@@ -1,0 +1,17 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="100%" height="100%" fill="#f0f0f0" />
+  <text x="50%" y="50%" font-family="Arial" font-size="24" fill="#333" text-anchor="middle">
+    Screenshot della cronologia delle partite
+  </text>
+  <rect x="100" y="150" width="600" height="300" fill="#fff" stroke="#333" stroke-width="2" />
+  <line x1="100" y1="190" x2="700" y2="190" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="230" x2="700" y2="230" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="270" x2="700" y2="270" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="310" x2="700" y2="310" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="350" x2="700" y2="350" stroke="#333" stroke-width="1" />
+  <line x1="100" y1="390" x2="700" y2="390" stroke="#333" stroke-width="1" />
+  <text x="120" y="175" font-family="Arial" font-size="14" fill="#333">Data</text>
+  <text x="300" y="175" font-family="Arial" font-size="14" fill="#333">Carte</text>
+  <text x="450" y="175" font-family="Arial" font-size="14" fill="#333">Risultato</text>
+  <text x="600" y="175" font-family="Arial" font-size="14" fill="#333">Azioni</text>
+</svg>
