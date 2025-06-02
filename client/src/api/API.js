@@ -60,6 +60,11 @@ export const getUserGames = async () => {
     const response = await API.get('/games');
     return response.data;
   } catch (error) {
+    // If it's an authentication error, don't throw it as a generic error
+    if (error.response && error.response.status === 401) {
+      console.log('User not authenticated for getUserGames');
+      return []; // Return empty array instead of throwing error
+    }
     throw error;
   }
 };

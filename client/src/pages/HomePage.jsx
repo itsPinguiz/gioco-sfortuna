@@ -11,23 +11,40 @@ const HomePage = () => {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   // Load user's games history if authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetchGames();
+    } else {
+      // Clear games and error when not authenticated
+      setGames([]);
+      setError('');
     }
   }, [isAuthenticated]);
 
   // Fetch games history
   const fetchGames = async () => {
+    // Double check authentication before making the call
+    if (!isAuthenticated) {
+      console.log('Skipping fetchGames - user not authenticated');
+      return;
+    }
+    
     try {
       setLoading(true);
+      setError(''); // Clear any previous errors
       const userGames = await getUserGames();
       setGames(userGames);
     } catch (error) {
       console.error('Error fetching games:', error);
-      setError('Errore nel caricamento delle partite. Riprova più tardi.');
+      // Check if the error is due to authentication
+      if (error.response && error.response.status === 401) {
+        console.log('Authentication error when fetching games - user might have been logged out');
+        setError('');
+        setGames([]);
+      } else {
+        setError('Errore nel caricamento delle partite. Riprova più tardi.');
+      }
     } finally {
       setLoading(false);
     }
