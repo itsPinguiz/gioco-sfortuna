@@ -2,16 +2,57 @@
 import { useState, useEffect, useRef } from 'react';
 
 /**
- * Custom hook to manage a countdown timer
+ * Custom hook to manage a countdown timer with localStorage persistence
  * @param {number} initialTime - Initial time in seconds
  * @param {function} onTimeUp - Function to call when time is up
+ * @param {string} gameId - Game ID for localStorage persistence
  * @returns {Object} - Timer state and control functions
  */
-const useGameTimer = (initialTime = 30, onTimeUp) => {
-  const [timeLeft, setTimeLeft] = useState(initialTime);
-  const [isRunning, setIsRunning] = useState(false);
-  const timerRef = useRef(null);
+const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
+  // Helper functions for localStorage
+  const saveTimerToLocalStorage = (gameId, timeLeft, isRunning) => {
+    if (gameId) {
+      localStorage.setItem('gameTimer_' + gameId, JSON.stringify({
+        timeLeft,
+        isRunning,
+        timestamp: Date.now()
+      }));
+    }
+  };
 
+  const loadTimerFromLocalStorage = (gameId) => {
+    if (gameId) {
+      const saved = localStorage.getItem('gameTimer_' + gameId);
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          // Calcola il tempo trascorso da quando è stato salvato
+          const elapsed = Math.floor((Date.now() - data.timestamp) / 1000);
+          const adjustedTime = Math.max(0, data.timeLeft - elapsed);
+          
+          return {
+            timeLeft: adjustedTime,
+            isRunning: data.isRunning && adjustedTime > 0
+          };
+        } catch (e) {
+          console.warn('Error parsing saved timer data:', e);
+        }
+      }
+    }
+    return null;
+  };
+
+  const clearTimerFromLocalStorage = (gameId) => {
+    if (gameId) {
+      localStorage.removeItem('gameTimer_' + gameId);
+    }
+  };
+
+  // Initialize state - try to load from localStorage first
+  const savedState = gameId ? loadTimerFromLocalStorage(gameId) : null;
+  const [timeLeft, setTimeLeft] = useState(savedState ? savedState.timeLeft : initialTime);
+  const [isRunning, setIsRunning] = useState(savedState ? savedState.isRunning : false);
+  const timerRef = useRef(null);
   // Clear timer on unmount
   useEffect(() => {
     return () => {
@@ -20,6 +61,35 @@ const useGameTimer = (initialTime = 30, onTimeUp) => {
       }
     };
   }, []);
+
+  // Save timer state to localStorage when it changes
+  useEffect(() => {
+    if (gameId) {
+      saveTimerToLocalStorage(gameId, timeLeft, isRunning);
+    }
+  }, [timeLeft, isRunning, gameId]);
+  // Restore running timer on mount if it was running
+  useEffect(() => {
+    if (savedState && savedState.isRunning && savedState.timeLeft > 0) {
+      // Il timer era in esecuzione quando la pagina è stata ricaricata
+      // Riavviamo il timer con il tempo rimanente
+      setIsRunning(true);
+      
+      timerRef.current = setInterval(() => {
+        setTimeLeft(prevTime => {
+          if (prevTime <= 1) {
+            // Time's up
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+            setIsRunning(false);
+            if (onTimeUp) onTimeUp();
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 1000);
+    }
+  }, []); // Solo al mount
 
   // Start the timer
   const startTimer = () => {
@@ -64,11 +134,14 @@ const useGameTimer = (initialTime = 30, onTimeUp) => {
     }
     setIsRunning(false);
   };
-
   // Reset the timer
   const resetTimer = () => {
     stopTimer();
     setTimeLeft(initialTime);
+    // Clear from localStorage when resetting
+    if (gameId) {
+      clearTimerFromLocalStorage(gameId);
+    }
   };
 
   return {
@@ -77,7 +150,7 @@ const useGameTimer = (initialTime = 30, onTimeUp) => {
     startTimer,
     stopTimer,
     resetTimer,
-    timerRef
+    clearTimerFromLocalStorage
   };
 };
 

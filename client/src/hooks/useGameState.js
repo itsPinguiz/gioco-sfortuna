@@ -7,25 +7,66 @@ import { getGameById, getNextRoundCard, submitCardPlacement } from '../api/API';
  * Handles loading the game, updating cards, and tracking attempts
  */
 const useGameState = (gameId) => {
+  // Helper functions for localStorage persistence
+  const saveGameStateToLocalStorage = (gameId, roundCard, gamePhase, incorrectAttempts) => {
+    if (gameId) {
+      localStorage.setItem('gameState_' + gameId, JSON.stringify({
+        roundCard,
+        gamePhase,
+        incorrectAttempts,
+        timestamp: Date.now()
+      }));
+    }
+  };
+
+  const loadGameStateFromLocalStorage = (gameId) => {
+    if (gameId) {
+      const saved = localStorage.getItem('gameState_' + gameId);
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          console.warn('Error parsing saved game state:', e);
+        }
+      }
+    }
+    return null;
+  };
+
+  const clearGameStateFromLocalStorage = (gameId) => {
+    if (gameId) {
+      localStorage.removeItem('gameState_' + gameId);
+    }
+  };
+
+  // Initialize state - try to load from localStorage first
+  const savedState = loadGameStateFromLocalStorage(gameId);
+  
   // Game state
   const [game, setGame] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Round state
-  const [roundCard, setRoundCard] = useState(null);
-  const [gamePhase, setGamePhase] = useState('loading'); // loading, round, result, over
+  // Round state - use saved state if available
+  const [roundCard, setRoundCard] = useState(savedState ? savedState.roundCard : null);
+  const [gamePhase, setGamePhase] = useState(savedState ? savedState.gamePhase : 'loading');
   const [roundResult, setRoundResult] = useState(null);
-  const [incorrectAttempts, setIncorrectAttempts] = useState(0);
+  const [incorrectAttempts, setIncorrectAttempts] = useState(savedState ? savedState.incorrectAttempts : 0);
   
   // Ref per evitare problemi di closure con lo stato degli errori
   const attemptsRef = useRef(incorrectAttempts);
-
   // Manteniamo aggiornata la ref ogni volta che lo stato cambia
   useEffect(() => {
     attemptsRef.current = incorrectAttempts;
   }, [incorrectAttempts]);
+
+  // Save game state to localStorage when it changes
+  useEffect(() => {
+    if (gameId && gamePhase !== 'loading') {
+      saveGameStateToLocalStorage(gameId, roundCard, gamePhase, incorrectAttempts);
+    }
+  }, [gameId, roundCard, gamePhase, incorrectAttempts]);
 
   // Load game data
   useEffect(() => {

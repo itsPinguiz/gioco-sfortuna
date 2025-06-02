@@ -37,13 +37,14 @@ const GamePage = () => {
     handleTimeUp,
     startNewRound
   } = useGameState(gameId);
-
-  // Game timer with callback to handleTimeUp
+  // Game timer with callback to handleTimeUp and gameId for persistence
   const {
     timeLeft,
     startTimer,
-    stopTimer
-  } = useGameTimer(30, handleTimeUp);
+    stopTimer,
+    resetTimer,
+    clearTimerFromLocalStorage
+  } = useGameTimer(30, handleTimeUp, gameId);
   // Demo game modal
   const [showDemoModal, setShowDemoModal] = useState(false);
   
@@ -74,15 +75,19 @@ const GamePage = () => {
     stopTimer();
     await handlePlaceCard(cardId, position);
   };
-
   // Function to start a new round
   const onContinue = async () => {
+    resetTimer(); // Reset timer when starting new round
     await startNewRound();
   };
 
   // Function to start a new game
   const onNewGame = async () => {
     try {
+      // Clear timer data for current game before starting new one
+      if (gameId) {
+        clearTimerFromLocalStorage(gameId);
+      }
       const result = await createGame();
       if (result && result.game) {
         navigate(`/game/${result.game.id}`);
