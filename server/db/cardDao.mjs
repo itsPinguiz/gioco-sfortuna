@@ -30,7 +30,6 @@ const cardDao = {
       });
     });
   },
-
   // Get random cards excluding specific card IDs
   getRandomCards: (count, excludeIds = []) => {
     return new Promise((resolve, reject) => {
@@ -49,7 +48,18 @@ const cardDao = {
         if (err) {
           reject(err);
         } else {
-          resolve(rows);
+          // Extra safety check: ensure uniqueness
+          const uniqueCards = [];
+          const seenIds = new Set();
+          
+          for (const card of rows) {
+            if (!seenIds.has(card.id)) {
+              uniqueCards.push(card);
+              seenIds.add(card.id);
+            }
+          }
+          
+          resolve(uniqueCards);
         }
       });
     });

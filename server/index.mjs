@@ -156,12 +156,22 @@ app.delete('/api/sessions/current', (req, res) => {
 // Start a new game
 app.post('/api/games', (req, res) => {
   const userId = req.isAuthenticated() ? req.user.id : null;
-  
-  gameDao.createGame(userId)
+    gameDao.createGame(userId)
     .then(game => {
-      // Get 3 random cards for the game
+      // Get 3 unique random cards for the game
       return cardDao.getRandomCards(3)
         .then(cards => {
+          // Verify we got 3 unique cards
+          if (cards.length < 3) {
+            throw new Error('Not enough unique cards available');
+          }
+          
+          // Verify uniqueness (extra safety check)
+          const uniqueIds = [...new Set(cards.map(card => card.id))];
+          if (uniqueIds.length !== cards.length) {
+            throw new Error('Duplicate cards detected in initial hand');
+          }
+          
           // Add cards to the game
           const promises = cards.map((card, index) => 
             gameDao.addCardToGame(game.id, card.id, index + 1));
