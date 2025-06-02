@@ -67,30 +67,16 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
     if (gameId) {
       saveTimerToLocalStorage(gameId, timeLeft, isRunning);
     }
-  }, [timeLeft, isRunning, gameId]);
-  // Restore running timer on mount if it was running
+  }, [timeLeft, isRunning, gameId]);  // Restore running timer on mount if it was running
   useEffect(() => {
     if (savedState && savedState.isRunning && savedState.timeLeft > 0) {
       // Il timer era in esecuzione quando la pagina è stata ricaricata
-      // Riavviamo il timer con il tempo rimanente
-      setIsRunning(true);
-      
-      timerRef.current = setInterval(() => {
-        setTimeLeft(prevTime => {
-          if (prevTime <= 1) {
-            // Time's up
-            clearInterval(timerRef.current);
-            timerRef.current = null;
-            setIsRunning(false);
-            if (onTimeUp) onTimeUp();
-            return 0;
-          }
-          return prevTime - 1;
-        });
-      }, 1000);
+      // IMPORTANTE: Non riavviamo automaticamente il timer
+      // Verrà riavviato esplicitamente dalla GamePage se necessario
+      setIsRunning(false); // Resetta lo stato isRunning
+      setTimeLeft(savedState.timeLeft); // Mantieni il tempo rimanente
     }
   }, []); // Solo al mount
-
   // Start the timer
   const startTimer = () => {
     // Don't restart if timer is already running
@@ -103,8 +89,8 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
       clearInterval(timerRef.current);
     }
     
-    // Reset time - only if not already running
-    if (!isRunning) {
+    // Reset time - only if timer is at 0 or this is a fresh start
+    if (timeLeft <= 0) {
       setTimeLeft(initialTime);
     }
     
@@ -125,7 +111,6 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
       });
     }, 1000);
   };
-
   // Stop the timer
   const stopTimer = () => {
     if (timerRef.current) {
@@ -133,6 +118,19 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
       timerRef.current = null;
     }
     setIsRunning(false);
+  };
+
+  // Pause the timer (stop but keep time) - used when navigating away
+  const pauseTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setIsRunning(false);
+    // Save current state as paused to localStorage
+    if (gameId) {
+      saveTimerToLocalStorage(gameId, timeLeft, false);
+    }
   };
   // Reset the timer
   const resetTimer = () => {
@@ -143,12 +141,12 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
       clearTimerFromLocalStorage(gameId);
     }
   };
-
   return {
     timeLeft,
     isRunning,
     startTimer,
     stopTimer,
+    pauseTimer,
     resetTimer,
     clearTimerFromLocalStorage
   };

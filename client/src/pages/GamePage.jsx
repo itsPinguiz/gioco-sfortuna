@@ -36,12 +36,12 @@ const GamePage = () => {
     handlePlaceCard,
     handleTimeUp,
     startNewRound
-  } = useGameState(gameId);
-  // Game timer with callback to handleTimeUp and gameId for persistence
+  } = useGameState(gameId);  // Game timer with callback to handleTimeUp and gameId for persistence
   const {
     timeLeft,
     startTimer,
     stopTimer,
+    pauseTimer,
     resetTimer,
     clearTimerFromLocalStorage
   } = useGameTimer(30, handleTimeUp, gameId);
@@ -62,13 +62,19 @@ const GamePage = () => {
       stopTimer();
     }
   }, [gamePhase, roundCard, startTimer, stopTimer]);
-
   // Start first round when game is loaded
   useEffect(() => {
     if (!loading && gamePhase === 'round' && !roundCard) {
       startNewRound();
     }
   }, [loading, gamePhase, roundCard, startNewRound]);
+  // Cleanup timer when component unmounts (user navigates away)
+  useEffect(() => {
+    return () => {
+      // Pause timer when leaving the game page (preserves time but stops execution)
+      pauseTimer();
+    };
+  }, [pauseTimer]);
 
   // Function to handle card placement
   const onPlaceCard = async (cardId, position) => {
