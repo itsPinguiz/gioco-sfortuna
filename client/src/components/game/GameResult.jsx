@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Alert, Button } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import MisfortuneCard from './MisfortuneCard';
 import styles from './GameResult.module.css';
 
@@ -9,39 +9,41 @@ import styles from './GameResult.module.css';
 const GameResult = ({ 
   result, 
   card, 
-  onContinue 
+  cards = [],
+  onContinue,
+  timeLeft = 0,
+  incorrectAttempts = 0,
+  maxAttempts = 3
 }) => {
   if (!result || !card) {
     return null;
   }
-
   const isCorrect = result.result === 'correct';
-  const alertVariant = isCorrect ? 'success' : 'danger';
-  const alertTitle = isCorrect ? 'Risposta Corretta!' : 'Risposta Sbagliata!';
-  const alertMessage = isCorrect 
-    ? 'Ottimo lavoro! Hai inserito la carta nella posizione corretta.' 
-    : `La posizione corretta era: ${result.correctPosition === 0 ? 'Prima di tutte le carte' : `Dopo la carta in posizione ${result.correctPosition}`}`;
 
   return (
     <Container className={styles.resultContainer}>
-      <Alert variant={alertVariant} className={styles.resultAlert}>
-        <Alert.Heading>{alertTitle}</Alert.Heading>
-        <p>{alertMessage}</p>
-      </Alert>
-      
-      <div className={styles.cardResult}>
+      {/* Header with timer and attempts counter - consistent with GameRound */}
+      <div className={styles.roundHeader}>
+        <div className={styles.attemptsCounter}>
+          <span>Errori: {incorrectAttempts}/{maxAttempts}</span>
+        </div>
+        <div className={styles.timer}>
+          <div className={styles.timerLabel}>
+            Tempo rimasto:
+          </div>
+          <div 
+            className={`${styles.timerValue} ${timeLeft <= 10 ? styles.timerLow : ''}`}
+          >
+            {timeLeft}s
+          </div>
+        </div>
+      </div>      <div className={styles.cardResult}>
         <MisfortuneCard 
           card={card} 
-          showIndex={true} 
+          showIndex={!isCorrect} /* Mostra l'indice solo quando è sbagliato */
           result={isCorrect ? 'correct' : 'incorrect'} 
         />
       </div>
-      
-      {result.incorrectAttempts !== undefined && !isCorrect && (
-        <div className={styles.attemptsInfo}>
-          <p>Tentativi errati: {result.incorrectAttempts}/3</p>
-        </div>
-      )}
       
       <div className={styles.actionButtons}>
         <Button

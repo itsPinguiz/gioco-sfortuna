@@ -6,7 +6,7 @@ import styles from './CardHand.module.css';
 /**
  * Component to display the hand of cards in the game
  */
-const CardHand = ({ cards, onCardSelect }) => {
+const CardHand = ({ cards, onCardSelect, showIndex = false }) => {
   if (!cards || cards.length === 0) {
     return (
       <div className={styles.emptyHand}>
@@ -26,14 +26,15 @@ const CardHand = ({ cards, onCardSelect }) => {
   return (
     <Container className={styles.cardHandContainer}>
       <h3 className={styles.handTitle}>Le tue carte ({cards.length})</h3>
+      
       <div className={styles.cardScroll}>
-        <div className={styles.cardHand}>
-          {sortedCards.map(card => (
+        <div className={styles.cardHand}>          {sortedCards.map(card => (
             <MisfortuneCard 
               key={card.id} 
               card={card} 
               onClick={onCardSelect ? () => onCardSelect(card) : undefined}
               selectable={!!onCardSelect}
+              showIndex={showIndex}
             />
           ))}
         </div>

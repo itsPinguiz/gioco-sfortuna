@@ -21,14 +21,43 @@ const GameOver = ({
   
   const isWon = game.result === 'won';
   const gameDate = new Date(game.start_date).toLocaleDateString();
-  const gameTime = new Date(game.start_date).toLocaleTimeString();
-  
-  // Calculate game duration
+  const gameTime = new Date(game.start_date).toLocaleTimeString();  // Calculate game duration
   const startTime = new Date(game.start_date).getTime();
   const endTime = game.end_date ? new Date(game.end_date).getTime() : Date.now();
-  const durationMs = endTime - startTime;
-  const durationMinutes = Math.floor(durationMs / (1000 * 60));
-  const durationSeconds = Math.floor((durationMs % (1000 * 60)) / 1000);
+  
+  // Debug log per capire i timestamp
+  console.log('GameOver Debug - Calculating duration:');
+  console.log('- start_date from DB:', game.start_date);
+  console.log('- end_date from DB:', game.end_date);
+  console.log('- startTime parsed:', startTime, new Date(startTime));
+  console.log('- endTime parsed:', endTime, new Date(endTime));
+  
+  const durationMs = Math.max(0, endTime - startTime); // Ensure non-negative duration
+  console.log('- durationMs:', durationMs);
+  
+  // Convert to total seconds and then to hours, minutes, seconds
+  const totalSeconds = Math.floor(durationMs / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  
+  console.log('- totalSeconds:', totalSeconds, 'hours:', hours, 'minutes:', minutes, 'seconds:', seconds);
+  
+  // Format duration string
+  let durationString = '';
+  if (hours > 0) {
+    durationString = `${hours}h ${minutes}m ${seconds}s`;
+  } else if (minutes > 0) {
+    durationString = `${minutes}m ${seconds}s`;
+  } else {
+    durationString = `${seconds}s`;
+  }
+  
+  // Add validation for unrealistic durations (more than 2 hours for a game)
+  if (hours > 2 || totalSeconds < 0) {
+    durationString = 'N/A';
+    console.warn('Invalid game duration detected:', durationMs, 'ms');
+  }
   
   return (
     <Container className={styles.gameOverContainer}>
@@ -39,18 +68,6 @@ const GameOver = ({
       </div>
       
       <div className={styles.gameOverContent}>
-        <Alert variant={isWon ? 'success' : 'danger'}>
-          <Alert.Heading>
-            {isWon 
-              ? 'Congratulazioni!' 
-              : 'Oh no! La sfortuna ha avuto la meglio.'}
-          </Alert.Heading>
-          <p>
-            {isWon 
-              ? 'Hai completato con successo il gioco ordinando correttamente tutte le carte della sfortuna!' 
-              : 'Hai commesso troppi errori e la sfortuna si è abbattuta su di te.'}
-          </p>
-        </Alert>
         
         <div className={styles.gameStats}>
           <h3>Statistiche Partita</h3>
@@ -62,10 +79,9 @@ const GameOver = ({
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Ora:</span>
               <span className={styles.statValue}>{gameTime}</span>
-            </div>
-            <div className={styles.statItem}>
+            </div>            <div className={styles.statItem}>
               <span className={styles.statLabel}>Durata:</span>
-              <span className={styles.statValue}>{durationMinutes}m {durationSeconds}s</span>
+              <span className={styles.statValue}>{durationString}</span>
             </div>
             <div className={styles.statItem}>
               <span className={styles.statLabel}>Carte raccolte:</span>

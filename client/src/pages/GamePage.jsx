@@ -138,22 +138,28 @@ const GamePage = () => {
           timeLeft={timeLeft}
           incorrectAttempts={incorrectAttempts}
         />
-      )}
-
-      {gamePhase === 'result' && (
+      )}      {gamePhase === 'result' && (
         <GameResult
           result={roundResult}
           card={roundCard}
+          cards={cards}
           onContinue={onContinue}
+          timeLeft={timeLeft}
+          incorrectAttempts={incorrectAttempts}
         />
-      )}      {gamePhase === 'over' && (
+      )}{gamePhase === 'over' && (
         <GameOver
           game={game}
           cards={cards}
           incorrectAttempts={incorrectAttempts}
           onNewGame={onNewGame}
         />      )}      {/* Cards collection (hand) - mostrato solo nella fase di risultato, non in GameOver */}
-      {gamePhase === 'result' && <CardHand cards={cards} />}
+      {gamePhase === 'result' && (
+        <CardHand 
+          cards={cards} 
+          showIndex={roundResult && roundResult.result === 'incorrect'} 
+        />
+      )}
 
       {/* Demo game modal */}
       <Modal 

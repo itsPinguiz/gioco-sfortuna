@@ -2,8 +2,7 @@ import db from './database.mjs';
 
 // DAO for Game operations
 const gameDao = {
-  
-  // Create a new game
+    // Create a new game
   createGame: (userId) => {
     return new Promise((resolve, reject) => {
       const sql = 'INSERT INTO games (user_id, start_date) VALUES (?, datetime("now"))';
@@ -11,12 +10,19 @@ const gameDao = {
         if (err) {
           reject(err);
         } else {
-          resolve({ id: this.lastID, user_id: userId, start_date: new Date() });
+          // Get the created game to return consistent data
+          const getGameSql = 'SELECT * FROM games WHERE id = ?';
+          db.get(getGameSql, [this.lastID], (err, row) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(row);
+            }
+          });
         }
       });
     });
   },
-
   // End a game
   endGame: (gameId, result) => {
     return new Promise((resolve, reject) => {
@@ -27,7 +33,15 @@ const gameDao = {
         } else if (this.changes === 0) {
           reject(new Error('Game not found'));
         } else {
-          resolve({ gameId, result, end_date: new Date() });
+          // Get the updated game to return consistent data
+          const getGameSql = 'SELECT * FROM games WHERE id = ?';
+          db.get(getGameSql, [gameId], (err, row) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(row);
+            }
+          });
         }
       });
     });

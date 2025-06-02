@@ -33,8 +33,7 @@ const MisfortuneCard = ({
           className={styles.cardImage}
         />
         <Card.Body className={styles.compactCardBody}>
-          <Card.Title className={styles.compactTitle}>{card.name}</Card.Title> 
-          {showIndex && (
+          <Card.Title className={styles.compactTitle}>{card.name}</Card.Title>          {showIndex && card.misfortune_index !== undefined && (
             <div className={styles.misfortuneIndex} title="Indice di sfortuna">
               {card.misfortune_index}
             </div>

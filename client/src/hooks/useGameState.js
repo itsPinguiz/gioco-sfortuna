@@ -135,11 +135,23 @@ const useGameState = (gameId) => {
       
       // Aggiorniamo lo stato del risultato del round
       setRoundResult(result);
-      
-      // Aggiorniamo la fase del gioco
+        // Aggiorniamo la fase del gioco
       if (result.gameCompleted) {
         console.log('🏁 Game is completed, setting phase to over');
-        setTimeout(() => setGamePhase('over'), 50);
+        
+        // Ricarica i dati del gioco dal database per avere end_date aggiornato
+        setTimeout(async () => {
+          try {
+            const updatedGameData = await getGameById(gameId);
+            if (updatedGameData.game) {
+              console.log('📡 Reloaded game data with updated end_date:', updatedGameData.game.end_date);
+              setGame(updatedGameData.game);
+            }
+          } catch (error) {
+            console.error('Error reloading game data:', error);
+          }
+          setGamePhase('over');
+        }, 100); // Piccolo delay per permettere al server di salvare
       } else {
         setGamePhase('result');
       }
@@ -177,11 +189,23 @@ const useGameState = (gameId) => {
         result: 'incorrect',
         correctPosition: result.correctPosition || 0
       });
-      
-      // Gestiamo il fine partita basandoci sul server
+        // Gestiamo il fine partita basandoci sul server
       if (result.gameCompleted) {
         console.log('🏁 Game over per decisione del server');
-        setTimeout(() => setGamePhase('over'), 50);
+        
+        // Ricarica i dati del gioco dal database per avere end_date aggiornato
+        setTimeout(async () => {
+          try {
+            const updatedGameData = await getGameById(gameId);
+            if (updatedGameData.game) {
+              console.log('📡 Reloaded game data with updated end_date:', updatedGameData.game.end_date);
+              setGame(updatedGameData.game);
+            }
+          } catch (error) {
+            console.error('Error reloading game data:', error);
+          }
+          setGamePhase('over');
+        }, 100); // Piccolo delay per permettere al server di salvare
       } else {
         setGamePhase('result');
       }
@@ -203,11 +227,22 @@ const useGameState = (gameId) => {
         incorrectAttempts: newAttempts,
         gameCompleted: newAttempts >= 3
       };
-      
-      setRoundResult(fakeResult);
+        setRoundResult(fakeResult);
       
       if (newAttempts >= 3) {
-        setTimeout(() => setGamePhase('over'), 50);
+        // Anche qui, prova a ricaricare i dati del gioco se possibile
+        setTimeout(async () => {
+          try {
+            const updatedGameData = await getGameById(gameId);
+            if (updatedGameData.game && updatedGameData.game.end_date) {
+              console.log('📡 Reloaded game data after manual timeout:', updatedGameData.game.end_date);
+              setGame(updatedGameData.game);
+            }
+          } catch (error) {
+            console.error('Error reloading game data after manual timeout:', error);
+          }
+          setGamePhase('over');
+        }, 100);
       } else {
         setGamePhase('result');
       }
