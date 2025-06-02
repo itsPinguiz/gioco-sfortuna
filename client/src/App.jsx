@@ -3,9 +3,8 @@ import { AuthProvider } from './contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 
-// Components
-import NavbarComponent from './components/Navbar';
-import ProtectedRoute from './components/ProtectedRoute';
+// Components - importiamo dal file indice principale
+import { NavbarComponent, ProtectedRoute } from './components';
 
 // Pages
 import HomePage from './pages/HomePage';

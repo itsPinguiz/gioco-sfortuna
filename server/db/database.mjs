@@ -5,6 +5,61 @@ const db = new sqlite3.Database('db/game.db', (err) => {
   if (err) throw err;
 });
 
+// Function to reset the entire database - WARNING: This deletes all data!
+export const resetDB = () => {
+  return new Promise((resolve, reject) => {
+    console.log('⚠️ RESETTING DATABASE - All data will be lost!');
+    
+    db.serialize(() => {
+      // Drop all tables in reverse order to avoid foreign key constraints
+      db.run(`DROP TABLE IF EXISTS game_cards`, (err) => {
+        if (err) {
+          console.error('Error dropping game_cards table:', err);
+          reject(err);
+          return;
+        }
+        
+        db.run(`DROP TABLE IF EXISTS games`, (err) => {
+          if (err) {
+            console.error('Error dropping games table:', err);
+            reject(err);
+            return;
+          }
+          
+          db.run(`DROP TABLE IF EXISTS cards`, (err) => {
+            if (err) {
+              console.error('Error dropping cards table:', err);
+              reject(err);
+              return;
+            }
+            
+            db.run(`DROP TABLE IF EXISTS users`, (err) => {
+              if (err) {
+                console.error('Error dropping users table:', err);
+                reject(err);
+                return;
+              }
+              
+              console.log('🗑️ All tables dropped successfully');
+              
+              // After dropping all tables, initialize them again
+              initializeDB()
+                .then(() => {
+                  console.log('🔄 Database schema recreated');
+                  resolve();
+                })
+                .catch((err) => {
+                  console.error('Error recreating schema:', err);
+                  reject(err);
+                });
+            });
+          });
+        });
+      });
+    });
+  });
+};
+
 // Function to update database schema if needed
 export const updateDBSchema = () => {
   return new Promise((resolve, reject) => {
@@ -19,8 +74,6 @@ export const updateDBSchema = () => {
       
       // Check if the incorrect_attempts column exists
       const hasIncorrectAttempts = rows.some(col => col && col.name === 'incorrect_attempts');
-      
-      console.log('Has incorrect_attempts column:', hasIncorrectAttempts);
       
       if (!hasIncorrectAttempts) {
         console.log('Adding incorrect_attempts column to games table');

@@ -1,0 +1,73 @@
+.gameOverContainer {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.gameOverHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.winTitle {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+
+.loseTitle {
+  color: #dc3545;
+  font-weight: bold;
+  font-size: 2.5rem;
+}
+
+.gameOverContent {
+  margin: 2rem 0;
+}
+
+.gameStats {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background: #f1f3f5;
+  border-radius: 5px;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.statValue {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.cardsCollection {
+  margin: 2rem 0;
+}
+
+.gameOverActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}

@@ -1,0 +1,33 @@
+.resultContainer {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.resultAlert {
+  margin-bottom: 2rem;
+  text-align: left;
+}
+
+.cardResult {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.attemptsInfo {
+  margin: 1rem 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.actionButtons {
+  margin-top: 2rem;
+}
+
+.actionButtons button {
+  min-width: 150px;
+}

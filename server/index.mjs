@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Import DAOs and utility functions
-import { initializeDB, updateDBSchema } from './db/database.mjs';
+import { initializeDB, updateDBSchema, resetDB } from './db/database.mjs';
 import userDao from './db/userDao.mjs';
 import cardDao from './db/cardDao.mjs';
 import gameDao from './db/gameDao.mjs';
@@ -31,7 +31,7 @@ app.use(morgan('dev'));
 
 // Set up CORS
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175'],
+  origin: ['http://localhost:5177', 'http://localhost:5174', 'http://localhost:5175'],
   credentials: true
 };
 app.use(cors(corsOptions));
@@ -85,6 +85,10 @@ passport.deserializeUser((id, done) => {
 // Initialize database and load sample data
 const initializeApp = async () => {
   try {
+    // Uncomment the following line to reset the database
+    await resetDB();
+    // console.log('✅ Database reset complete');
+    
     // Initialize database structure
     await initializeDB();
     console.log('Database structure initialized');
@@ -259,7 +263,7 @@ app.get('/api/games/:id/round', (req, res) => {
 // Submit a placement for the current round
 app.post('/api/games/:id/round', 
   body('cardId').isInt().withMessage('Card ID must be an integer'),
-  body('position').isInt({ min: 0 }).withMessage('Position must be a non-negative integer'),
+  body('position').isInt({ min: -1 }).withMessage('Position must be -1 or non-negative integer'),
   (req, res) => {
     // Check for validation errors
     const errors = validationResult(req);

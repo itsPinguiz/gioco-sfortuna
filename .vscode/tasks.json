@@ -1,0 +1,48 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		// Task to run the client
+		{
+			"type": "npm",
+			"script": "dev",
+			"path": "client",
+			"problemMatcher": [],
+			"label": "npm: dev - client",
+			"detail": "vite",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"group": "fullstack"
+			}
+		},
+		// Task to run the server
+		{
+			"type": "shell",
+			"command": "node --watch index.mjs",
+			"options": {
+				"cwd": "${workspaceFolder}/server"
+			},
+			"problemMatcher": [],
+			"label": "npm: dev - server",
+			"detail": "node index.mjs",
+			"presentation": {
+				"reveal": "always",
+				"panel": "new",
+				"group": "fullstack"
+			}
+		},
+		// Compound task to run both client and server
+		{
+			"label": "Run Full Stack App",
+			"dependsOn": [
+				"npm: dev - server",
+				"npm: dev - client"
+			],
+			"problemMatcher": [],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	]
+}
