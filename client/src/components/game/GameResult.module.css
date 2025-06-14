@@ -1,6 +1,6 @@
 .resultContainer {
   padding: 2rem;
-  background-color: #f8f9fa;
+  background-color: var(--game-black);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 1rem 0;
@@ -37,9 +37,9 @@
   font-weight: bold;
   min-width: 50px;
   text-align: center;
-  background: #e9ecef;
+  background: var(--game-yellow);
   padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  color: black;
 }
 
 .timerLow {
@@ -48,9 +48,17 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.5; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 .resultAlert {
