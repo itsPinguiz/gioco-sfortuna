@@ -34,6 +34,13 @@ const DraggableNewCard = ({ card }) => {
     cursor: isDragging ? 'grabbing' : 'grab',
   };
 
+  // Debug: vediamo se la carta ha i dati corretti
+  console.log('DraggableNewCard - card:', card);
+
+  if (!card) {
+    return <div>Carta non disponibile</div>;
+  }
+
   return (
     <div
       ref={setNodeRef}

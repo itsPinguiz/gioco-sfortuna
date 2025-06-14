@@ -12,6 +12,13 @@ const MisfortuneCard = ({
   selectable = false, 
   result = null // 'correct', 'incorrect', o null
 }) => {
+  // Debug: vediamo i dati della carta
+  console.log('MisfortuneCard - card data:', card);
+  
+  if (!card) {
+    return <div>Carta non disponibile</div>;
+  }
+
   // Determina la classe CSS basata sul risultato
   const getCardClass = () => {
     let className = `${styles.misfortuneCard} ${selectable ? styles.selectable : ''}`;
