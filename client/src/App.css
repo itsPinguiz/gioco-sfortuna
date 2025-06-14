@@ -1,3 +1,9 @@
+:root {
+  --game-yellow: #ffd83e;
+  --game-black: #111820;
+  --app-background: #0c1318
+}
+
 body {
   min-height: 100vh;
   width: 100%;
@@ -5,6 +11,7 @@ body {
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  color: white;
 }
 
 #root {
@@ -17,6 +24,7 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #0c1318;
 }
 
 /* Card animations */
@@ -46,6 +54,7 @@ body {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -59,8 +68,112 @@ body {
 
 .card {
   padding: 2em;
+  background-color: var(--game-black);
+  color: #fff;
+}
+
+.card-title {
+  color: var(--game-yellow);
 }
 
 .read-the-docs {
   color: #888;
+}
+
+.btn-primary {
+  border-radius: 0;
+  color: var(--app-background);
+  font-weight: 1000;
+  background-color: var(--game-yellow);
+  -webkit-font-smoothing: antialiased;
+  font-size: 14pt;
+  border: none;
+  outline: none;
+}
+
+.border-info {
+  border-color: var(--game-yellow) !important;
+}
+
+.btn .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter .15s ease-in-out;
+}
+
+.btn .icon>img {
+  height: 24px;
+}
+
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  z-index: 2;
+  border: 1px solid black;
+}
+
+.btn:hover{
+  background-color: var(--game-yellow);
+  outline: unset;
+  border-color: black;
+  color: black;
+}
+
+.btn-wrapper {
+  position: relative;
+  width: fit-content;
+  transition: all 100ms ease;
+  display: inline-flex;
+}
+
+.btn-wrapper:hover{
+  transform: scale(1.05);
+}
+
+.btn-wrapper::before,
+.btn-wrapper::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  content: "";
+  transition: all 200ms ease;
+  border: 1px solid black;
+  background-color: var(--game-yellow);
+  filter: brightness(.75);
+}
+
+.btn-wrapper::before {
+  z-index: 1;
+}
+
+.btn-wrapper::after {
+  filter: brightness(.5);
+}
+
+.btn-wrapper:hover::before,
+.btn-wrapper:hover::after {
+  transform: rotate(-2deg);
+  transform-origin: right;
+}
+
+.btn-wrapper:hover::after {
+  transform: rotate(-4deg);
+  transition: all 100ms 150ms ease;
+}
+
+.lead {
+  color: rgb(190, 190, 190);
+}
+
+.navbar {
+  background-color: #080e13 !important;
+  box-shadow: 0 -10px 30px black;
+  margin-bottom: 40px;
 }

@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { createGame, getUserGames } from '../api/API';
 import dayjs from 'dayjs';
+import userIcon from '../assets/icons/person.png'
+import playIcon from '../assets/icons/play.png'
 
 const HomePage = () => {
   const { user, isAuthenticated } = useContext(AuthContext);
@@ -29,7 +31,7 @@ const HomePage = () => {
       console.log('Skipping fetchGames - user not authenticated');
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(''); // Clear any previous errors
@@ -55,7 +57,7 @@ const HomePage = () => {
     try {
       setLoading(true);
       const gameData = await createGame();
-      
+
       // Navigate to the game page
       if (gameData.game) {
         navigate(`/game/${gameData.game.id}`);
@@ -92,17 +94,22 @@ const HomePage = () => {
             <Card.Body>
               <Card.Title>Inizia una nuova partita</Card.Title>
               <Card.Text>
-                {isAuthenticated 
-                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere!' 
+                {isAuthenticated
+                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere!'
                   : 'Prova una partita demo con una sola mano. Registrati per giocare partite complete!'}
               </Card.Text>
-              <Button 
-                variant="primary" 
-                onClick={handleNewGame}
-                disabled={loading}
-              >
-                {loading ? 'Caricamento...' : 'Nuova Partita'}
-              </Button>
+              <div className="btn-wrapper">
+                <Button
+                  variant="primary"
+                  onClick={handleNewGame}
+                  disabled={loading}
+                >
+                  <span className='icon'>
+                    <img src={playIcon} alt="" />
+                  </span>
+                  {loading ? 'Caricamento...' : 'Nuova Partita'}
+                </Button>
+              </div>
             </Card.Body>
           </Card>
         </Col>
@@ -131,7 +138,7 @@ const HomePage = () => {
         <Row className="mt-4">
           <Col>
             <h2>Le tue partite recenti</h2>
-            
+
             {loading ? (
               <div className="text-center mt-3">
                 <div className="spinner-border" role="status">
@@ -197,9 +204,11 @@ const HomePage = () => {
                 <Card.Text>
                   Effettua il login per tenere traccia delle tue partite e giocare partite complete!
                 </Card.Text>
-                <Link to="/login" className="btn btn-info">
-                  Accedi
-                </Link>
+                <div className="btn-wrapper">
+                  <Link to="/login" className="btn btn-primary">
+                    <span className="icon"><img src={userIcon} alt="" /></span>Accedi
+                  </Link>
+                </div>
               </Card.Body>
             </Card>
           </Col>
