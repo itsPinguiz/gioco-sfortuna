@@ -91,6 +91,7 @@ const GameRound = ({
 }) => {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [timerStarted, setTimerStarted] = useState(false);
+  const [timeoutHandled, setTimeoutHandled] = useState(false); // Add this
   const [activeId, setActiveId] = useState(null);
 
   const sensors = useSensors(
@@ -98,10 +99,11 @@ const GameRound = ({
     useSensor(KeyboardSensor)
   );
 
-  // Reset selection when a new round starts (new roundCard)
+  // Reset states when a new round starts
   useEffect(() => {
     setSelectedPosition(null);
     setTimerStarted(false);
+    setTimeoutHandled(false); // Reset timeout flag
   }, [roundCard?.id]);
 
   // Detect when timer starts (transitions from initial value to started)
@@ -113,10 +115,11 @@ const GameRound = ({
 
   // Handle timeout: use selected position or error
   useEffect(() => {
-    if (timeLeft === 0 && timerStarted) {
+    if (timeLeft === 0 && timerStarted && !timeoutHandled) {
+      setTimeoutHandled(true); // Prevent multiple calls
       handleTimeUp();
     }
-  }, [timeLeft, timerStarted, selectedPosition, onPlaceCard, onTimeUp, roundCard?.id]);
+  }, [timeLeft, timerStarted, timeoutHandled]);
 
   const handleTimeUp = () => {
     if (selectedPosition !== null) {

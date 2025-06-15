@@ -163,7 +163,23 @@ const useGameState = (gameId) => {
       return null;
     }
   };
+  // Add ref to track if timeout is already being processed
+  const timeoutProcessingRef = useRef(false);
+  
+  // Reset timeout processing flag when new round starts
+  useEffect(() => {
+    if (roundCard?.id) {
+      timeoutProcessingRef.current = false;
+    }
+  }, [roundCard?.id]);
+
   const handleTimeUp = async () => {
+    // Prevent multiple timeout submissions for the same round
+    if (timeoutProcessingRef.current) {
+      console.log('⏰ Timeout already being processed, skipping...');
+      return null;
+    }
+    
     if (!roundCard || !roundCard.id) {
       console.warn('❌ Cannot handle timeout: roundCard is not available');
       return null;
@@ -171,7 +187,9 @@ const useGameState = (gameId) => {
     
     try {
       console.log('⏰ TIMEOUT: Timer scaduto');
-        // Per il timeout, usiamo la posizione -1 per indicare al server che è un timeout
+      timeoutProcessingRef.current = true; // Mark as processing
+      
+      // Per il timeout, usiamo la posizione -1 per indicare al server che è un timeout
       console.log('📤 Sending timeout to server with position=-1');
       const result = await submitCardPlacement(gameId, roundCard.id, -1);
       console.log('📥 Server response for timeout:', result);
@@ -248,6 +266,9 @@ const useGameState = (gameId) => {
       }
       
       return fakeResult;
+    } finally {
+      // Keep the flag set to prevent duplicate submissions for this round
+      // It will be reset when a new round starts
     }
   };
   
