@@ -141,6 +141,7 @@ const GamePage = () => {
           roundCard={roundCard}
           cards={cards}
           onPlaceCard={onPlaceCard}
+          onTimeUp={handleTimeUp}
           timeLeft={timeLeft}
           incorrectAttempts={incorrectAttempts}
         />
