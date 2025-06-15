@@ -1,11 +1,62 @@
+/* ==========================================
+   CSS CUSTOM PROPERTIES
+   ========================================== */
+:root {
+  --game-bg-dark: #0c1318;
+  --game-bg-light: rgba(255, 255, 255, 0.05);
+  --game-bg-hover: rgba(255, 255, 255, 0.1);
+  --game-border-color: #dee2e6;
+  --game-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --game-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --game-transition: all 0.2s ease;
+  --game-border-radius: 8px;
+  --game-border-radius-large: 10px;
+}
+
+/* ==========================================
+   COMMON UTILITY CLASSES
+   ========================================== */
+
+/* Common hover effects */
+.hoverScale {
+  transition: var(--game-transition);
+}
+
+.hoverScale:hover {
+  transform: scale(1.05);
+}
+
+.hoverLift {
+  transition: var(--game-transition);
+}
+
+.hoverLift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+/* Common button styles */
+.gameButton {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
 .gameRoundContainer {
   padding: 2rem;
-  background-color: #0c1318;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: var(--game-border-radius-large);
+  box-shadow: var(--game-shadow);
   margin: 1rem 0;
-  border: 2px solid var(--game-yellow) !important;
 }
+
+/* ==========================================
+   HEADER SECTION
+   ========================================== */
 
 .roundHeader {
   display: flex;
@@ -13,7 +64,7 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--game-border-color);
 }
 
 .attemptsCounter {
@@ -21,6 +72,12 @@
   font-weight: bold;
 }
 
+.roundTitle {
+  text-align: center;
+  flex: 1;
+}
+
+/* Timer styles */
 .timer {
   display: flex;
   align-items: center;
@@ -39,6 +96,7 @@
   background: var(--game-yellow);
   padding: 0.25rem 0.5rem;
   color: black;
+  border-radius: var(--game-border-radius);
 }
 
 .timerLow {
@@ -46,17 +104,254 @@
   animation: pulse 1s infinite;
 }
 
+/* ==========================================
+   MAIN CONTENT AREA
+   ========================================== */
+
 .roundContent {
   text-align: center;
 }
+
+.loadingRound {
+  padding: 2rem;
+  text-align: center;
+}
+
+/* ==========================================
+   CONTROL BUTTONS
+   ========================================== */
+
+.controlButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.confirmButton {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.confirmButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+.resetButton {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.resetButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+/* ==========================================
+   DRAG AND DROP LAYOUT
+   ========================================== */
+
+.verticalLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+/* New card section */
+.newCardSection {
+  padding: 1rem;
+  background-color: var(--game-bg-light);
+  border-radius: var(--game-border-radius-large);
+  border: 2px solid var(--game-yellow);
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.newCardSection::before {
+  content: "Trascina questa carta nell'array sottostante";
+  display: block;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: var(--game-yellow);
+}
+
+/* ==========================================
+   DRAGGABLE COMPONENTS
+   ========================================== */
+
+.draggableNewCard {
+  display: inline-block;
+  cursor: grab;
+  transition: var(--game-transition);
+  margin: 1rem 0;
+  border: 2px solid transparent;
+  border-radius: var(--game-border-radius);
+  padding: 0.5rem;
+}
+
+.draggableNewCard:hover {
+  transform: scale(1.05);
+  border-color: var(--game-yellow);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.draggableNewCard:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+/* Drag overlay */
+.dragOverlay {
+  transform: rotate(5deg);
+  z-index: 1000;
+  opacity: 0.9;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--game-yellow);
+  border-radius: var(--game-border-radius);
+}
+
+/* ==========================================
+   SORTABLE CARDS CONTAINER
+   ========================================== */
+
+.sortableContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.cardArray {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 150px;
+  padding: 1rem;
+  border-radius: var(--game-border-radius-large);
+  transition: all 0.3s ease;
+}
+
+.cardArray:hover {
+  border-color: var(--game-yellow);
+  background-color: var(--game-bg-hover);
+}
+
+/* Individual sortable cards */
+.sortableCard {
+  transition: var(--game-transition);
+  cursor: pointer;
+}
+
+.sortableCard:hover {
+  transform: scale(1.05);
+}
+
+.previewCard {
+  opacity: 0.7;
+  border: 2px solid var(--game-yellow);
+  border-radius: var(--game-border-radius);
+  animation: previewPulse 1s ease-in-out infinite alternate;
+}
+
+/* ==========================================
+   DROP ZONES
+   ========================================== */
+
+/* Common drop zone styles */
+.dropZoneBase {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.dropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+  width: 60px;
+  border: 2px dashed #ccc;
+  background-color: #f8f9fa;
+  margin: 0 5px;
+  min-width: 60px;
+  flex-shrink: 0;
+  min-height: 100%;
+  margin-top: 45px;
+  z-index: 1;
+  opacity: 0.1;
+}
+
+.dropZoneActive {
+  border-color: #28a745;
+  background-color: #d4edda;
+  transform: scale(1.05);
+  margin-inline: 30px;
+}
+
+.dropIndicator {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-align: center;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.dropZoneActive .dropIndicator {
+  color: #155724;
+}
+
+/* End drop zone */
+.endDropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+  min-width: 60px;
+  height: 100px;
+  margin-left: 10px;
+  opacity: 0;
+}
+
+.endDropZoneActive {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.endDropZoneIndicator {
+  font-size: 24px;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.endDropZoneActive .endDropZoneIndicator {
+  color: #007bff;
+}
+
+/* ==========================================
+   LEGACY STYLES (for backwards compatibility)
+   ========================================== */
 
 .cardWrapper {
   display: flex;
   justify-content: center;
   margin: 2rem 0;
 }
-
-/* Rimossi i pulsanti di inserimento all'inizio, non necessari */
 
 .cardPosition {
   position: relative;
@@ -80,12 +375,12 @@
 
 .cardScrollContainer::-webkit-scrollbar-track {
   background: #f0f0f0;
-  border-radius: 10px;
+  border-radius: var(--game-border-radius-large);
 }
 
 .cardScrollContainer::-webkit-scrollbar-thumb {
   background-color: #007bff;
-  border-radius: 10px;
+  border-radius: var(--game-border-radius-large);
 }
 
 .arrowButtons {
@@ -112,8 +407,8 @@
   font-size: 1.8rem;
   cursor: pointer;
   border: none;
-  transition: all 0.2s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: var(--game-transition);
+  box-shadow: var(--game-shadow);
   line-height: 1;
   padding-bottom: 5px;
 }
@@ -123,152 +418,14 @@
   transform: translateY(-2px);
 }
 
-.loadingRound {
-  padding: 2rem;
-  text-align: center;
-}
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
 
 @keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.6;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
-/* Drag and Drop Styles */
-.dragDropContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-top: 1rem;
-}
-
-/* Drag and drop styles for horizontal layout */
-.draggableNewCard {
-  display: inline-block;
-  cursor: grab;
-  transition: all 0.2s ease;
-  margin: 1rem 0;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  padding: 0.5rem;
-}
-
-.draggableNewCard:hover {
-  transform: scale(1.05);
-  border-color: var(--game-yellow);
-  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
-}
-
-.draggableNewCard:active {
-  cursor: grabbing;
-  transform: scale(0.95);
-}
-
-/* Drop zones for horizontal layout */
-.dropZone {
-  width: 60px;
-  border: 2px dashed #ccc;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #f8f9fa;
-  transition: all 0.2s ease;
-  margin: 0 5px;
-  min-width: 60px;
-  flex-shrink: 0;
-  min-height: 100%;
-  margin-top: 45px;
-  z-index: 1;
-  opacity: .1;
-}
-
-.dropZoneActive {
-  border-color: #28a745;
-  background-color: #d4edda;
-  transform: scale(1.05);
-  margin-inline: 30px;
-}
-
-.dropIndicator {
-  font-size: 0.8rem;
-  color: #6c757d;
-  text-align: center;
-  font-weight: bold;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-}
-
-.dropZoneActive .dropIndicator {
-  color: #155724;
-}
-
-.dragOverlay {
-  transform: rotate(5deg);
-  z-index: 1000;
-  opacity: 0.9;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-  border: 2px solid var(--game-yellow);
-  border-radius: 8px;
-}
-
-/* Vertical layout for drag and drop */
-.verticalLayout {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  margin: 1rem 0;
-}
-
-/* Stili per il sistema sortable */
-.sortableContainer {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  padding: 1rem 0;
-}
-
-.cardArray {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  justify-content: flex-start;
-  min-height: 150px;
-  padding: 1rem;
-  /*background-color: rgba(255, 255, 255, 0.05);*/
-  border-radius: 10px;
-  /*border: 2px dashed var(--game-yellow);*/
-  transition: all 0.3s ease;
-}
-
-.cardArray:hover {
-  border-color: var(--game-yellow);
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sortableCard {
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-
-.sortableCard:hover {
-  transform: scale(1.05);
-}
-
-.previewCard {
-  opacity: 0.7;
-  border: 2px solid var(--game-yellow);
-  border-radius: 8px;
-  animation: previewPulse 1s ease-in-out infinite alternate;
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
 }
 
 @keyframes previewPulse {
@@ -280,77 +437,6 @@
   }
 }
 
-.controlButtons {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.confirmButton, .resetButton {
-  padding: 0.75rem 1.5rem;
-  font-weight: bold;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-}
-
-.confirmButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.resetButton:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Sezione della nuova carta */
-.newCardSection {
-  padding: 1rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  border: 2px solid var(--game-yellow);
-  margin-bottom: 1rem;
-}
-
-.newCardSection::before {
-  content: "Trascina questa carta nell'array sottostante";
-  display: block;
-  text-align: center;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  color: var(--game-yellow);
-}
-
-/* End drop zone styles */
-.endDropZone {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 60px;
-  height: 100px;
-  border-radius: 8px;
-  margin-left: 10px;
-  transition: all 0.2s ease;
-  opacity: 0;
-}
-
-.endDropZoneActive {
-  border-color: #007bff;
-  background-color: #e3f2fd;
-  opacity: 1;
-  transform: scale(1.05);
-}
-
-.endDropZoneIndicator {
-  font-size: 24px;
-  color: #6c757d;
-  font-weight: bold;
-}
-
-.endDropZoneActive .endDropZoneIndicator {
-  color: #007bff;
-}
 
 
 

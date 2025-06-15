@@ -14,16 +14,199 @@ import { CardHand, GameRound, GameResult, GameOver } from '../components/game';
 // Styles
 import './GamePage.css';
 
+// ==========================================
+// CONSTANTS
+// ==========================================
+
+const TIMER_DURATION = 30; // seconds
+const DEMO_MODAL_CONFIG = {
+  TITLE: 'Partita Demo',
+  CONTENT: {
+    DESCRIPTION: 'Stai giocando una partita demo senza effettuare il login. Il progresso non verrà salvato nel tuo profilo.',
+    BENEFITS_TITLE: 'Accedi per:',
+    BENEFITS: [
+      'Salvare le tue partite',
+      'Visualizzare la cronologia',
+      'Competere con altri giocatori'
+    ]
+  },
+  BUTTONS: {
+    CONTINUE_DEMO: 'Continua la partita demo',
+    LOGIN: 'Accedi'
+  }
+};
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
 /**
- * Main Game Page Component
- * Uses custom hooks for better separation of concerns
+ * Determines if cards should be shown in the current phase
+ * @param {string} gamePhase - Current game phase
+ * @param {Object} roundResult - Current round result
+ * @returns {Object} Display configuration for cards
+ */
+const getCardsDisplayConfig = (gamePhase, roundResult) => {
+  const shouldShow = gamePhase === 'result';
+  const showIndex = shouldShow && roundResult?.result === 'incorrect';
+  
+  return { shouldShow, showIndex };
+};
+
+// ==========================================
+// COMPONENT PARTS
+// ==========================================
+
+/**
+ * Loading state component
+ */
+const LoadingState = () => (
+  <Container className="mt-4 text-center">
+    <div className="spinner-container">
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Caricamento...</span>
+      </div>
+      <p className="mt-3">Caricamento del gioco...</p>
+    </div>
+  </Container>
+);
+
+/**
+ * Error state component
+ */
+const ErrorState = ({ error, onNavigateHome }) => (
+  <Container className="mt-4">
+    <Alert variant="danger">
+      <Alert.Heading>Errore</Alert.Heading>
+      <p>{error}</p>
+      <Button variant="outline-danger" onClick={onNavigateHome}>
+        Torna alla Home
+      </Button>
+    </Alert>
+  </Container>
+);
+
+/**
+ * Demo game modal component
+ */
+const DemoGameModal = ({ show, onHide, onLogin }) => (
+  <Modal 
+    show={show} 
+    onHide={onHide}
+    backdrop="static"
+    keyboard={false}
+    centered
+  >
+    <Modal.Header>
+      <Modal.Title>{DEMO_MODAL_CONFIG.TITLE}</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <p>{DEMO_MODAL_CONFIG.CONTENT.DESCRIPTION}</p>
+      <p>{DEMO_MODAL_CONFIG.CONTENT.BENEFITS_TITLE}</p>
+      <ul>
+        {DEMO_MODAL_CONFIG.CONTENT.BENEFITS.map((benefit, index) => (
+          <li key={index}>{benefit}</li>
+        ))}
+      </ul>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={onHide}>
+        {DEMO_MODAL_CONFIG.BUTTONS.CONTINUE_DEMO}
+      </Button>
+      <Button variant="primary" onClick={onLogin}>
+        {DEMO_MODAL_CONFIG.BUTTONS.LOGIN}
+      </Button>
+    </Modal.Footer>
+  </Modal>
+);
+
+/**
+ * Game content renderer based on current phase
+ */
+const GameContent = ({ 
+  gamePhase, 
+  roundCard, 
+  cards, 
+  roundResult, 
+  game, 
+  timeLeft, 
+  incorrectAttempts,
+  onPlaceCard, 
+  onTimeUp, 
+  onContinue, 
+  onNewGame 
+}) => {
+  switch (gamePhase) {
+    case 'round':
+      return (
+        <GameRound
+          roundCard={roundCard}
+          cards={cards}
+          onPlaceCard={onPlaceCard}
+          onTimeUp={onTimeUp}
+          timeLeft={timeLeft}
+          incorrectAttempts={incorrectAttempts}
+        />
+      );
+
+    case 'result':
+      return (
+        <GameResult
+          result={roundResult}
+          card={roundCard}
+          cards={cards}
+          onContinue={onContinue}
+          timeLeft={timeLeft}
+          incorrectAttempts={incorrectAttempts}
+        />
+      );
+
+    case 'over':
+      return (
+        <GameOver
+          game={game}
+          cards={cards}
+          incorrectAttempts={incorrectAttempts}
+          onNewGame={onNewGame}
+        />
+      );
+
+    default:
+      return null;
+  }
+};
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
+
+/**
+ * GamePage Component
+ * Main game page that orchestrates the entire game flow using custom hooks
+ * for state management and timer functionality
+ * 
+ * Features:
+ * - Game state management with persistence
+ * - Timer functionality with localStorage persistence
+ * - Phase-based rendering (round, result, game over)
+ * - Demo game modal for unauthenticated users
+ * - Error handling and loading states
+ * - Automatic game flow management
  */
 const GamePage = () => {
+  // ==========================================
+  // HOOKS
+  // ==========================================
+  
   const { gameId } = useParams();
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Use our custom hooks
+  // ==========================================
+  // CUSTOM HOOKS
+  // ==========================================
+  
+  // Game state management
   const {
     game,
     cards,
@@ -36,7 +219,9 @@ const GamePage = () => {
     handlePlaceCard,
     handleTimeUp,
     startNewRound
-  } = useGameState(gameId);  // Game timer with callback to handleTimeUp and gameId for persistence
+  } = useGameState(gameId);
+
+  // Game timer with persistence
   const {
     timeLeft,
     startTimer,
@@ -44,31 +229,48 @@ const GamePage = () => {
     pauseTimer,
     resetTimer,
     clearTimerFromLocalStorage
-  } = useGameTimer(30, handleTimeUp, gameId);
-  // Demo game modal
-  const [showDemoModal, setShowDemoModal] = useState(false);
+  } = useGameTimer(TIMER_DURATION, handleTimeUp, gameId);
+
+  // ==========================================
+  // STATE MANAGEMENT
+  // ==========================================
   
-  // Aggiorna lo stato del modal quando cambia isAuthenticated
+  const [showDemoModal, setShowDemoModal] = useState(false);
+
+  // ==========================================
+  // EFFECTS
+  // ==========================================
+  
+  /**
+   * Update demo modal visibility based on authentication status
+   */
   useEffect(() => {
     setShowDemoModal(!isAuthenticated);
   }, [isAuthenticated]);
 
-  // Start the timer when round starts
+  /**
+   * Start/stop timer based on game phase
+   */
   useEffect(() => {
-    // If we're in the round phase, start the timer
     if (gamePhase === 'round' && roundCard) {
       startTimer();
     } else {
       stopTimer();
     }
   }, [gamePhase, roundCard, startTimer, stopTimer]);
-  // Start first round when game is loaded
+
+  /**
+   * Start first round when game is loaded
+   */
   useEffect(() => {
     if (!loading && gamePhase === 'round' && !roundCard) {
       startNewRound();
     }
   }, [loading, gamePhase, roundCard, startNewRound]);
-  // Cleanup timer when component unmounts (user navigates away)
+
+  /**
+   * Cleanup timer when component unmounts
+   */
   useEffect(() => {
     return () => {
       // Pause timer when leaving the game page (preserves time but stops execution)
@@ -76,127 +278,124 @@ const GamePage = () => {
     };
   }, [pauseTimer]);
 
-  // Function to handle card placement
+  /**
+   * Set page title for game page
+   */
+  useEffect(() => {
+    document.title = 'Partita in corso - Gioco della Sfortuna';
+    
+    return () => {
+      document.title = 'Gioco della Sfortuna - Università Edition';
+    };
+  }, []);
+
+  // ==========================================
+  // EVENT HANDLERS
+  // ==========================================
+  
+  /**
+   * Handles card placement with timer management
+   */
   const onPlaceCard = async (cardId, position) => {
     stopTimer();
     await handlePlaceCard(cardId, position);
   };
-  // Function to start a new round
+
+  /**
+   * Handles continuing to next round with timer reset
+   */
   const onContinue = async () => {
     resetTimer(); // Reset timer when starting new round
     await startNewRound();
   };
 
-  // Function to start a new game
+  /**
+   * Handles starting a new game with cleanup
+   */
   const onNewGame = async () => {
     try {
       // Clear timer data for current game before starting new one
       if (gameId) {
-        clearTimerFromLocalStorage(gameId);
+        clearTimerFromLocalStorage();
       }
+      
       const result = await createGame();
-      if (result && result.game) {
-        navigate(`/game/${result.game.id}`);
+      const newGameId = result?.game?.id || result?.id;
+      
+      if (newGameId) {
+        navigate(`/game/${newGameId}`);
       }
     } catch (error) {
       console.error('Failed to create new game:', error);
     }
   };
 
+  /**
+   * Handles demo modal login button
+   */
+  const handleDemoLogin = () => {
+    navigate('/login');
+  };
+
+  /**
+   * Handles navigation to home page
+   */
+  const handleNavigateHome = () => {
+    navigate('/');
+  };
+
+  // ==========================================
+  // COMPUTED VALUES
+  // ==========================================
+  
+  const cardsDisplayConfig = getCardsDisplayConfig(gamePhase, roundResult);
+
+  // ==========================================
+  // RENDER
+  // ==========================================
+  
   // Show loading state
   if (loading) {
-    return (
-      <Container className="mt-4 text-center">
-        <div className="spinner-container">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Caricamento...</span>
-          </div>
-          <p className="mt-3">Caricamento del gioco...</p>
-        </div>
-      </Container>
-    );
+    return <LoadingState />;
   }
 
   // Show error state
   if (error) {
-    return (
-      <Container className="mt-4">
-        <Alert variant="danger">
-          <Alert.Heading>Errore</Alert.Heading>
-          <p>{error}</p>
-          <Button variant="outline-danger" onClick={() => navigate('/')}>
-            Torna alla Home
-          </Button>
-        </Alert>
-      </Container>
-    );
+    return <ErrorState error={error} onNavigateHome={handleNavigateHome} />;
   }
 
-  // Render game based on the current phase
+  // Main game render
   return (
     <Container className="game-container">
-      {/* Game content based on phase */}
-      {gamePhase === 'round' && (
-        <GameRound
-          roundCard={roundCard}
-          cards={cards}
-          onPlaceCard={onPlaceCard}
-          onTimeUp={handleTimeUp}
-          timeLeft={timeLeft}
-          incorrectAttempts={incorrectAttempts}
-        />
-      )}      {gamePhase === 'result' && (
-        <GameResult
-          result={roundResult}
-          card={roundCard}
-          cards={cards}
-          onContinue={onContinue}
-          timeLeft={timeLeft}
-          incorrectAttempts={incorrectAttempts}
-        />
-      )}{gamePhase === 'over' && (
-        <GameOver
-          game={game}
-          cards={cards}
-          incorrectAttempts={incorrectAttempts}
-          onNewGame={onNewGame}
-        />      )}      {/* Cards collection (hand) - mostrato solo nella fase di risultato, non in GameOver */}
-      {gamePhase === 'result' && (
+      {/* Game content based on current phase */}
+      <GameContent
+        gamePhase={gamePhase}
+        roundCard={roundCard}
+        cards={cards}
+        roundResult={roundResult}
+        game={game}
+        timeLeft={timeLeft}
+        incorrectAttempts={incorrectAttempts}
+        onPlaceCard={onPlaceCard}
+        onTimeUp={handleTimeUp}
+        onContinue={onContinue}
+        onNewGame={onNewGame}
+      />
+
+      {/* Cards collection - shown only in result phase */}
+      {cardsDisplayConfig.shouldShow && (
         <CardHand 
           cards={cards} 
-          showIndex={roundResult && roundResult.result === 'incorrect'} 
+          showIndex={cardsDisplayConfig.showIndex} 
         />
       )}
 
       {/* Demo game modal */}
-      <Modal 
-        show={showDemoModal} 
+      <DemoGameModal
+        show={showDemoModal}
         onHide={() => setShowDemoModal(false)}
-        backdrop="static"
-        keyboard={false}
-        centered
-      >
-        <Modal.Header>
-          <Modal.Title>Partita Demo</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>Stai giocando una partita demo senza effettuare il login. Il progresso non verrà salvato nel tuo profilo.</p>
-          <p>Accedi per:</p>
-          <ul>
-            <li>Salvare le tue partite</li>
-            <li>Visualizzare la cronologia</li>
-            <li>Competere con altri giocatori</li>
-          </ul>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowDemoModal(false)}>
-            Continua la partita demo
-          </Button>
-          <Button variant="primary" onClick={() => navigate('/login')}>
-            Accedi
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        onLogin={handleDemoLogin}
+      />
     </Container>
   );
 };

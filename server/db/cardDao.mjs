@@ -1,117 +1,204 @@
-import db from './database.mjs';
+import { runSQL, getRow, getAllRows, executeTransaction } from './database.mjs';
 
-// DAO for Card operations
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+/**
+ * Validate card data
+ * @param {Object} card - Card object to validate
+ * @returns {boolean} Whether card data is valid
+ */
+const validateCardData = (card) => {
+  return card && 
+         typeof card.name === 'string' && 
+         typeof card.image_url === 'string' && 
+         typeof card.misfortune_index === 'number' &&
+         card.misfortune_index >= 0 && 
+         card.misfortune_index <= 100;
+};
+
+/**
+ * Ensure unique cards in array
+ * @param {Array} cards - Array of cards
+ * @returns {Array} Array with unique cards only
+ */
+const ensureUniqueCards = (cards) => {
+  const uniqueCards = [];
+  const seenIds = new Set();
+  
+  for (const card of cards) {
+    if (!seenIds.has(card.id)) {
+      uniqueCards.push(card);
+      seenIds.add(card.id);
+    }
+  }
+  
+  return uniqueCards;
+};
+
+/**
+ * Build SQL query for random cards with exclusions
+ * @param {Array} excludeIds - Array of card IDs to exclude
+ * @returns {Object} SQL query and parameters
+ */
+const buildRandomCardsQuery = (excludeIds = []) => {
+  let sql = 'SELECT * FROM cards';
+  let params = [];
+  
+  if (excludeIds.length > 0) {
+    const placeholders = excludeIds.map(() => '?').join(',');
+    sql += ` WHERE id NOT IN (${placeholders})`;
+    params = [...excludeIds];
+  }
+  
+  sql += ' ORDER BY RANDOM() LIMIT ?';
+  
+  return { sql, params };
+};
+
+// ==========================================
+// CARD DAO
+// ==========================================
+
+/**
+ * Data Access Object for Card operations
+ * Handles all card-related database interactions
+ */
 const cardDao = {
   
-  // Get all cards
-  getAllCards: () => {
-    return new Promise((resolve, reject) => {
-      const sql = 'SELECT * FROM cards';
-      db.all(sql, [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
+  /**
+   * Get all cards from database
+   * @returns {Promise<Array>} Array of all cards
+   */
+  getAllCards: async () => {
+    try {
+      const sql = 'SELECT * FROM cards ORDER BY misfortune_index';
+      return await getAllRows(sql);
+    } catch (error) {
+      console.error('Error getting all cards:', error);
+      throw error;
+    }
   },
 
-  // Get card by id
-  getCardById: (id) => {
-    return new Promise((resolve, reject) => {
+  /**
+   * Get card by ID
+   * @param {number} id - Card ID
+   * @returns {Promise<Object|null>} Card object or null if not found
+   */
+  getCardById: async (id) => {
+    try {
       const sql = 'SELECT * FROM cards WHERE id = ?';
-      db.get(sql, [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+      return await getRow(sql, [id]);
+    } catch (error) {
+      console.error('Error getting card by ID:', error);
+      throw error;
+    }
   },
-  // Get random cards excluding specific card IDs
-  getRandomCards: (count, excludeIds = []) => {
-    return new Promise((resolve, reject) => {
-      let sql = 'SELECT * FROM cards';
+
+  /**
+   * Get random cards excluding specific IDs
+   * @param {number} count - Number of cards to retrieve
+   * @param {Array} excludeIds - Array of card IDs to exclude
+   * @returns {Promise<Array>} Array of random cards
+   */
+  getRandomCards: async (count, excludeIds = []) => {
+    try {
+      const { sql, params } = buildRandomCardsQuery(excludeIds);
+      params.push(count);
       
-      if (excludeIds.length > 0) {
-        const placeholders = excludeIds.map(() => '?').join(',');
-        sql += ` WHERE id NOT IN (${placeholders})`;
+      const cards = await getAllRows(sql, params);
+      
+      // Ensure uniqueness as extra safety measure
+      return ensureUniqueCards(cards);
+    } catch (error) {
+      console.error('Error getting random cards:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Add a single card to database
+   * @param {Object} card - Card object to add
+   * @returns {Promise<Object>} Created card with ID
+   */
+  addCard: async (card) => {
+    try {
+      if (!validateCardData(card)) {
+        throw new Error('Invalid card data');
       }
-      
-      sql += ' ORDER BY RANDOM() LIMIT ?';
-      
-      const params = [...excludeIds, count];
-      
-      db.all(sql, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          // Extra safety check: ensure uniqueness
-          const uniqueCards = [];
-          const seenIds = new Set();
-          
-          for (const card of rows) {
-            if (!seenIds.has(card.id)) {
-              uniqueCards.push(card);
-              seenIds.add(card.id);
-            }
-          }
-          
-          resolve(uniqueCards);
-        }
-      });
-    });
-  },
-  
-  // Add a new card
-  addCard: (card) => {
-    return new Promise((resolve, reject) => {
+
       const sql = 'INSERT INTO cards (name, image_url, misfortune_index) VALUES (?, ?, ?)';
-      db.run(sql, [card.name, card.image_url, card.misfortune_index], function(err) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ id: this.lastID, ...card });
-        }
-      });
-    });
-  },
-  
-  // Add multiple cards
-  addCards: (cards) => {
-    return new Promise((resolve, reject) => {
-      const sql = 'INSERT INTO cards (name, image_url, misfortune_index) VALUES (?, ?, ?)';
+      const result = await runSQL(sql, [card.name, card.image_url, card.misfortune_index]);
       
-      db.serialize(() => {
-        db.run('BEGIN TRANSACTION');
-        
-        const stmt = db.prepare(sql);
-        const insertedIds = [];
-        
-        let error = null;
-        cards.forEach((card) => {
-          stmt.run([card.name, card.image_url, card.misfortune_index], function(err) {
-            if (err) {
-              error = err;
-            } else {
-              insertedIds.push(this.lastID);
-            }
-          });
-        });
-        
-        stmt.finalize();
-        
-        if (error) {
-          db.run('ROLLBACK');
-          reject(error);
-        } else {
-          db.run('COMMIT');
-          resolve(insertedIds);
+      return { id: result.id, ...card };
+    } catch (error) {
+      console.error('Error adding card:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Add multiple cards to database in a transaction
+   * @param {Array} cards - Array of card objects to add
+   * @returns {Promise<Array>} Array of inserted card IDs
+   */
+  addCards: async (cards) => {
+    try {
+      // Validate all cards first
+      for (const card of cards) {
+        if (!validateCardData(card)) {
+          throw new Error(`Invalid card data: ${JSON.stringify(card)}`);
         }
-      });
-    });
+      }
+
+      // Prepare transaction statements
+      const statements = cards.map(card => ({
+        sql: 'INSERT INTO cards (name, image_url, misfortune_index) VALUES (?, ?, ?)',
+        params: [card.name, card.image_url, card.misfortune_index]
+      }));
+
+      const results = await executeTransaction(statements);
+      return results.map(result => result.id);
+    } catch (error) {
+      console.error('Error adding multiple cards:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get cards by misfortune index range
+   * @param {number} minIndex - Minimum misfortune index
+   * @param {number} maxIndex - Maximum misfortune index
+   * @returns {Promise<Array>} Array of cards in range
+   */
+  getCardsByMisfortuneRange: async (minIndex, maxIndex) => {
+    try {
+      const sql = `
+        SELECT * FROM cards 
+        WHERE misfortune_index >= ? AND misfortune_index <= ?
+        ORDER BY misfortune_index
+      `;
+      return await getAllRows(sql, [minIndex, maxIndex]);
+    } catch (error) {
+      console.error('Error getting cards by misfortune range:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get total count of cards
+   * @returns {Promise<number>} Total number of cards
+   */
+  getCardCount: async () => {
+    try {
+      const sql = 'SELECT COUNT(*) as count FROM cards';
+      const result = await getRow(sql);
+      return result ? result.count : 0;
+    } catch (error) {
+      console.error('Error getting card count:', error);
+      throw error;
+    }
   }
 };
 

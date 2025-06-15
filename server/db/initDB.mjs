@@ -1,193 +1,220 @@
-import db from './database.mjs';
-import bcrypt from 'bcrypt';
+import { runSQL, getRow, getAllRows, executeTransaction } from './database.mjs';
 import { misfortuneCards, sampleUsers } from '../data/sampleData.mjs';
 import crypt from '../utils/crypt.mjs';
 
-// Function to initialize the database with sample data
-const initializeSampleData = async () => {
+// ==========================================
+// CONSTANTS
+// ==========================================
+
+const SAMPLE_GAME_CONFIG = {
+  WON_GAME: {
+    result: 'won',
+    cardCount: 6,
+    dateOffset: '-2 day'
+  },
+  LOST_GAME: {
+    result: 'lost',
+    cardCount: 4,
+    dateOffset: '-1 day'
+  }
+};
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+/**
+ * Checks if a table is empty
+ * @param {string} tableName - Name of the table to check
+ * @returns {Promise<boolean>} Whether the table is empty
+ */
+const isTableEmpty = async (tableName) => {
   try {
-    // Insert sample cards if the cards table is empty
-    const countCards = await new Promise((resolve, reject) => {
-      db.get('SELECT COUNT(*) as count FROM cards', [], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row.count);
-        }
-      });
-    });
+    const result = await getRow(`SELECT COUNT(*) as count FROM ${tableName}`);
+    return result.count === 0;
+  } catch (error) {
+    console.error(`Error checking ${tableName} table:`, error);
+    throw error;
+  }
+};
 
-    if (countCards === 0) {
-      // Add all cards in a transaction
-      await new Promise((resolve, reject) => {
-        db.serialize(() => {
-          db.run('BEGIN TRANSACTION');
-          
-          const stmt = db.prepare('INSERT INTO cards (name, image_url, misfortune_index) VALUES (?, ?, ?)');
-          
-          misfortuneCards.forEach(card => {
-            stmt.run([card.name, card.image_url, card.misfortune_index], err => {
-              if (err) {
-                console.error('Error inserting card:', err);
-              }
-            });
-          });
-          
-          stmt.finalize();
-          
-          db.run('COMMIT', err => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          });
-        });
-      });
+/**
+ * Gets random cards from database
+ * @param {number} count - Number of cards to get
+ * @returns {Promise<Array>} Array of random cards
+ */
+const getRandomCards = async (count) => {
+  try {
+    const cards = await getAllRows('SELECT * FROM cards ORDER BY RANDOM() LIMIT ?', [count]);
+    return cards;
+  } catch (error) {
+    console.error('Error getting random cards:', error);
+    throw error;
+  }
+};
+
+// ==========================================
+// INITIALIZATION FUNCTIONS
+// ==========================================
+
+/**
+ * Initializes cards table with sample data
+ * @returns {Promise<void>}
+ */
+const initializeCards = async () => {
+  try {
+    console.log('Checking cards table...');
+    
+    if (await isTableEmpty('cards')) {
+      console.log('Initializing cards with sample data...');
+      
+      // Prepare transaction statements
+      const statements = misfortuneCards.map(card => ({
+        sql: 'INSERT INTO cards (name, image_url, misfortune_index) VALUES (?, ?, ?)',
+        params: [card.name, card.image_url, card.misfortune_index]
+      }));
+      
+      await executeTransaction(statements);
+      console.log(`Added ${misfortuneCards.length} cards to database`);
+    } else {
+      console.log('Cards table already has data, skipping...');
     }
+  } catch (error) {
+    console.error('Error initializing cards:', error);
+    throw error;
+  }
+};
 
-    // Insert sample users if the users table is empty
-    const countUsers = await new Promise((resolve, reject) => {
-      db.get('SELECT COUNT(*) as count FROM users', [], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row.count);
-        }
-      });
-    });
-
-    if (countUsers === 0) {
-      for (const user of sampleUsers) {
+/**
+ * Initializes users table with sample data
+ * @returns {Promise<void>}
+ */
+const initializeUsers = async () => {
+  try {
+    console.log('Checking users table...');
+    
+    if (await isTableEmpty('users')) {
+      console.log('Initializing users with sample data...');
+      
+      // Prepare user statements with hashed passwords
+      const statements = sampleUsers.map(user => {
         const salt = crypt.generateSalt();
         const hashedPassword = crypt.hashPassword(user.password, salt);
         
-        await new Promise((resolve, reject) => {
-          db.run(
-            'INSERT INTO users (email, username, password, salt) VALUES (?, ?, ?, ?)',
-            [user.email, user.username, hashedPassword, salt],
-            err => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            }
-          );
-        });
-      }
-    }
-    
-    // Optional: Add sample games for the first user
-    const firstUser = await new Promise((resolve, reject) => {
-      db.get('SELECT * FROM users LIMIT 1', [], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
-    
-    if (firstUser) {
-      const countGames = await new Promise((resolve, reject) => {
-        db.get('SELECT COUNT(*) as count FROM games WHERE user_id = ?', [firstUser.id], (err, row) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(row.count);
-          }
-        });
+        return {
+          sql: 'INSERT INTO users (email, username, password, salt) VALUES (?, ?, ?, ?)',
+          params: [user.email, user.username, hashedPassword, salt]
+        };
       });
       
-      if (countGames === 0) {        
-        // Create a completed game (won)
-        const gameWon = await new Promise((resolve, reject) => {
-          db.run(
-            'INSERT INTO games (user_id, start_date, end_date, result) VALUES (?, datetime("now", "-2 day"), datetime("now", "-2 day"), ?)',
-            [firstUser.id, 'won'],
-            function(err) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve({ id: this.lastID });
-              }
-            }
-          );
-        });
-        
-        // Add 6 cards to the won game
-        const wonCards = await new Promise((resolve, reject) => {
-          db.all('SELECT * FROM cards ORDER BY RANDOM() LIMIT 6', [], (err, rows) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(rows);
-            }
-          });
-        });
-        
-        for (let i = 0; i < wonCards.length; i++) {
-          await new Promise((resolve, reject) => {
-            db.run(
-              'INSERT INTO game_cards (game_id, card_id, acquisition_order) VALUES (?, ?, ?)',
-              [gameWon.id, wonCards[i].id, i + 1],
-              err => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve();
-                }
-              }
-            );
-          });
-        }
-        
-        // Create a completed game (lost)
-        const gameLost = await new Promise((resolve, reject) => {
-          db.run(
-            'INSERT INTO games (user_id, start_date, end_date, result) VALUES (?, datetime("now", "-1 day"), datetime("now", "-1 day"), ?)',
-            [firstUser.id, 'lost'],
-            function(err) {
-              if (err) {
-                reject(err);
-              } else {
-                resolve({ id: this.lastID });
-              }
-            }
-          );
-        });
-        
-        // Add 4 cards to the lost game
-        const lostCards = await new Promise((resolve, reject) => {
-          db.all('SELECT * FROM cards ORDER BY RANDOM() LIMIT 4', [], (err, rows) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(rows);
-            }
-          });
-        });
-        
-        for (let i = 0; i < lostCards.length; i++) {
-          await new Promise((resolve, reject) => {
-            db.run(
-              'INSERT INTO game_cards (game_id, card_id, acquisition_order) VALUES (?, ?, ?)',
-              [gameLost.id, lostCards[i].id, i + 1],
-              err => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve();
-                }
-              }
-            );
-          });
-        }
-      }
+      await executeTransaction(statements);
+      console.log(`Added ${sampleUsers.length} users to database`);
+    } else {
+      console.log('Users table already has data, skipping...');
     }
   } catch (error) {
-    console.error('Error initializing sample data:', error);
+    console.error('Error initializing users:', error);
+    throw error;
+  }
+};
+
+/**
+ * Creates a sample game with cards
+ * @param {number} userId - User ID for the game
+ * @param {Object} gameConfig - Game configuration
+ * @returns {Promise<void>}
+ */
+const createSampleGame = async (userId, gameConfig) => {
+  try {
+    // Create the game
+    const gameResult = await runSQL(
+      `INSERT INTO games (user_id, start_date, end_date, result) 
+       VALUES (?, datetime("now", ?), datetime("now", ?), ?)`,
+      [userId, gameConfig.dateOffset, gameConfig.dateOffset, gameConfig.result]
+    );
+    
+    const gameId = gameResult.id;
+    
+    // Get random cards for the game
+    const cards = await getRandomCards(gameConfig.cardCount);
+    
+    // Add cards to the game
+    const cardStatements = cards.map((card, index) => ({
+      sql: 'INSERT INTO game_cards (game_id, card_id, acquisition_order) VALUES (?, ?, ?)',
+      params: [gameId, card.id, index + 1]
+    }));
+    
+    await executeTransaction(cardStatements);
+    
+    console.log(`Created sample ${gameConfig.result} game with ${gameConfig.cardCount} cards`);
+  } catch (error) {
+    console.error(`Error creating sample ${gameConfig.result} game:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Initializes sample games for the first user
+ * @returns {Promise<void>}
+ */
+const initializeSampleGames = async () => {
+  try {
+    console.log('Checking for sample games...');
+    
+    // Get the first user
+    const firstUser = await getRow('SELECT * FROM users LIMIT 1');
+    
+    if (!firstUser) {
+      console.log('No users found, skipping sample games creation');
+      return;
+    }
+    
+    // Check if user already has games
+    const existingGames = await getRow(
+      'SELECT COUNT(*) as count FROM games WHERE user_id = ?', 
+      [firstUser.id]
+    );
+    
+    if (existingGames.count === 0) {
+      console.log('Creating sample games for first user...');
+      
+      // Create won game
+      await createSampleGame(firstUser.id, SAMPLE_GAME_CONFIG.WON_GAME);
+      
+      // Create lost game
+      await createSampleGame(firstUser.id, SAMPLE_GAME_CONFIG.LOST_GAME);
+      
+      console.log('Sample games created successfully');
+    } else {
+      console.log('User already has games, skipping sample games creation');
+    }
+  } catch (error) {
+    console.error('Error initializing sample games:', error);
+    throw error;
+  }
+};
+
+// ==========================================
+// MAIN INITIALIZATION FUNCTION
+// ==========================================
+
+/**
+ * Main function to initialize the database with sample data
+ * Initializes cards, users, and sample games in sequence
+ * @returns {Promise<void>}
+ */
+const initializeSampleData = async () => {
+  try {
+    console.log('Starting database initialization with sample data...');
+    
+    // Initialize in sequence to handle dependencies
+    await initializeCards();
+    await initializeUsers();
+    await initializeSampleGames();
+    
+    console.log('Database initialization completed successfully');
+  } catch (error) {
+    console.error('Error during database initialization:', error);
     throw error;
   }
 };

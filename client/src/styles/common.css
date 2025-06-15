@@ -1,0 +1,177 @@
+/* ==========================================
+   SHARED CSS CUSTOM PROPERTIES
+   Used across all game components
+   ========================================== */
+:root {
+  /* Color palette */
+  --game-yellow: #ffd83e;
+  --game-black: #111820;
+  --game-bg-dark: #0c1318;
+  --game-bg-light: rgba(255, 255, 255, 0.05);
+  --game-bg-hover: rgba(255, 255, 255, 0.1);
+  --game-bg-white: #fff;
+  --game-bg-gray: #f8f9fa;
+  --game-white: white;
+  
+  /* Border colors */
+  --game-border-color: #dee2e6;
+  --game-border-standard: 1px solid black;
+  
+  /* Text colors */
+  --game-text-muted: #6c757d;
+  --game-info-text: #495057;
+  
+  /* Status colors */
+  --game-success-color: #28a745;
+  --game-danger-color: #dc3545;
+  --game-error-color: rgba(220, 53, 69, 0.9);
+  --game-error-bg: rgba(220, 53, 69, 0.2);
+  
+  /* Shadows */
+  --game-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --game-shadow-small: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --game-shadow-medium: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --game-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+  
+  /* Border radius */
+  --game-border-radius: 8px;
+  --game-border-radius-small: 5px;
+  --game-border-radius-large: 10px;
+  --game-border-radius-round: 50%;
+  
+  /* Transitions */
+  --game-transition: all 0.2s ease;
+  
+  /* Card dimensions */
+  --game-card-min-height: 320px;
+  
+  /* Glows */
+  --game-success-glow: 0 0 15px #28a745;
+  --game-danger-glow: 0 0 15px #dc3545;
+}
+
+/* ==========================================
+   COMMON UTILITY CLASSES
+   ========================================== */
+
+/* Hover effects */
+.game-hover-scale {
+  transition: var(--game-transition);
+}
+
+.game-hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.game-hover-lift {
+  transition: var(--game-transition);
+}
+
+.game-hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+.game-hover-glow {
+  transition: var(--game-transition);
+}
+
+.game-hover-glow:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--game-shadow);
+}
+
+/* Common button styles */
+.game-button {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.game-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+/* Container styles */
+.game-container {
+  padding: 2rem;
+  background-color: var(--game-bg-dark);
+  border-radius: var(--game-border-radius-large);
+  box-shadow: var(--game-shadow);
+  margin: 1rem 0;
+  border: 2px solid var(--game-yellow);
+}
+
+/* Header styles */
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--game-border-color);
+}
+
+/* Timer styles */
+.game-timer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game-timer-label {
+  font-weight: bold;
+}
+
+.game-timer-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  min-width: 50px;
+  text-align: center;
+  background: var(--game-yellow);
+  padding: 0.25rem 0.5rem;
+  color: black;
+  border-radius: var(--game-border-radius);
+}
+
+.game-timer-low {
+  color: var(--game-danger-color);
+  animation: pulse 1s infinite;
+}
+
+/* Attempts counter */
+.game-attempts-counter {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* Common animations */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .game-container {
+    padding: 1rem;
+  }
+  
+  .game-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .game-container {
+    padding: 0.75rem;
+  }
+}

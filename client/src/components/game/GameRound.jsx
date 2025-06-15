@@ -13,14 +13,56 @@ import {
   useSortable,
   SortableContext,
   horizontalListSortingStrategy,
-  arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDroppable } from '@dnd-kit/core';
 import MisfortuneCard from './MisfortuneCard';
 import styles from './GameRound.module.css';
 
-// Sortable card component per le carte nell'array
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+/**
+ * Creates a preview array with the new card inserted at the specified position
+ * @param {Array} sortedCards - The current sorted cards array
+ * @param {Object} newCard - The card to insert
+ * @param {number} position - The position where to insert the card
+ * @returns {Array} New array with the inserted card
+ */
+const createPreviewWithNewCard = (sortedCards, newCard, position) => {
+  const newArray = [...sortedCards];
+  const newCardWithPreview = { 
+    ...newCard, 
+    id: 'preview-new-card',
+    isPreview: true 
+  };
+  newArray.splice(position, 0, newCardWithPreview);
+  return newArray;
+};
+
+/**
+ * Common drag/drop styling configuration
+ * @param {Object} transform - DnD transform object
+ * @param {string} transition - CSS transition
+ * @param {boolean} isDragging - Whether the item is being dragged
+ * @param {number} opacity - Base opacity when dragging
+ * @returns {Object} Style object
+ */
+const getDragStyle = (transform, transition, isDragging, opacity = 0.5) => ({
+  transform: CSS.Transform.toString(transform),
+  transition,
+  opacity: isDragging ? opacity : 1,
+});
+
+// ==========================================
+// DRAGGABLE COMPONENTS
+// ==========================================
+
+/**
+ * Sortable card component for cards in the array
+ * Handles both regular cards and preview cards
+ */
 const SortableCard = ({ card, isPreview = false }) => {
   const {
     attributes,
@@ -34,11 +76,7 @@ const SortableCard = ({ card, isPreview = false }) => {
     data: { type: 'existing-card', card }
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
+  const style = getDragStyle(transform, transition, isDragging);
 
   return (
     <div
@@ -53,24 +91,9 @@ const SortableCard = ({ card, isPreview = false }) => {
   );
 };
 
-// Drop zone alla fine dell'array per permettere inserimento in ultima posizione
-const EndDropZone = ({ isOver }) => {
-  const { setNodeRef } = useDroppable({
-    id: 'end-drop-zone',
-    data: { type: 'end-zone' }
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`${styles.endDropZone} ${isOver ? styles.endDropZoneActive : ''}`}
-    >
-      <div className={styles.endDropZoneIndicator}>+</div>
-    </div>
-  );
-};
-
-// Draggable new card component
+/**
+ * Draggable component for the new card to be placed
+ */
 const DraggableNewCard = ({ card }) => {
   const {
     attributes,
@@ -85,9 +108,7 @@ const DraggableNewCard = ({ card }) => {
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.8 : 1,
+    ...getDragStyle(transform, transition, isDragging, 0.8),
     cursor: isDragging ? 'grabbing' : 'grab',
   };
 
@@ -109,7 +130,40 @@ const DraggableNewCard = ({ card }) => {
 };
 
 /**
- * Component to display the current game round
+ * Drop zone at the end of the array for inserting cards at the last position
+ */
+const EndDropZone = ({ isOver }) => {
+  const { setNodeRef } = useDroppable({
+    id: 'end-drop-zone',
+    data: { type: 'end-zone' }
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className={`${styles.endDropZone} ${isOver ? styles.endDropZoneActive : ''}`}
+    >
+      <div className={styles.endDropZoneIndicator}>+</div>
+    </div>
+  );
+};
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
+
+/**
+ * GameRound Component
+ * Manages a single round of the misfortune card game where users
+ * drag and drop a new card into the correct position in the sorted array
+ * 
+ * @param {Object} roundCard - The card to be positioned this round
+ * @param {Array} cards - Array of existing cards in the game
+ * @param {Function} onPlaceCard - Callback when card is placed
+ * @param {Function} onTimeUp - Callback when time runs out
+ * @param {number} timeLeft - Remaining time in seconds
+ * @param {number} incorrectAttempts - Number of incorrect attempts so far
+ * @param {number} maxAttempts - Maximum allowed attempts
  */
 const GameRound = ({ 
   roundCard, 
@@ -120,43 +174,74 @@ const GameRound = ({
   incorrectAttempts = 0,
   maxAttempts = 3
 }) => {
-  // Stato per la preview dell'inserimento
+  // ==========================================
+  // STATE MANAGEMENT
+  // ==========================================
+  
+  // Preview and positioning state
   const [previewCards, setPreviewCards] = useState([]);
   const [insertPosition, setInsertPosition] = useState(null);
+  
+  // Timer state
   const [timerStarted, setTimerStarted] = useState(false);
   const [timeoutHandled, setTimeoutHandled] = useState(false);
+  
+  // Drag state
   const [activeId, setActiveId] = useState(null);
+  
+  // DnD sensors configuration
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor)
   );
 
-  // Sort cards by misfortune_index - usa useMemo per evitare loop infiniti
+  // ==========================================
+  // COMPUTED VALUES
+  // ==========================================
+  
+  /**
+   * Cards sorted by misfortune index
+   * Uses useMemo to prevent unnecessary recalculations
+   */
   const sortedCards = useMemo(() => {
     return [...cards].sort((a, b) => a.misfortune_index - b.misfortune_index);
   }, [cards]);
 
-  // Reset states when a new round starts
+  // ==========================================
+  // EFFECTS
+  // ==========================================
+  
+  /**
+   * Reset component state when a new round starts
+   */
   useEffect(() => {
     setPreviewCards(sortedCards);
     setInsertPosition(null);
     setTimerStarted(false);
-    setTimeoutHandled(false);  }, [roundCard?.id, cards]);
+    setTimeoutHandled(false);
+  }, [roundCard?.id, sortedCards]);
 
-  // Update preview when insert position changes
+  /**
+   * Update preview when insert position is reset
+   */
   useEffect(() => {
     if (insertPosition === null) {
       setPreviewCards(sortedCards);
     }
   }, [insertPosition, sortedCards]);
-  // Detect when timer starts (transitions from initial value to started)
+
+  /**
+   * Detect when timer starts (transitions from initial value to counting down)
+   */
   useEffect(() => {
     if (timeLeft > 0 && timeLeft < 30 && !timerStarted) {
       setTimerStarted(true);
     }
   }, [timeLeft, timerStarted]);
 
-  // Handle timeout: use insert position or error
+  /**
+   * Handle timeout: either place card at current position or trigger error
+   */
   useEffect(() => {
     if (timeLeft === 0 && timerStarted && !timeoutHandled) {
       setTimeoutHandled(true);
@@ -164,6 +249,13 @@ const GameRound = ({
     }
   }, [timeLeft, timerStarted, timeoutHandled]);
 
+  // ==========================================
+  // EVENT HANDLERS
+  // ==========================================
+  
+  /**
+   * Handles timeout logic - place card if position is set, otherwise trigger error
+   */
   const handleTimeUp = () => {
     if (insertPosition !== null) {
       onPlaceCard(roundCard.id, insertPosition);
@@ -172,6 +264,108 @@ const GameRound = ({
     }
   };
 
+  /**
+   * Handles the start of a drag operation
+   */
+  const handleDragStart = (event) => {
+    setActiveId(event.active.id);
+  };
+
+  /**
+   * Handles drag over events to show preview positioning
+   */
+  const handleDragOver = (event) => {
+    const { active, over } = event;
+    
+    // Clear preview if no valid drop target
+    if (!over) {
+      setPreviewCards(sortedCards);
+      setInsertPosition(null);
+      return;
+    }
+
+    // Only handle dragging of the new card
+    if (active.id !== 'new-card') return;
+
+    // Handle drop on end zone
+    if (over.id === 'end-drop-zone') {
+      const newPreview = createPreviewWithNewCard(sortedCards, roundCard, sortedCards.length);
+      setPreviewCards(newPreview);
+      setInsertPosition(sortedCards.length);
+      return;
+    }
+    
+    // Handle drop on existing card
+    const overCard = over.data?.current?.card;
+    if (overCard) {
+      const overIndex = sortedCards.findIndex(card => card.id === overCard.id);
+      if (overIndex !== -1) {
+        const newPreview = createPreviewWithNewCard(sortedCards, roundCard, overIndex);
+        setPreviewCards(newPreview);
+        setInsertPosition(overIndex);
+      }
+    }
+  };
+
+  /**
+   * Handles the end of a drag operation
+   */
+  const handleDragEnd = (event) => {
+    const { active, over } = event;
+    setActiveId(null);
+    
+    // Reset if no valid drop
+    if (!over) {
+      setPreviewCards(sortedCards);
+      setInsertPosition(null);
+      return;
+    }
+
+    // Only handle dropping of the new card
+    if (active.id !== 'new-card') return;
+
+    // Handle drop on end zone
+    if (over.id === 'end-drop-zone') {
+      const newPreview = createPreviewWithNewCard(sortedCards, roundCard, sortedCards.length);
+      setPreviewCards(newPreview);
+      setInsertPosition(sortedCards.length);
+      return;
+    }
+    
+    // Handle drop on existing card
+    const overCard = over.data?.current?.card;
+    if (overCard) {
+      const overIndex = sortedCards.findIndex(card => card.id === overCard.id);
+      if (overIndex !== -1) {
+        const newPreview = createPreviewWithNewCard(sortedCards, roundCard, overIndex);
+        setPreviewCards(newPreview);
+        setInsertPosition(overIndex);
+      }
+    }
+  };
+
+  /**
+   * Confirms the current card placement
+   */
+  const handleConfirm = () => {
+    if (insertPosition !== null) {
+      onPlaceCard(roundCard.id, insertPosition);
+    }
+  };
+
+  /**
+   * Resets the current card placement preview
+   */
+  const handleReset = () => {
+    setPreviewCards(sortedCards);
+    setInsertPosition(null);
+  };
+
+  // ==========================================
+  // RENDER
+  // ==========================================
+  
+  // Loading state
   if (!roundCard) {
     return (
       <Container className={styles.loadingRound}>
@@ -182,99 +376,9 @@ const GameRound = ({
     );
   }
 
-  // Crea un array temporaneo che include la nuova carta per il sortable
-  const createPreviewWithNewCard = (position) => {
-    const newArray = [...sortedCards];
-    const newCardWithPreview = { 
-      ...roundCard, 
-      id: 'preview-new-card',
-      isPreview: true 
-    };
-    newArray.splice(position, 0, newCardWithPreview);
-    return newArray;
-  };
-
-  const handleDragStart = (event) => {
-    setActiveId(event.active.id);
-  };
-  const handleDragOver = (event) => {
-    const { active, over } = event;
-    
-    if (!over) {
-      // Se non c'è hover, rimuovi la preview
-      setPreviewCards(sortedCards);
-      setInsertPosition(null);
-      return;
-    }
-
-    // Se stiamo trascinando la nuova carta
-    if (active.id === 'new-card') {
-      // Controlla se siamo sopra la zona finale
-      if (over.id === 'end-drop-zone') {
-        // Inserisci alla fine
-        const newPreview = createPreviewWithNewCard(sortedCards.length);
-        setPreviewCards(newPreview);
-        setInsertPosition(sortedCards.length);
-        return;
-      }
-      
-      const overCard = over.data?.current?.card;
-      if (overCard) {
-        // Trova la posizione della carta over
-        const overIndex = sortedCards.findIndex(card => card.id === overCard.id);
-        if (overIndex !== -1) {
-          // Inserisci prima della carta over
-          const newPreview = createPreviewWithNewCard(overIndex);
-          setPreviewCards(newPreview);
-          setInsertPosition(overIndex);
-        }
-      }
-    }
-  };
-
-  const handleDragEnd = (event) => {
-    const { active, over } = event;
-    setActiveId(null);
-    
-    if (!over) {
-      // Reset se non c'è drop valido
-      setPreviewCards(sortedCards);
-      setInsertPosition(null);
-      return;
-    }    // Se stiamo rilasciando la nuova carta
-    if (active.id === 'new-card') {
-      // Controlla se rilasciato sulla zona finale
-      if (over.id === 'end-drop-zone') {
-        const newPreview = createPreviewWithNewCard(sortedCards.length);
-        setPreviewCards(newPreview);
-        setInsertPosition(sortedCards.length);
-        return;
-      }
-      
-      const overCard = over.data?.current?.card;
-      if (overCard) {
-        const overIndex = sortedCards.findIndex(card => card.id === overCard.id);
-        if (overIndex !== -1) {
-          // Mantieni la preview per la conferma
-          const newPreview = createPreviewWithNewCard(overIndex);
-          setPreviewCards(newPreview);
-          setInsertPosition(overIndex);
-        }
-      }
-    }
-  };
-
-  const handleConfirm = () => {
-    if (insertPosition !== null) {
-      onPlaceCard(roundCard.id, insertPosition);
-    }
-  };
-
-  const handleReset = () => {
-    setPreviewCards(sortedCards);
-    setInsertPosition(null);
-  };  return (
+  return (
     <Container className={styles.gameRoundContainer}>
+      {/* Header with timer and attempts counter */}
       <div className={styles.roundHeader}>
         <div className={styles.attemptsCounter}>
           <span>Errori: {incorrectAttempts}/{maxAttempts}</span>
@@ -283,21 +387,16 @@ const GameRound = ({
           <h3>Dove inseriresti questa situazione sfortunata?</h3>
         </div>
         <div className={styles.timer}>
-          <div className={styles.timerLabel}>
-            Tempo rimasto:
-          </div>
-          <div 
-            className={`${styles.timerValue} ${timeLeft <= 10 ? styles.timerLow : ''}`}
-          >
+          <div className={styles.timerLabel}>Tempo rimasto:</div>
+          <div className={`${styles.timerValue} ${timeLeft <= 10 ? styles.timerLow : ''}`}>
             {timeLeft}s
           </div>
         </div>
       </div>
 
       <div className={styles.roundContent}>
-        {insertPosition == null ? (
-          <p></p>
-        ) : (
+        {/* Control buttons - shown only when position is selected */}
+        {insertPosition !== null && (
           <div className={styles.controlButtons}>
             <Button 
               variant="success" 
@@ -316,6 +415,7 @@ const GameRound = ({
           </div>
         )}
 
+        {/* Drag and Drop Context */}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -324,17 +424,18 @@ const GameRound = ({
           onDragEnd={handleDragEnd}
         >
           <div className={styles.verticalLayout}>
-            {/* Carta da trascinare in alto */}
+            {/* New card section */}
             <div className={styles.newCardSection}>
               <DraggableNewCard card={roundCard} />
             </div>
 
-            {/* Array sortable delle carte */}
+            {/* Sortable cards array */}
             <div className={styles.sortableContainer}>
               <SortableContext
                 items={previewCards.map(card => card.id)}
                 strategy={horizontalListSortingStrategy}
-              >                <div className={styles.cardArray}>
+              >
+                <div className={styles.cardArray}>
                   {previewCards.map((card) => (
                     <SortableCard 
                       key={card.id} 
@@ -348,12 +449,13 @@ const GameRound = ({
             </div>
           </div>
 
+          {/* Drag overlay for visual feedback */}
           <DragOverlay>
-            {activeId === 'new-card' ? (
+            {activeId === 'new-card' && (
               <div className={styles.dragOverlay}>
                 <MisfortuneCard card={roundCard} showIndex={false} />
               </div>
-            ) : null}
+            )}
           </DragOverlay>
         </DndContext>
       </div>

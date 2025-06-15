@@ -1,86 +1,180 @@
-// Game state management hook
 import { useState, useEffect, useRef } from 'react';
 import { getGameById, getNextRoundCard, submitCardPlacement } from '../api/API';
 
+// ==========================================
+// CONSTANTS
+// ==========================================
+
+const STORAGE_PREFIX = 'gameState_';
+const MAX_ATTEMPTS = 3;
+const TIMEOUT_POSITION = -1; // Special position value for timeout submissions
+const GAME_RELOAD_DELAY = 100; // Delay for server data sync
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
 /**
- * Custom hook that manages the game state
- * Handles loading the game, updating cards, and tracking attempts
+ * Saves game state to localStorage
+ * @param {string} gameId - Game identifier
+ * @param {Object} roundCard - Current round card
+ * @param {string} gamePhase - Current game phase
+ * @param {number} incorrectAttempts - Number of incorrect attempts
+ */
+const saveGameStateToLocalStorage = (gameId, roundCard, gamePhase, incorrectAttempts) => {
+  if (!gameId) return;
+  
+  try {
+    const gameStateData = {
+      roundCard,
+      gamePhase,
+      incorrectAttempts,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(STORAGE_PREFIX + gameId, JSON.stringify(gameStateData));
+  } catch (error) {
+    console.warn('Failed to save game state to localStorage:', error);
+  }
+};
+
+/**
+ * Loads game state from localStorage
+ * @param {string} gameId - Game identifier
+ * @returns {Object|null} Game state or null if not found
+ */
+const loadGameStateFromLocalStorage = (gameId) => {
+  if (!gameId) return null;
+  
+  try {
+    const saved = localStorage.getItem(STORAGE_PREFIX + gameId);
+    if (!saved) return null;
+    
+    return JSON.parse(saved);
+  } catch (error) {
+    console.warn('Error parsing saved game state:', error);
+    return null;
+  }
+};
+
+/**
+ * Clears game state from localStorage
+ * @param {string} gameId - Game identifier
+ */
+const clearGameStateFromLocalStorage = (gameId) => {
+  if (gameId) {
+    localStorage.removeItem(STORAGE_PREFIX + gameId);
+  }
+};
+
+/**
+ * Creates a fallback result object for error scenarios
+ * @param {number} attempts - Current number of attempts
+ * @returns {Object} Fallback result object
+ */
+const createFallbackResult = (attempts) => ({
+  result: 'incorrect',
+  correctPosition: 0,
+  incorrectAttempts: attempts,
+  gameCompleted: attempts >= MAX_ATTEMPTS
+});
+
+/**
+ * Reloads game data from server with error handling
+ * @param {string} gameId - Game identifier
+ * @param {Function} setGame - Game state setter
+ */
+const reloadGameData = async (gameId, setGame) => {
+  try {
+    const updatedGameData = await getGameById(gameId);
+    if (updatedGameData.game) {
+      setGame(updatedGameData.game);
+    }
+  } catch (error) {
+    console.error('Error reloading game data:', error);
+  }
+};
+
+// ==========================================
+// MAIN HOOK
+// ==========================================
+
+/**
+ * Custom hook that manages comprehensive game state
+ * 
+ * Features:
+ * - Game data loading and management
+ * - Round state management with localStorage persistence
+ * - Card placement handling
+ * - Timeout handling with fallback mechanisms
+ * - Attempt tracking with server synchronization
+ * - Game phase transitions
+ * 
+ * @param {string} gameId - Game identifier
+ * @returns {Object} Game state and control functions
  */
 const useGameState = (gameId) => {
-  // Helper functions for localStorage persistence
-  const saveGameStateToLocalStorage = (gameId, roundCard, gamePhase, incorrectAttempts) => {
-    if (gameId) {
-      localStorage.setItem('gameState_' + gameId, JSON.stringify({
-        roundCard,
-        gamePhase,
-        incorrectAttempts,
-        timestamp: Date.now()
-      }));
-    }
-  };
-
-  const loadGameStateFromLocalStorage = (gameId) => {
-    if (gameId) {
-      const saved = localStorage.getItem('gameState_' + gameId);
-      if (saved) {
-        try {
-          return JSON.parse(saved);
-        } catch (e) {
-          console.warn('Error parsing saved game state:', e);
-        }
-      }
-    }
-    return null;
-  };
-
-  const clearGameStateFromLocalStorage = (gameId) => {
-    if (gameId) {
-      localStorage.removeItem('gameState_' + gameId);
-    }
-  };
-
-  // Initialize state - try to load from localStorage first
+  // ==========================================
+  // STATE INITIALIZATION
+  // ==========================================
+  
+  // Load saved state if available
   const savedState = loadGameStateFromLocalStorage(gameId);
   
-  // Game state
+  // Core game state
   const [game, setGame] = useState(null);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   // Round state - use saved state if available
-  const [roundCard, setRoundCard] = useState(savedState ? savedState.roundCard : null);
-  const [gamePhase, setGamePhase] = useState(savedState ? savedState.gamePhase : 'loading');
+  const [roundCard, setRoundCard] = useState(savedState?.roundCard || null);
+  const [gamePhase, setGamePhase] = useState(savedState?.gamePhase || 'loading');
   const [roundResult, setRoundResult] = useState(null);
-  const [incorrectAttempts, setIncorrectAttempts] = useState(savedState ? savedState.incorrectAttempts : 0);
+  const [incorrectAttempts, setIncorrectAttempts] = useState(savedState?.incorrectAttempts || 0);
   
-  // Ref per evitare problemi di closure con lo stato degli errori
+  // Refs for avoiding closure issues
   const attemptsRef = useRef(incorrectAttempts);
-  // Manteniamo aggiornata la ref ogni volta che lo stato cambia
+  const timeoutProcessingRef = useRef(false);
+
+  // ==========================================
+  // EFFECTS
+  // ==========================================
+  
+  /**
+   * Keep attempts ref synchronized with state
+   */
   useEffect(() => {
     attemptsRef.current = incorrectAttempts;
   }, [incorrectAttempts]);
 
-  // Save game state to localStorage when it changes
+  /**
+   * Save game state to localStorage when it changes
+   */
   useEffect(() => {
     if (gameId && gamePhase !== 'loading') {
       saveGameStateToLocalStorage(gameId, roundCard, gamePhase, incorrectAttempts);
     }
   }, [gameId, roundCard, gamePhase, incorrectAttempts]);
 
-  // Load game data
+  /**
+   * Load initial game data
+   */
   useEffect(() => {
     const fetchGame = async () => {
       try {
         const data = await getGameById(gameId);
+        
         if (data.game) {
           setGame(data.game);
           setCards(data.cards || []);
-          // Utilizziamo SEMPRE il conteggio dal server
+          
+          // Always use server's attempt count as source of truth
           if (data.game.incorrect_attempts !== undefined) {
             setIncorrectAttempts(data.game.incorrect_attempts);
             attemptsRef.current = data.game.incorrect_attempts;
           }
+          
+          // Set appropriate game phase
           setGamePhase(data.game.result ? 'over' : 'round');
         } else {
           setError('Gioco non trovato.');
@@ -96,7 +190,23 @@ const useGameState = (gameId) => {
     fetchGame();
   }, [gameId]);
 
-  // Load a new round card
+  /**
+   * Reset timeout processing flag when new round starts
+   */
+  useEffect(() => {
+    if (roundCard?.id) {
+      timeoutProcessingRef.current = false;
+    }
+  }, [roundCard?.id]);
+
+  // ==========================================
+  // GAME CONTROL FUNCTIONS
+  // ==========================================
+  
+  /**
+   * Loads a new round card from the server
+   * @returns {Object|null} The loaded card or null on error
+   */
   const loadRoundCard = async () => {
     try {
       setGamePhase('loading');
@@ -111,38 +221,37 @@ const useGameState = (gameId) => {
     }
   };
 
-  // Submit card placement
+  /**
+   * Handles card placement submission
+   * @param {string} cardId - ID of the card being placed
+   * @param {number} position - Position where card is being placed
+   * @returns {Object|null} Placement result or null on error
+   */
   const handlePlaceCard = async (cardId, position) => {
     try {
-      // Submit the placement
       const result = await submitCardPlacement(gameId, cardId, position);
-      // Update cards if placement was correct
+      
+      // Update cards collection if placement was correct
       if (result.result === 'correct') {
         setCards(prev => [...prev, result.card]);
-      } 
+      }
       
-      // Usa il conteggio degli errori dal server
+      // Always use server's attempt count
       if (result.incorrectAttempts !== undefined) {
         setIncorrectAttempts(result.incorrectAttempts);
         attemptsRef.current = result.incorrectAttempts;
       }
       
-      // Aggiorniamo lo stato del risultato del round
+      // Update round result for display
       setRoundResult(result);
-        // Aggiorniamo la fase del gioco
+      
+      // Handle game completion
       if (result.gameCompleted) {
-        // Ricarica i dati del gioco dal database per avere end_date aggiornato
+        // Reload game data after small delay for server sync
         setTimeout(async () => {
-          try {
-            const updatedGameData = await getGameById(gameId);
-            if (updatedGameData.game) {
-              setGame(updatedGameData.game);
-            }
-          } catch (error) {
-            console.error('Error reloading game data:', error);
-          }
+          await reloadGameData(gameId, setGame);
           setGamePhase('over');
-        }, 100); // Piccolo delay per permettere al server di salvare
+        }, GAME_RELOAD_DELAY);
       } else {
         setGamePhase('result');
       }
@@ -154,57 +263,42 @@ const useGameState = (gameId) => {
       return null;
     }
   };
-  // Add ref to track if timeout is already being processed
-  const timeoutProcessingRef = useRef(false);
-  
-  // Reset timeout processing flag when new round starts
-  useEffect(() => {
-    if (roundCard?.id) {
-      timeoutProcessingRef.current = false;
-    }
-  }, [roundCard?.id]);
 
+  /**
+   * Handles timeout scenarios with fallback mechanisms
+   * @returns {Object|null} Timeout result or null if already processing
+   */
   const handleTimeUp = async () => {
-    // Prevent multiple timeout submissions for the same round
-    if (timeoutProcessingRef.current) {
-      return null;
-    }
-    
-    if (!roundCard || !roundCard.id) {
+    // Prevent duplicate timeout processing
+    if (timeoutProcessingRef.current || !roundCard?.id) {
       return null;
     }
     
     try {
-      timeoutProcessingRef.current = true; // Mark as processing
+      timeoutProcessingRef.current = true;
       
-      // Per il timeout, usiamo la posizione -1 per indicare al server che è un timeout
-      const result = await submitCardPlacement(gameId, roundCard.id, -1);
-      // Aggiorna sempre con il valore dal server
+      // Submit timeout with special position indicator
+      const result = await submitCardPlacement(gameId, roundCard.id, TIMEOUT_POSITION);
+      
+      // Update attempts with server data
       if (result.incorrectAttempts !== undefined) {
         setIncorrectAttempts(result.incorrectAttempts);
         attemptsRef.current = result.incorrectAttempts;
       }
       
-      // Aggiorniamo il risultato per la visualizzazione
+      // Set result for display
       setRoundResult({
         ...result,
         result: 'incorrect',
         correctPosition: result.correctPosition || 0
       });
-        // Gestiamo il fine partita basandoci sul server
+      
+      // Handle game completion
       if (result.gameCompleted) {
-        // Ricarica i dati del gioco dal database per avere end_date aggiornato
         setTimeout(async () => {
-          try {
-            const updatedGameData = await getGameById(gameId);
-            if (updatedGameData.game) {
-              setGame(updatedGameData.game);
-            }
-          } catch (error) {
-            console.error('Error reloading game data:', error);
-          }
+          await reloadGameData(gameId, setGame);
           setGamePhase('over');
-        }, 100); // Piccolo delay per permettere al server di salvare
+        }, GAME_RELOAD_DELAY);
       } else {
         setGamePhase('result');
       }
@@ -213,61 +307,59 @@ const useGameState = (gameId) => {
     } catch (error) {
       console.error('Error handling timeout:', error);
       
-      // In caso di errore di rete, incrementiamo manualmente gli errori
-      // e mostriamo comunque un risultato
+      // Fallback mechanism for network errors
       const newAttempts = attemptsRef.current + 1;
       setIncorrectAttempts(newAttempts);
       attemptsRef.current = newAttempts;
       
-      // Creiamo un risultato artificiale per non bloccare il gioco
-      const fakeResult = {
-        result: 'incorrect',
-        correctPosition: 0,
-        incorrectAttempts: newAttempts,
-        gameCompleted: newAttempts >= 3
-      };
-        setRoundResult(fakeResult);
+      const fallbackResult = createFallbackResult(newAttempts);
+      setRoundResult(fallbackResult);
       
-      if (newAttempts >= 3) {
-        // Anche qui, prova a ricaricare i dati del gioco se possibile
+      // Handle potential game end
+      if (newAttempts >= MAX_ATTEMPTS) {
         setTimeout(async () => {
-          try {
-            const updatedGameData = await getGameById(gameId);
-            if (updatedGameData.game && updatedGameData.game.end_date) {
-              setGame(updatedGameData.game);
-            }
-          } catch (error) {
-            console.error('Error reloading game data after manual timeout:', error);
-          }
+          await reloadGameData(gameId, setGame);
           setGamePhase('over');
-        }, 100);
+        }, GAME_RELOAD_DELAY);
       } else {
         setGamePhase('result');
       }
       
-      return fakeResult;
-    } finally {
-      // Keep the flag set to prevent duplicate submissions for this round
-      // It will be reset when a new round starts
+      return fallbackResult;
     }
+    // Note: timeoutProcessingRef.current remains true until new round starts
   };
-  
-  // Start a new round
+
+  /**
+   * Starts a new round by clearing result and loading new card
+   * @returns {Object|null} New round card or null on error
+   */
   const startNewRound = async () => {
     setRoundResult(null);
     return await loadRoundCard();
   };
 
+  // ==========================================
+  // RETURN API
+  // ==========================================
+  
   return {
+    // Game state
     game,
     cards,
     loading,
     error,
+    
+    // Round state
     roundCard,
     gamePhase,
     roundResult,
     incorrectAttempts,
+    
+    // Refs
     attemptsRef,
+    
+    // Control functions
     setGamePhase,
     handlePlaceCard,
     handleTimeUp,

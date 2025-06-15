@@ -1,40 +1,97 @@
+/* ==========================================
+   CSS CUSTOM PROPERTIES
+   Note: Consistent with other game components
+   ========================================== */
+:root {
+  --game-bg-dark: #0c1318;
+  --game-bg-light: rgba(255, 255, 255, 0.05);
+  --game-bg-white: #fff;
+  --game-bg-gray: #f1f3f5;
+  --game-border-color: #dee2e6;
+  --game-text-muted: #6c757d;
+  --game-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --game-shadow-small: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --game-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --game-transition: all 0.2s ease;
+  --game-border-radius: 8px;
+  --game-border-radius-small: 5px;
+  --game-border-radius-large: 10px;
+  --game-success-color: #28a745;
+  --game-danger-color: #dc3545;
+  --game-black: #000;
+  --game-yellow: #ffd83d;
+}
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
 .gameOverContainer {
   padding: 2rem;
-  background-color: var(--bs-card-color);
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 2rem 0;
+  border-radius: var(--game-border-radius-large);
+  box-shadow: var(--game-shadow);
 }
+
+/* ==========================================
+   HEADER SECTION
+   ========================================== */
 
 .gameOverHeader {
   text-align: center;
   margin-bottom: 2rem;
 }
 
-.winTitle {
-  color: #28a745;
+/* Game result titles */
+.gameTitle {
   font-weight: bold;
   font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.winTitle {
+  font-weight: bold;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--game-success-color);
 }
 
 .loseTitle {
-  color: #dc3545;
   font-weight: bold;
   font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--game-danger-color);
 }
+
+/* ==========================================
+   MAIN CONTENT AREA
+   ========================================== */
 
 .gameOverContent {
   margin: 2rem 0;
 }
 
+/* ==========================================
+   STATISTICS SECTION
+   ========================================== */
+
 .gameStats {
   margin: 2rem 0;
   padding: 1.5rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--game-black);
+  border-radius: var(--game-border-radius);
+  box-shadow: var(--game-shadow-small);
+  border: 2px solid var(--game-yellow);
 }
 
+.gameStats h3 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--game-yellow);
+  font-weight: bold;
+  font-size: 1.8rem;
+}
+
+/* Statistics grid layout */
 .statsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -42,32 +99,127 @@
   margin-top: 1.5rem;
 }
 
+/* Individual statistic items */
 .statItem {
   display: flex;
   flex-direction: column;
-  padding: 0.75rem;
-  background: #f1f3f5;
-  border-radius: 5px;
+  padding: 1rem;
+  background: var(--game-bg-dark);
+  border-radius: var(--game-border-radius-small);
+  transition: var(--game-transition);
+  border: 1px solid var(--game-yellow);
+  text-align: center;
+}
+
+.statItem:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+  border-color: var(--game-yellow);
+  background: rgba(255, 216, 62, 0.1);
 }
 
 .statLabel {
   font-size: 0.9rem;
-  color: #6c757d;
-  margin-bottom: 0.25rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .statValue {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: bold;
+  color: var(--game-yellow);
 }
+
+/* ==========================================
+   CARDS COLLECTION SECTION
+   ========================================== */
 
 .cardsCollection {
   margin: 2rem 0;
+  padding: 1rem;
+  background-color: var(--game-bg-light);
+  border-radius: var(--game-border-radius);
+  border: 1px solid var(--game-border-color);
 }
+
+/* ==========================================
+   ACTION BUTTONS SECTION
+   ========================================== */
 
 .gameOverActions {
   display: flex;
   justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
+  flex-wrap: wrap;
 }
+
+.actionButton {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+  min-width: 150px;
+}
+
+.actionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .gameOverContainer {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .gameTitle {
+    font-size: 2rem;
+  }
+  
+  .statsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .statItem {
+    padding: 0.5rem;
+  }
+  
+  .statValue {
+    font-size: 1.1rem;
+  }
+  
+  .gameOverActions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .actionButton {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gameOverContainer {
+    padding: 0.75rem;
+  }
+  
+  .gameTitle {
+    font-size: 1.75rem;
+  }
+  
+  .gameStats {
+    padding: 1rem;
+  }
+}
+
+

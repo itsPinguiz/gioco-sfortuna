@@ -1,59 +1,118 @@
-// Timer hook for game rounds
 import { useState, useEffect, useRef } from 'react';
+
+// ==========================================
+// CONSTANTS
+// ==========================================
+
+const STORAGE_PREFIX = 'gameTimer_';
+const TIMER_INTERVAL = 1000; // 1 second
+
+// ==========================================
+// UTILITY FUNCTIONS
+// ==========================================
+
+/**
+ * Saves timer state to localStorage with timestamp
+ * @param {string} gameId - Game identifier
+ * @param {number} timeLeft - Remaining time in seconds
+ * @param {boolean} isRunning - Whether timer is currently running
+ */
+const saveTimerToLocalStorage = (gameId, timeLeft, isRunning) => {
+  if (!gameId) return;
+  
+  try {
+    const timerData = {
+      timeLeft,
+      isRunning,
+      timestamp: Date.now()
+    };
+    localStorage.setItem(STORAGE_PREFIX + gameId, JSON.stringify(timerData));
+  } catch (error) {
+    console.warn('Failed to save timer to localStorage:', error);
+  }
+};
+
+/**
+ * Loads timer state from localStorage and adjusts for elapsed time
+ * @param {string} gameId - Game identifier
+ * @returns {Object|null} Timer state or null if not found
+ */
+const loadTimerFromLocalStorage = (gameId) => {
+  if (!gameId) return null;
+  
+  try {
+    const saved = localStorage.getItem(STORAGE_PREFIX + gameId);
+    if (!saved) return null;
+    
+    const data = JSON.parse(saved);
+    
+    // Calculate elapsed time since save
+    const elapsed = Math.floor((Date.now() - data.timestamp) / 1000);
+    const adjustedTime = Math.max(0, data.timeLeft - elapsed);
+    
+    return {
+      timeLeft: adjustedTime,
+      isRunning: data.isRunning && adjustedTime > 0
+    };
+  } catch (error) {
+    console.warn('Error parsing saved timer data:', error);
+    return null;
+  }
+};
+
+/**
+ * Clears timer data from localStorage
+ * @param {string} gameId - Game identifier
+ */
+const clearTimerFromLocalStorage = (gameId) => {
+  if (gameId) {
+    localStorage.removeItem(STORAGE_PREFIX + gameId);
+  }
+};
+
+// ==========================================
+// MAIN HOOK
+// ==========================================
 
 /**
  * Custom hook to manage a countdown timer with localStorage persistence
- * @param {number} initialTime - Initial time in seconds
- * @param {function} onTimeUp - Function to call when time is up
+ * 
+ * Features:
+ * - Countdown timer with configurable initial time
+ * - localStorage persistence across page reloads
+ * - Automatic time adjustment for elapsed time during page absence
+ * - Start, stop, pause, and reset functionality
+ * - Callback when timer reaches zero
+ * 
+ * @param {number} initialTime - Initial time in seconds (default: 30)
+ * @param {Function} onTimeUp - Callback function when timer reaches zero
  * @param {string} gameId - Game ID for localStorage persistence
- * @returns {Object} - Timer state and control functions
+ * @returns {Object} Timer state and control functions
  */
 const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
-  // Helper functions for localStorage
-  const saveTimerToLocalStorage = (gameId, timeLeft, isRunning) => {
-    if (gameId) {
-      localStorage.setItem('gameTimer_' + gameId, JSON.stringify({
-        timeLeft,
-        isRunning,
-        timestamp: Date.now()
-      }));
-    }
-  };
-
-  const loadTimerFromLocalStorage = (gameId) => {
-    if (gameId) {
-      const saved = localStorage.getItem('gameTimer_' + gameId);
-      if (saved) {
-        try {
-          const data = JSON.parse(saved);
-          // Calcola il tempo trascorso da quando è stato salvato
-          const elapsed = Math.floor((Date.now() - data.timestamp) / 1000);
-          const adjustedTime = Math.max(0, data.timeLeft - elapsed);
-          
-          return {
-            timeLeft: adjustedTime,
-            isRunning: data.isRunning && adjustedTime > 0
-          };
-        } catch (e) {
-          console.warn('Error parsing saved timer data:', e);
-        }
-      }
-    }
-    return null;
-  };
-
-  const clearTimerFromLocalStorage = (gameId) => {
-    if (gameId) {
-      localStorage.removeItem('gameTimer_' + gameId);
-    }
-  };
-
-  // Initialize state - try to load from localStorage first
+  // ==========================================
+  // STATE INITIALIZATION
+  // ==========================================
+  
+  // Try to load saved state first
   const savedState = gameId ? loadTimerFromLocalStorage(gameId) : null;
-  const [timeLeft, setTimeLeft] = useState(savedState ? savedState.timeLeft : initialTime);
-  const [isRunning, setIsRunning] = useState(savedState ? savedState.isRunning : false);
+  
+  const [timeLeft, setTimeLeft] = useState(
+    savedState ? savedState.timeLeft : initialTime
+  );
+  const [isRunning, setIsRunning] = useState(
+    savedState ? savedState.isRunning : false
+  );
+  
   const timerRef = useRef(null);
-  // Clear timer on unmount
+
+  // ==========================================
+  // EFFECTS
+  // ==========================================
+  
+  /**
+   * Cleanup timer on unmount
+   */
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -62,56 +121,78 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
     };
   }, []);
 
-  // Save timer state to localStorage when it changes
+  /**
+   * Save timer state to localStorage when it changes
+   */
   useEffect(() => {
     if (gameId) {
       saveTimerToLocalStorage(gameId, timeLeft, isRunning);
     }
-  }, [timeLeft, isRunning, gameId]);  // Restore running timer on mount if it was running
+  }, [timeLeft, isRunning, gameId]);
+
+  /**
+   * Handle saved state restoration on mount
+   * Reset isRunning to prevent auto-restart after page reload
+   */
   useEffect(() => {
-    if (savedState && savedState.isRunning && savedState.timeLeft > 0) {
-      // Il timer era in esecuzione quando la pagina è stata ricaricata
-      // IMPORTANTE: Non riavviamo automaticamente il timer
-      // Verrà riavviato esplicitamente dalla GamePage se necessario
-      setIsRunning(false); // Resetta lo stato isRunning
-      setTimeLeft(savedState.timeLeft); // Mantieni il tempo rimanente
+    if (savedState?.isRunning && savedState.timeLeft > 0) {
+      // Timer was running when page was reloaded
+      // Reset running state - will be restarted explicitly by GamePage if needed
+      setIsRunning(false);
+      setTimeLeft(savedState.timeLeft);
     }
-  }, []); // Solo al mount
-  // Start the timer
+  }, []); // Only on mount
+
+  // ==========================================
+  // TIMER CONTROL FUNCTIONS
+  // ==========================================
+  
+  /**
+   * Starts or resumes the timer
+   * Resets time to initial value if timer was at zero
+   */
   const startTimer = () => {
     // Don't restart if timer is already running
     if (isRunning && timerRef.current) {
       return;
     }
     
-    // First clear any existing timer
+    // Clear any existing timer
     if (timerRef.current) {
       clearInterval(timerRef.current);
     }
     
-    // Reset time - only if timer is at 0 or this is a fresh start
+    // Reset time if timer was at zero (fresh start)
     if (timeLeft <= 0) {
       setTimeLeft(initialTime);
     }
     
     setIsRunning(true);
     
-    // Start the interval
+    // Start the countdown interval
     timerRef.current = setInterval(() => {
       setTimeLeft(prevTime => {
         if (prevTime <= 1) {
-          // Time's up
+          // Timer reached zero
           clearInterval(timerRef.current);
           timerRef.current = null;
           setIsRunning(false);
-          if (onTimeUp) onTimeUp();
+          
+          // Trigger callback if provided
+          if (onTimeUp) {
+            onTimeUp();
+          }
+          
           return 0;
         }
         return prevTime - 1;
       });
-    }, 1000);
+    }, TIMER_INTERVAL);
   };
-  // Stop the timer
+
+  /**
+   * Stops the timer completely
+   */
   const stopTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -120,35 +201,53 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
     setIsRunning(false);
   };
 
-  // Pause the timer (stop but keep time) - used when navigating away
+  /**
+   * Pauses the timer (stops but keeps current time)
+   * Used when navigating away from the game
+   */
   const pauseTimer = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
     setIsRunning(false);
+    
     // Save current state as paused to localStorage
     if (gameId) {
       saveTimerToLocalStorage(gameId, timeLeft, false);
     }
   };
-  // Reset the timer
+
+  /**
+   * Resets the timer to initial time and stops it
+   */
   const resetTimer = () => {
     stopTimer();
     setTimeLeft(initialTime);
+    
     // Clear from localStorage when resetting
     if (gameId) {
       clearTimerFromLocalStorage(gameId);
     }
   };
+
+  // ==========================================
+  // RETURN API
+  // ==========================================
+  
   return {
+    // State
     timeLeft,
     isRunning,
+    
+    // Control functions
     startTimer,
     stopTimer,
     pauseTimer,
     resetTimer,
-    clearTimerFromLocalStorage
+    
+    // Utility functions
+    clearTimerFromLocalStorage: () => clearTimerFromLocalStorage(gameId)
   };
 };
 

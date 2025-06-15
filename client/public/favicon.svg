@@ -1,0 +1,14 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="16" cy="16" r="16" fill="#0c1318"/>
+  
+  <!-- Yellow accent circle -->
+  <circle cx="16" cy="16" r="12" fill="#ffd83e"/>
+  
+  <!-- Misfortune symbol (broken heart/crack) -->
+  <path d="M16 8L18 12L22 10L20 14L24 16L20 18L22 22L18 20L16 24L14 20L10 22L12 18L8 16L12 14L10 10L14 12L16 8Z" fill="#0c1318"/>
+  
+  <!-- Inner detail -->
+  <circle cx="16" cy="16" r="3" fill="#0c1318"/>
+  <path d="M16 13V19M13 16H19" stroke="#ffd83e" stroke-width="1.5" stroke-linecap="round"/>
+</svg>
