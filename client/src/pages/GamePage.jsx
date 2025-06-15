@@ -20,19 +20,26 @@ import './GamePage.css';
 
 const TIMER_DURATION = 30; // seconds
 const DEMO_MODAL_CONFIG = {
-  TITLE: 'Partita Demo',
+  TITLE: 'Partita Demo - Un Solo Round',
   CONTENT: {
-    DESCRIPTION: 'Stai giocando una partita demo senza effettuare il login. Il progresso non verrà salvato nel tuo profilo.',
+    DESCRIPTION: 'Stai giocando una partita demo limitata ad un solo round. Il progresso non verrà salvato nel tuo profilo.',
+    FEATURES_TITLE: 'Limitazioni della demo:',
+    FEATURES: [
+      'Solo 1 round disponibile',
+      'La partita termina dopo il primo tentativo',
+      'Nessun salvataggio del progresso'
+    ],
     BENEFITS_TITLE: 'Accedi per:',
     BENEFITS: [
+      'Giocare partite complete (fino a 6 carte)',
+      'Avere 3 tentativi per round',
       'Salvare le tue partite',
-      'Visualizzare la cronologia',
-      'Competere con altri giocatori'
+      'Visualizzare la cronologia'
     ]
   },
   BUTTONS: {
-    CONTINUE_DEMO: 'Continua la partita demo',
-    LOGIN: 'Accedi'
+    CONTINUE_DEMO: 'Continua la demo',
+    LOGIN: 'Accedi per partita completa'
   }
 };
 
@@ -96,18 +103,31 @@ const DemoGameModal = ({ show, onHide, onLogin }) => (
     backdrop="static"
     keyboard={false}
     centered
+    size="lg"
   >
     <Modal.Header>
       <Modal.Title>{DEMO_MODAL_CONFIG.TITLE}</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <p>{DEMO_MODAL_CONFIG.CONTENT.DESCRIPTION}</p>
-      <p>{DEMO_MODAL_CONFIG.CONTENT.BENEFITS_TITLE}</p>
-      <ul>
-        {DEMO_MODAL_CONFIG.CONTENT.BENEFITS.map((benefit, index) => (
-          <li key={index}>{benefit}</li>
-        ))}
-      </ul>
+      
+      <div className="mb-3">
+        <p><strong>{DEMO_MODAL_CONFIG.CONTENT.FEATURES_TITLE}</strong></p>
+        <ul>
+          {DEMO_MODAL_CONFIG.CONTENT.FEATURES.map((feature, index) => (
+            <li key={index} className="text-warning">{feature}</li>
+          ))}
+        </ul>
+      </div>
+      
+      <div>
+        <p><strong>{DEMO_MODAL_CONFIG.CONTENT.BENEFITS_TITLE}</strong></p>
+        <ul>
+          {DEMO_MODAL_CONFIG.CONTENT.BENEFITS.map((benefit, index) => (
+            <li key={index} className="text-success">{benefit}</li>
+          ))}
+        </ul>
+      </div>
     </Modal.Body>
     <Modal.Footer>
       <Button variant="secondary" onClick={onHide}>

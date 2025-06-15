@@ -245,7 +245,7 @@ const useGameState = (gameId) => {
       // Update round result for display
       setRoundResult(result);
       
-      // Handle game completion
+      // Handle game completion (including guest games)
       if (result.gameCompleted) {
         // Reload game data after small delay for server sync
         setTimeout(async () => {

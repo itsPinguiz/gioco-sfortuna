@@ -227,9 +227,10 @@ const calculateCorrectPosition = (gameCards, roundCard) => {
  * @param {number} position - Position where card is placed
  * @param {number} correctPosition - Correct position for the card
  * @param {number} gameCardsCount - Current number of cards in game
+ * @param {boolean} isGuestGame - Whether this is a guest game
  * @returns {Promise<Object>} Placement result
  */
-const processCardPlacement = async (gameId, roundCard, position, correctPosition, gameCardsCount) => {
+const processCardPlacement = async (gameId, roundCard, position, correctPosition, gameCardsCount, isGuestGame = false) => {
   const isTimeout = position === GAME_CONFIG.TIMEOUT_POSITION;
   const isCorrect = !isTimeout && position === correctPosition;
   
@@ -237,7 +238,20 @@ const processCardPlacement = async (gameId, roundCard, position, correctPosition
     // Add card to game
     await gameDao.addCardToGame(gameId, roundCard.id, gameCardsCount + 1);
     
-    // Check for win condition
+    // For guest games, end after first correct placement
+    if (isGuestGame) {
+      await gameDao.endGame(gameId, 'won');
+      return {
+        result: 'correct',
+        card: roundCard,
+        gameCompleted: true,
+        gameResult: 'won',
+        isGuestGame: true,
+        message: 'Complimenti! Hai completato la partita demo. Registrati per giocare partite complete!'
+      };
+    }
+    
+    // Check for win condition (authenticated users)
     if (gameCardsCount + 1 >= GAME_CONFIG.WINNING_CARDS) {
       await gameDao.endGame(gameId, 'won');
       return {
@@ -256,6 +270,21 @@ const processCardPlacement = async (gameId, roundCard, position, correctPosition
   } else {
     // Handle incorrect placement
     const attemptResult = await gameDao.incrementIncorrectAttempts(gameId);
+    
+    // For guest games, end after first incorrect attempt
+    if (isGuestGame) {
+      await gameDao.endGame(gameId, 'lost');
+      return {
+        result: 'incorrect',
+        card: roundCard,
+        correctPosition,
+        incorrectAttempts: attemptResult.incorrectAttempts,
+        gameCompleted: true,
+        gameResult: 'lost',
+        isGuestGame: true,
+        message: 'Partita demo terminata. Registrati per giocare partite complete con 3 tentativi!'
+      };
+    }
     
     const response = {
       result: 'incorrect',
@@ -413,12 +442,17 @@ app.post('/api/games/:id/round',
       }
       
       const correctPosition = calculateCorrectPosition(gameCards, roundCard);
+      
+      // Check if this is a guest game (no user_id)
+      const isGuestGame = !game.user_id;
+      
       const result = await processCardPlacement(
         gameId, 
         roundCard, 
         position, 
         correctPosition, 
-        gameCards.length
+        gameCards.length,
+        isGuestGame
       );
       
       res.json(result);

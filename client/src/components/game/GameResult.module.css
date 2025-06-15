@@ -200,3 +200,38 @@
     font-size: 1rem;
   }
 }
+
+/* ==========================================
+   GUEST GAME MESSAGE STYLING
+   ========================================== */
+
+.guestMessage {
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+  border-radius: var(--game-border-radius);
+  text-align: center;
+  border: 2px solid;
+}
+
+.guestMessage h4 {
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.guestMessage p {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.5;
+}
+
+.guestSuccess {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-color: var(--game-success-color);
+  color: var(--game-success-color);
+}
+
+.guestError {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: var(--game-danger-color);
+  color: var(--game-danger-color);
+}

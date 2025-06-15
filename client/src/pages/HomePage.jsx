@@ -88,8 +88,8 @@ const NewGameCard = ({ isAuthenticated, onNewGame, loading }) => (
       <Card.Title>Inizia una nuova partita</Card.Title>
       <Card.Text>
         {isAuthenticated
-          ? 'Sfida il computer e cerca di ottenere 6 carte per vincere!'
-          : 'Prova una partita demo con una sola mano. Registrati per giocare partite complete!'}
+          ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Hai 3 tentativi per ogni round.'
+          : 'Prova una partita demo con un solo round. Solo un tentativo disponibile! Registrati per partite complete.'}
       </Card.Text>
       <div className="btn-wrapper">
         <Button
@@ -100,7 +100,7 @@ const NewGameCard = ({ isAuthenticated, onNewGame, loading }) => (
           <span className="icon">
             <img src={playIcon} alt="" />
           </span>
-          {loading ? 'Caricamento...' : 'Nuova Partita'}
+          {loading ? 'Caricamento...' : (isAuthenticated ? 'Nuova Partita' : 'Demo (1 Round)')}
         </Button>
       </div>
     </Card.Body>
@@ -209,15 +209,24 @@ const LoginPromptSection = () => (
       <Card className="border-info">
         <Card.Body>
           <Card.Title>Vuoi accedere a tutte le funzionalità?</Card.Title>
-          <Card.Text>
-            Effettua il login per tenere traccia delle tue partite e giocare partite complete!
-          </Card.Text>
+          <div>
+            <p>
+              La demo ti permette di provare il gioco con un solo round e un solo tentativo.
+            </p>
+            <p><strong>Effettua il login per:</strong></p>
+            <ul className="mt-2">
+              <li>Giocare partite complete (fino a 6 carte)</li>
+              <li>Avere 3 tentativi per ogni round</li>
+              <li>Tenere traccia delle tue partite</li>
+              <li>Visualizzare statistiche dettagliate</li>
+            </ul>
+          </div>
           <div className="btn-wrapper">
             <Link to="/login" className="btn btn-primary">
               <span className="icon">
                 <img src={userIcon} alt="" />
               </span>
-              Accedi
+              Accedi per Partite Complete
             </Link>
           </div>
         </Card.Body>
@@ -376,8 +385,8 @@ const HomePage = () => {
               <Card.Title>Inizia una nuova partita</Card.Title>
               <Card.Text>
                 {isAuthenticated
-                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere!'
-                  : 'Prova una partita demo con una sola mano. Registrati per giocare partite complete!'}
+                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Hai 3 tentativi per ogni round.'
+                  : 'Prova una partita demo con un solo round. Solo un tentativo disponibile! Registrati per partite complete.'}
               </Card.Text>
               <div className="btn-wrapper">
                 <Button
@@ -388,7 +397,7 @@ const HomePage = () => {
                   <span className="icon">
                     <img src={playIcon} alt="" />
                   </span>
-                  {loading ? 'Caricamento...' : 'Nuova Partita'}
+                  {loading ? 'Caricamento...' : (isAuthenticated ? 'Nuova Partita' : 'Demo (1 Round)')}
                 </Button>
               </div>
             </Card.Body>

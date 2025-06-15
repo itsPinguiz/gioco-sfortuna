@@ -32,6 +32,20 @@ const validateProps = (result, card) => {
 // ==========================================
 
 /**
+ * Guest game message component
+ */
+const GuestGameMessage = ({ message, isCorrect }) => {
+  if (!message) return null;
+  
+  return (
+    <div className={`${styles.guestMessage} ${isCorrect ? styles.guestSuccess : styles.guestError}`}>
+      <h4>Partita Demo Completata!</h4>
+      <p>{message}</p>
+    </div>
+  );
+};
+
+/**
  * GameResult Component
  * Displays the result of a game round, showing whether the user's
  * card placement was correct or incorrect, along with game state info
@@ -68,9 +82,17 @@ const GameResult = ({
   
   // Determine if the result is correct
   const isCorrect = result.result === 'correct';
+  const isGuestGame = result.isGuestGame;
+  const isGameCompleted = result.gameCompleted;
   
   // Get button configuration based on result
   const buttonConfig = getButtonConfig(isCorrect);
+  
+  // Override button text for completed guest games
+  if (isGuestGame && isGameCompleted) {
+    buttonConfig.text = 'Termina Demo';
+    buttonConfig.variant = 'primary';
+  }
 
   // ==========================================
   // RENDER
@@ -97,6 +119,11 @@ const GameResult = ({
           </div>
         </div>
       </div>
+
+      {/* Guest game message */}
+      {isGuestGame && isGameCompleted && (
+        <GuestGameMessage message={result.message} isCorrect={isCorrect} />
+      )}
 
       {/* Card result display */}
       <div className={styles.cardResult}>
