@@ -94,24 +94,17 @@ const initializeApp = async () => {
   try {
     // Uncomment the following line to reset the database
     await resetDB();
-    // console.log('✅ Database reset complete');
     
     // Initialize database structure
     await initializeDB();
-    console.log('Database structure initialized');
-    
     // Update database schema if needed
     await updateDBSchema();
-    console.log('Database schema updated if needed');
     
     // Create images directory and placeholder images
     createImagesDirectory();
-    createPlaceholderImages();
-    console.log('Images directory and placeholders created');
     
     // Initialize database with sample data
     await initializeSampleData();
-    console.log('Sample data initialized');
   } catch (error) {
     console.error('Error initializing app:', error);
   }
@@ -350,19 +343,11 @@ app.post('/api/games/:id/round',
                         gameCompleted: false
                       });
                     });                } else {
-                  // Log se la posizione è -1 (timeout)
-                  if (position === -1) {
-                    console.log('Timeout detected for game', gameId, '- Counting as incorrect attempt');
-                  }
-                  
                   // Increment the incorrect attempts counter
                   return gameDao.incrementIncorrectAttempts(gameId)
-                    .then((result) => {
-                      console.log('Incorrect attempt for game', gameId, '- Current count:', result.incorrectAttempts);
-                      
+                    .then((result) => {                      
                       // Check if this is the third incorrect placement
                       if (result.reachedMaxAttempts) {
-                        console.log('Max attempts reached, ending game');
                         // End the game if we reached the maximum attempts (3)
                         return gameDao.endGame(gameId, 'lost')
                           .then(() => {

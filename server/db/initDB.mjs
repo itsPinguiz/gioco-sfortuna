@@ -18,8 +18,6 @@ const initializeSampleData = async () => {
     });
 
     if (countCards === 0) {
-      console.log('Adding sample cards to database...');
-      
       // Add all cards in a transaction
       await new Promise((resolve, reject) => {
         db.serialize(() => {
@@ -46,8 +44,6 @@ const initializeSampleData = async () => {
           });
         });
       });
-      
-      console.log('Sample cards added successfully.');
     }
 
     // Insert sample users if the users table is empty
@@ -62,8 +58,6 @@ const initializeSampleData = async () => {
     });
 
     if (countUsers === 0) {
-      console.log('Adding sample users to database...');
-      
       for (const user of sampleUsers) {
         const salt = crypt.generateSalt();
         const hashedPassword = crypt.hashPassword(user.password, salt);
@@ -82,8 +76,6 @@ const initializeSampleData = async () => {
           );
         });
       }
-      
-      console.log('Sample users added successfully.');
     }
     
     // Optional: Add sample games for the first user
@@ -108,9 +100,7 @@ const initializeSampleData = async () => {
         });
       });
       
-      if (countGames === 0) {
-        console.log('Adding sample games for first user...');
-        
+      if (countGames === 0) {        
         // Create a completed game (won)
         const gameWon = await new Promise((resolve, reject) => {
           db.run(
@@ -194,12 +184,8 @@ const initializeSampleData = async () => {
             );
           });
         }
-        
-        console.log('Sample games added successfully.');
       }
     }
-    
-    console.log('Database initialization completed successfully.');
   } catch (error) {
     console.error('Error initializing sample data:', error);
     throw error;

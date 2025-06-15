@@ -25,24 +25,14 @@ const GameOver = ({
   const startTime = new Date(game.start_date).getTime();
   const endTime = game.end_date ? new Date(game.end_date).getTime() : Date.now();
   
-  // Debug log per capire i timestamp
-  console.log('GameOver Debug - Calculating duration:');
-  console.log('- start_date from DB:', game.start_date);
-  console.log('- end_date from DB:', game.end_date);
-  console.log('- startTime parsed:', startTime, new Date(startTime));
-  console.log('- endTime parsed:', endTime, new Date(endTime));
-  
   const durationMs = Math.max(0, endTime - startTime); // Ensure non-negative duration
-  console.log('- durationMs:', durationMs);
   
   // Convert to total seconds and then to hours, minutes, seconds
   const totalSeconds = Math.floor(durationMs / 1000);
   const hours = Math.floor(totalSeconds / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);
   const seconds = totalSeconds % 60;
-  
-  console.log('- totalSeconds:', totalSeconds, 'hours:', hours, 'minutes:', minutes, 'seconds:', seconds);
-  
+
   // Format duration string
   let durationString = '';
   if (hours > 0) {

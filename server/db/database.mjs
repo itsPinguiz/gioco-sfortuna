@@ -8,8 +8,6 @@ const db = new sqlite3.Database('db/game.db', (err) => {
 // Function to reset the entire database - WARNING: This deletes all data!
 export const resetDB = () => {
   return new Promise((resolve, reject) => {
-    console.log('⚠️ RESETTING DATABASE - All data will be lost!');
-    
     db.serialize(() => {
       // Drop all tables in reverse order to avoid foreign key constraints
       db.run(`DROP TABLE IF EXISTS game_cards`, (err) => {
@@ -40,12 +38,10 @@ export const resetDB = () => {
                 return;
               }
               
-              console.log('🗑️ All tables dropped successfully');
               
               // After dropping all tables, initialize them again
               initializeDB()
                 .then(() => {
-                  console.log('🔄 Database schema recreated');
                   resolve();
                 })
                 .catch((err) => {
@@ -70,20 +66,16 @@ export const updateDBSchema = () => {
         return;
       }
 
-      console.log('Games table columns:', rows);
-      
       // Check if the incorrect_attempts column exists
       const hasIncorrectAttempts = rows.some(col => col && col.name === 'incorrect_attempts');
       
       if (!hasIncorrectAttempts) {
-        console.log('Adding incorrect_attempts column to games table');
         // Add the column if it doesn't exist
         db.run(`ALTER TABLE games ADD COLUMN incorrect_attempts INTEGER DEFAULT 0`, (err) => {
           if (err) {
             console.error('Error adding column:', err);
             reject(err);
           } else {
-            console.log('Column added successfully');
             resolve();
           }
         });

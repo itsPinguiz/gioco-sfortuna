@@ -61,7 +61,6 @@
 .cardPosition {
   position: relative;
   margin-top: 45px;
-  margin-inline: -40px;
 }
 
 .cardScrollContainer {
@@ -151,22 +150,26 @@
   margin-top: 1rem;
 }
 
-
-
 /* Drag and drop styles for horizontal layout */
 .draggableNewCard {
   display: inline-block;
   cursor: grab;
   transition: all 0.2s ease;
   margin: 1rem 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 0.5rem;
 }
 
 .draggableNewCard:hover {
-  transform: scale(1.02);
+  transform: scale(1.05);
+  border-color: var(--game-yellow);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
 .draggableNewCard:active {
   cursor: grabbing;
+  transform: scale(0.95);
 }
 
 /* Drop zones for horizontal layout */
@@ -211,8 +214,10 @@
 .dragOverlay {
   transform: rotate(5deg);
   z-index: 1000;
-  opacity: 0.8;
+  opacity: 0.9;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--game-yellow);
+  border-radius: 8px;
 }
 
 /* Vertical layout for drag and drop */
@@ -222,6 +227,129 @@
   align-items: center;
   gap: 1.5rem;
   margin: 1rem 0;
+}
+
+/* Stili per il sistema sortable */
+.sortableContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.cardArray {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 150px;
+  padding: 1rem;
+  /*background-color: rgba(255, 255, 255, 0.05);*/
+  border-radius: 10px;
+  /*border: 2px dashed var(--game-yellow);*/
+  transition: all 0.3s ease;
+}
+
+.cardArray:hover {
+  border-color: var(--game-yellow);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sortableCard {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sortableCard:hover {
+  transform: scale(1.05);
+}
+
+.previewCard {
+  opacity: 0.7;
+  border: 2px solid var(--game-yellow);
+  border-radius: 8px;
+  animation: previewPulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes previewPulse {
+  from {
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+  }
+}
+
+.controlButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.confirmButton, .resetButton {
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.confirmButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.resetButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Sezione della nuova carta */
+.newCardSection {
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 2px solid var(--game-yellow);
+  margin-bottom: 1rem;
+}
+
+.newCardSection::before {
+  content: "Trascina questa carta nell'array sottostante";
+  display: block;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  color: var(--game-yellow);
+}
+
+/* End drop zone styles */
+.endDropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+  height: 100px;
+  border-radius: 8px;
+  margin-left: 10px;
+  transition: all 0.2s ease;
+  opacity: 0;
+}
+
+.endDropZoneActive {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.endDropZoneIndicator {
+  font-size: 24px;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.endDropZoneActive .endDropZoneIndicator {
+  color: #007bff;
 }
 
 

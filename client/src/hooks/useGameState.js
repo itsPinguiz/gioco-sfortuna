@@ -114,21 +114,15 @@ const useGameState = (gameId) => {
   // Submit card placement
   const handlePlaceCard = async (cardId, position) => {
     try {
-      console.log(`🃏 Placing card ${cardId} at position ${position}`);
-      
       // Submit the placement
       const result = await submitCardPlacement(gameId, cardId, position);
-      console.log('📥 Placement result:', result);
-      
       // Update cards if placement was correct
       if (result.result === 'correct') {
-        console.log('✅ Correct placement - adding card to collection');
         setCards(prev => [...prev, result.card]);
       } 
       
-      // Usa SEMPRE il conteggio degli errori dal server
+      // Usa il conteggio degli errori dal server
       if (result.incorrectAttempts !== undefined) {
-        console.log('🔄 Using server error count:', result.incorrectAttempts);
         setIncorrectAttempts(result.incorrectAttempts);
         attemptsRef.current = result.incorrectAttempts;
       }
@@ -137,14 +131,11 @@ const useGameState = (gameId) => {
       setRoundResult(result);
         // Aggiorniamo la fase del gioco
       if (result.gameCompleted) {
-        console.log('🏁 Game is completed, setting phase to over');
-        
         // Ricarica i dati del gioco dal database per avere end_date aggiornato
         setTimeout(async () => {
           try {
             const updatedGameData = await getGameById(gameId);
             if (updatedGameData.game) {
-              console.log('📡 Reloaded game data with updated end_date:', updatedGameData.game.end_date);
               setGame(updatedGameData.game);
             }
           } catch (error) {
@@ -176,27 +167,20 @@ const useGameState = (gameId) => {
   const handleTimeUp = async () => {
     // Prevent multiple timeout submissions for the same round
     if (timeoutProcessingRef.current) {
-      console.log('⏰ Timeout already being processed, skipping...');
       return null;
     }
     
     if (!roundCard || !roundCard.id) {
-      console.warn('❌ Cannot handle timeout: roundCard is not available');
       return null;
     }
     
     try {
-      console.log('⏰ TIMEOUT: Timer scaduto');
       timeoutProcessingRef.current = true; // Mark as processing
       
       // Per il timeout, usiamo la posizione -1 per indicare al server che è un timeout
-      console.log('📤 Sending timeout to server with position=-1');
       const result = await submitCardPlacement(gameId, roundCard.id, -1);
-      console.log('📥 Server response for timeout:', result);
-      
       // Aggiorna sempre con il valore dal server
       if (result.incorrectAttempts !== undefined) {
-        console.log('🔄 Using server error count:', result.incorrectAttempts);
         setIncorrectAttempts(result.incorrectAttempts);
         attemptsRef.current = result.incorrectAttempts;
       }
@@ -209,14 +193,11 @@ const useGameState = (gameId) => {
       });
         // Gestiamo il fine partita basandoci sul server
       if (result.gameCompleted) {
-        console.log('🏁 Game over per decisione del server');
-        
         // Ricarica i dati del gioco dal database per avere end_date aggiornato
         setTimeout(async () => {
           try {
             const updatedGameData = await getGameById(gameId);
             if (updatedGameData.game) {
-              console.log('📡 Reloaded game data with updated end_date:', updatedGameData.game.end_date);
               setGame(updatedGameData.game);
             }
           } catch (error) {
@@ -253,7 +234,6 @@ const useGameState = (gameId) => {
           try {
             const updatedGameData = await getGameById(gameId);
             if (updatedGameData.game && updatedGameData.game.end_date) {
-              console.log('📡 Reloaded game data after manual timeout:', updatedGameData.game.end_date);
               setGame(updatedGameData.game);
             }
           } catch (error) {
