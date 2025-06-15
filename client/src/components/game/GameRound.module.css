@@ -70,6 +70,8 @@
   gap: 15px;
   scrollbar-width: thin;
   scrollbar-color: #007bff #f0f0f0;
+  width: 100%;
+  justify-content: center;
 }
 
 .cardScrollContainer::-webkit-scrollbar {
@@ -136,4 +138,112 @@
   100% {
     opacity: 1;
   }
+}
+
+/* Drag and Drop Styles */
+.dragDropContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.newCardSection {
+  background: #fff3cd;
+  border: 2px dashed #ffc107;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.newCardSection h4 {
+  color: #856404;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+/* Drag and drop styles for horizontal layout */
+.draggableNewCard {
+  display: inline-block;
+  cursor: grab;
+  transition: all 0.2s ease;
+  margin: 1rem 0;
+}
+
+.draggableNewCard:hover {
+  transform: scale(1.02);
+}
+
+.draggableNewCard:active {
+  cursor: grabbing;
+}
+
+/* Drop zones for horizontal layout */
+.dropZone {
+  width: 60px;
+  height: 160px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  transition: all 0.2s ease;
+  margin: 0 5px;
+  min-width: 60px;
+  flex-shrink: 0;
+}
+
+.dropZoneActive {
+  border-color: #28a745;
+  background-color: #d4edda;
+  transform: scale(1.05);
+}
+
+.dropIndicator {
+  font-size: 0.8rem;
+  color: #6c757d;
+  text-align: center;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.dropZoneActive .dropIndicator {
+  color: #155724;
+}
+
+.dragOverlay {
+  transform: rotate(5deg);
+  z-index: 1000;
+  opacity: 0.8;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+/* Vertical layout for drag and drop */
+.verticalLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.newCardSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  background-color: #e3f2fd;
+  border: 2px dashed #2196f3;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.newCardSection::before {
+  content: "Carta da inserire";
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 0.5rem;
 }
