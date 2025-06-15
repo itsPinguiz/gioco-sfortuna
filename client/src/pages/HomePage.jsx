@@ -116,10 +116,10 @@ const GameRulesCard = () => (
       <Card.Title>Come si gioca</Card.Title>
       <Card.Text>
         {GAME_RULES.map((rule, index) => (
-          <span key={index}>
-            {index + 1}. {rule}
-            {index < GAME_RULES.length - 1 && <><br /></>}
-          </span>
+          <div key={index} className={styles.ruleItem}>
+            <span className={styles.ruleNumber}>{index + 1}</span>
+            <span className={styles.ruleText}>{rule}</span>
+          </div>
         ))}
       </Card.Text>
     </Card.Body>
@@ -334,23 +334,75 @@ const HomePage = () => {
         <Col md={6} className="mb-4 mb-md-0">
           <Card className={styles.gameCard}>
             <Card.Body>
-              <Card.Title>Inizia una nuova partita</Card.Title>
-              <Card.Text>
+              <Card.Title>🎮 Inizia una nuova partita</Card.Title>
+              
+              {/* Game preview section */}
+              <div className={styles.gamePreview}>
+                <div className={styles.gameFeatures}>
+                  {isAuthenticated ? (
+                    <>
+                      <div className={styles.featureItem}>
+                        <span className={styles.featureIcon}>🎯</span>
+                        <span>Partita completa fino a 6 carte</span>
+                      </div>
+                      <div className={styles.featureItem}>
+                        <span className={styles.featureIcon}>⚡</span>
+                        <span>3 tentativi per round</span>
+                      </div>
+                      <div className={styles.featureItem}>
+                        <span className={styles.featureIcon}>⏱️</span>
+                        <span>30 secondi per carta</span>
+                      </div>
+                      <div className={styles.featureItem}>
+                        <span className={styles.featureIcon}>💾</span>
+                        <span>Progresso salvato automaticamente</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <Card.Text className={styles.gameDescription}>
                 {isAuthenticated
-                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Hai 3 tentativi per ogni round.'
-                  : 'Prova una partita demo con un solo round. Solo un tentativo disponibile! Registrati per partite complete.'}
+                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Metti alla prova la tua capacità di ordinare le situazioni sfortunate.'
+                  : 'Prova una partita demo e scopri quanto sei bravo a valutare la sfortuna! Registrati per l\'esperienza completa.'}
               </Card.Text>
+              
+              {/* Action button */}
               <div className="btn-wrapper">
                 <Button
                   variant="primary"
                   onClick={handleNewGame}
                   disabled={loading}
+                  size="lg"
                 >
                   <span className="icon">
                     <img src={playIcon} alt="" />
                   </span>
-                  {loading ? 'Caricamento...' : (isAuthenticated ? 'Nuova Partita' : 'Demo (1 Round)')}
+                  {loading ? 'Caricamento...' : (isAuthenticated ? 'Inizia Partita' : 'Prova Demo Gratuita')}
                 </Button>
+              </div>
+              
+              {/* Additional info for demo users */}
+              {!isAuthenticated && (
+                <div className={styles.demoInfo}>
+                  <small>💡 Nessun account richiesto per la demo</small>
+                </div>
+              )}
+              
+              {/* Author credit */}
+              <div className={styles.authorCredit}>
+                <a 
+                  href="https://github.com/itsPinguiz" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.authorLink}
+                >
+                  - author Stefano Zizzi
+                </a>
               </div>
             </Card.Body>
           </Card>
@@ -362,10 +414,10 @@ const HomePage = () => {
               <Card.Title>Come si gioca</Card.Title>
               <Card.Text>
                 {GAME_RULES.map((rule, index) => (
-                  <span key={index}>
-                    {index + 1}. {rule}
-                    {index < GAME_RULES.length - 1 && <><br /></>}
-                  </span>
+                  <div key={index} className={styles.ruleItem}>
+                    <span className={styles.ruleNumber}>{index + 1}</span>
+                    <span className={styles.ruleText}>{rule}</span>
+                  </div>
                 ))}
               </Card.Text>
             </Card.Body>

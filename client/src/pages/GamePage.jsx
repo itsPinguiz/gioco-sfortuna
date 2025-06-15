@@ -23,18 +23,18 @@ const DEMO_MODAL_CONFIG = {
   TITLE: 'Partita Demo - Un Solo Round',
   CONTENT: {
     DESCRIPTION: 'Stai giocando una partita demo limitata ad un solo round. Il progresso non verrà salvato nel tuo profilo.',
-    FEATURES_TITLE: 'Limitazioni della demo:',
+    FEATURES_TITLE: 'Limitazioni della demo',
     FEATURES: [
-      'Solo 1 round disponibile',
-      'La partita termina dopo il primo tentativo',
-      'Nessun salvataggio del progresso'
+      { text: 'Solo', bold: '1 round', after: 'disponibile' },
+      { text: 'La partita termina dopo il', bold: 'primo tentativo', after: '' },
+      { text: '', bold: 'Nessun salvataggio', after: 'del progresso' }
     ],
-    BENEFITS_TITLE: 'Accedi per:',
+    BENEFITS_TITLE: 'Accedi per',
     BENEFITS: [
-      'Giocare partite complete (fino a 6 carte)',
-      'Avere 3 tentativi per round',
-      'Salvare le tue partite',
-      'Visualizzare la cronologia'
+      { text: 'Giocare partite', bold: 'complete', after: '(fino a 6 carte)' },
+      { text: 'Avere', bold: '3 tentativi', after: 'per round' },
+      { text: '', bold: 'Salvare', after: 'le tue partite' },
+      { text: 'Visualizzare la', bold: 'cronologia', after: '' }
     ]
   },
   BUTTONS: {
@@ -111,22 +111,34 @@ const DemoGameModal = ({ show, onHide, onLogin }) => (
     <Modal.Body>
       <p>{DEMO_MODAL_CONFIG.CONTENT.DESCRIPTION}</p>
       
-      <div className="mb-3">
-        <p><strong>{DEMO_MODAL_CONFIG.CONTENT.FEATURES_TITLE}</strong></p>
-        <ul>
-          {DEMO_MODAL_CONFIG.CONTENT.FEATURES.map((feature, index) => (
-            <li key={index} className="text-warning">{feature}</li>
-          ))}
-        </ul>
-      </div>
-      
-      <div>
-        <p><strong>{DEMO_MODAL_CONFIG.CONTENT.BENEFITS_TITLE}</strong></p>
-        <ul>
-          {DEMO_MODAL_CONFIG.CONTENT.BENEFITS.map((benefit, index) => (
-            <li key={index} className="text-success">{benefit}</li>
-          ))}
-        </ul>
+      <div className="row">
+        <div className="col-md-6 mb-3">
+          <p><strong>{DEMO_MODAL_CONFIG.CONTENT.FEATURES_TITLE}</strong></p>
+          <ul className="demo-list demo-limitations">
+            {DEMO_MODAL_CONFIG.CONTENT.FEATURES.map((feature, index) => (
+              <li key={index}>
+                <span className="demo-bullet demo-limitation-bullet">{index + 1}</span>
+                <span className="demo-text">
+                  {feature.text} <strong>{feature.bold}</strong> {feature.after}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        
+        <div className="col-md-6">
+          <p><strong>{DEMO_MODAL_CONFIG.CONTENT.BENEFITS_TITLE}</strong></p>
+          <ul className="demo-list demo-benefits">
+            {DEMO_MODAL_CONFIG.CONTENT.BENEFITS.map((benefit, index) => (
+              <li key={index}>
+                <span className="demo-bullet demo-benefit-bullet">{index + 1}</span>
+                <span className="demo-text">
+                  {benefit.text} <strong>{benefit.bold}</strong> {benefit.after}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </Modal.Body>
     <Modal.Footer>

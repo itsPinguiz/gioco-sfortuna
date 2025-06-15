@@ -109,16 +109,18 @@
   margin-bottom: 1rem;
 }
 
+/* Guest link styling */
 .guestLink {
   color: var(--game-yellow);
-  text-decoration: none;
-  font-weight: bold;
-  transition: var(--game-transition);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+  transition: var(--transition-normal);
 }
 
 .guestLink:hover {
-  color: #e6c23b;
-  text-decoration: underline;
+  color: #e6c73a;
+  text-decoration: none;
 }
 
 .guestDescription {

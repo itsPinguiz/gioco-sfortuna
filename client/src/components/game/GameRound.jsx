@@ -399,7 +399,7 @@ const GameRound = ({
         {insertPosition !== null && (
           <div className={styles.controlButtons}>
             <Button 
-              variant="success" 
+              variant="primary" 
               onClick={handleConfirm}
               className={styles.confirmButton}
             >

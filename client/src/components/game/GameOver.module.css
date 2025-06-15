@@ -52,14 +52,14 @@
   font-weight: bold;
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: var(--game-success-color);
+  color: var(--game-yellow);
 }
 
 .loseTitle {
   font-weight: bold;
   font-size: 2.5rem;
   margin-bottom: 1rem;
-  color: var(--game-danger-color);
+  color: var(--game-yellow);
 }
 
 /* ==========================================

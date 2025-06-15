@@ -194,7 +194,6 @@ body {
   color: var(--game-yellow);
   font-size: 1.5rem;
   font-weight: bold;
-  text-decoration: none;
   transition: var(--transition-normal);
 }
 
@@ -219,8 +218,7 @@ body {
 }
 
 .navbar .dropdown-toggle::after {
-  margin-left: 0.5rem;
-  vertical-align: middle;
+  display: none !important;
 }
 
 .navbar .dropdown-menu {

@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap';
 import { AuthContext } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { createGame } from '../api/API';
 import styles from './LoginPage.module.css';
 
 // ==========================================
@@ -73,18 +74,36 @@ const FormField = ({
 /**
  * Guest information section component
  */
-const GuestInfoSection = () => (
-  <div className="mt-4">
-    <p>
-      {GUEST_INFO.TITLE.split('ospite')[0]}
-      <a href="/play">ospite</a>
-      {GUEST_INFO.TITLE.split('ospite')[1]}
-    </p>
-    <p className="text-muted">
-      <small>{GUEST_INFO.DESCRIPTION}</small>
-    </p>
-  </div>
-);
+const GuestInfoSection = () => {
+  const navigate = useNavigate();
+  
+  const handleGuestPlay = async () => {
+    try {
+      const gameData = await createGame();
+      const gameId = gameData.game?.id || gameData.id;
+      if (gameId) {
+        navigate(`/game/${gameId}`);
+      }
+    } catch (error) {
+      console.error('Error creating guest game:', error);
+    }
+  };
+
+  return (
+    <div className="mt-4">
+      <p>
+        Non hai un account? Puoi comunque{' '}
+        <span className={styles.guestLink} onClick={handleGuestPlay}>
+          giocare come ospite
+        </span>
+        .
+      </p>
+      <p className="text-muted">
+        <small>{GUEST_INFO.DESCRIPTION}</small>
+      </p>
+    </div>
+  );
+};
 
 /**
  * Error alert component
