@@ -6,6 +6,7 @@ import { createGame } from '../api/API';
 import dayjs from 'dayjs';
 import userIcon from '../assets/icons/person.png';
 import playIcon from '../assets/icons/play.png';
+import githubIcon from '../assets/icons/github-mark.svg';
 import styles from './HomePage.module.css';
 
 // ==========================================
@@ -13,11 +14,11 @@ import styles from './HomePage.module.css';
 // ==========================================
 
 const GAME_RULES = [
-  'Inizi con 3 carte che hanno un indice di sfortuna da 1 a 100.',
-  'Ogni round ti viene mostrata una nuova situazione sfortunata.',
-  'Devi collocare la nuova carta tra quelle che hai, in base a quanto è sfortunata.',
-  'Hai 30 secondi per decidere!',
-  'Ottieni 6 carte per vincere. 3 errori e hai perso.'
+  { text: 'Inizi con', bold: '3 carte', after: 'che hanno un indice di sfortuna da 1 a 100.' },
+  { text: 'Ogni round ti viene mostrata una', bold: 'nuova situazione sfortunata', after: '.' },
+  { text: 'Devi collocare la nuova carta tra quelle che hai, in base a', bold: 'quanto è sfortunata.', after: '' },
+  { text: 'Hai', bold: '30 secondi', after: 'per decidere!' },
+  { text: 'Ottieni', bold: '6 carte', after: 'per vincere.', bold2: '3 errori', after2: 'e hai perso.' }
 ];
 
 const ERROR_MESSAGES = {
@@ -118,7 +119,12 @@ const GameRulesCard = () => (
         {GAME_RULES.map((rule, index) => (
           <div key={index} className={styles.ruleItem}>
             <span className={styles.ruleNumber}>{index + 1}</span>
-            <span className={styles.ruleText}>{rule}</span>
+            <span className={styles.ruleText}>
+              {rule.text} <strong>{rule.bold}</strong> {rule.after}
+              {rule.bold2 && (
+                <> <strong>{rule.bold2}</strong> {rule.after2}</>
+              )}
+            </span>
           </div>
         ))}
       </Card.Text>
@@ -332,31 +338,15 @@ const HomePage = () => {
       {/* Main action cards */}
       <Row className={styles.actionCards}>
         <Col md={6} className="mb-4 mb-md-0">
-          <Card className={styles.gameCard}>
-            <Card.Body>
-              <Card.Title>🎮 Inizia una nuova partita</Card.Title>
+          <Card className={`${styles.gameCard} h-100`}>
+            <Card.Body className={styles.gameCardBody}>
+              <Card.Title>Inizia una nuova partita</Card.Title>
               
               {/* Game preview section */}
               <div className={styles.gamePreview}>
                 <div className={styles.gameFeatures}>
                   {isAuthenticated ? (
                     <>
-                      <div className={styles.featureItem}>
-                        <span className={styles.featureIcon}>🎯</span>
-                        <span>Partita completa fino a 6 carte</span>
-                      </div>
-                      <div className={styles.featureItem}>
-                        <span className={styles.featureIcon}>⚡</span>
-                        <span>3 tentativi per round</span>
-                      </div>
-                      <div className={styles.featureItem}>
-                        <span className={styles.featureIcon}>⏱️</span>
-                        <span>30 secondi per carta</span>
-                      </div>
-                      <div className={styles.featureItem}>
-                        <span className={styles.featureIcon}>💾</span>
-                        <span>Progresso salvato automaticamente</span>
-                      </div>
                     </>
                   ) : (
                     <>
@@ -401,7 +391,12 @@ const HomePage = () => {
                   rel="noopener noreferrer"
                   className={styles.authorLink}
                 >
-                  - author Stefano Zizzi
+                  <img 
+                    src={githubIcon} 
+                    alt="GitHub" 
+                    className={styles.githubIcon}
+                  />
+                  Stefano Zizzi
                 </a>
               </div>
             </Card.Body>
@@ -416,7 +411,12 @@ const HomePage = () => {
                 {GAME_RULES.map((rule, index) => (
                   <div key={index} className={styles.ruleItem}>
                     <span className={styles.ruleNumber}>{index + 1}</span>
-                    <span className={styles.ruleText}>{rule}</span>
+                    <span className={styles.ruleText}>
+                      {rule.text} <strong>{rule.bold}</strong> {rule.after}
+                      {rule.bold2 && (
+                        <> <strong>{rule.bold2}</strong> {rule.after2}</>
+                      )}
+                    </span>
                   </div>
                 ))}
               </Card.Text>

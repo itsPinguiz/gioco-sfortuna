@@ -263,6 +263,11 @@
   line-height: 1.4;
 }
 
+.ruleText strong {
+  color: var(--game-yellow);
+  font-weight: bold;
+}
+
 /* Demo info styling */
 .demoInfo {
   margin-top: 1rem;
@@ -275,10 +280,26 @@
   font-size: 0.9rem;
 }
 
+/* Game card layout adjustments */
+.gameCardBody {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gameDescription {
+  flex-grow: 1;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+}
+
 /* Author credit styling */
 .authorCredit {
   text-align: center;
-  margin-top: 1rem;
+  margin-top: auto;
+  padding-top: 1rem;
   font-size: 0.85rem;
 }
 
@@ -286,11 +307,25 @@
   color: rgba(255, 255, 255, 0.6);
   text-decoration: none;
   transition: var(--transition-normal);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .authorLink:hover {
   color: var(--game-yellow);
   text-decoration: none;
+}
+
+.githubIcon {
+  width: 16px;
+  height: 16px;
+  filter: invert(0.6);
+  transition: var(--transition-normal);
+}
+
+.authorLink:hover .githubIcon {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(35deg);
 }
 
 /* Responsive design */
