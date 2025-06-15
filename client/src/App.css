@@ -26,6 +26,10 @@ body {
   background-color: #0c1318;
 }
 
+.logo {
+  filter: invert(1);
+}
+
 /* Card animations */
 .card-enter {
   opacity: 0;

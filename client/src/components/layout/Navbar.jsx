@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
+import logo from '../../assets/icons/logo.svg';
 
 const NavbarComponent = () => {
   const { user, isAuthenticated, logout } = useContext(AuthContext);
@@ -15,7 +16,14 @@ const NavbarComponent = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand as={Link} to="/">Gioco della Sfortuna</Navbar.Brand>
+        <Navbar.Brand as={Link} to="/">
+          <img
+            src={logo}
+            height="30"
+            className="d-inline-block align-top"
+            alt="Gioco della Sfortuna Logo"
+          />
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
