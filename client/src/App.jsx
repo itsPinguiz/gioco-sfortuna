@@ -15,6 +15,7 @@ import { NavbarComponent, ProtectedRoute } from './components';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import GamePage from './pages/GamePage';
+import GamesHistoryPage from './pages/GamesHistoryPage';
 
 // ==========================================
 // MAIN APPLICATION COMPONENT
@@ -48,12 +49,9 @@ function App() {
             <Route path="/game/:gameId" element={<GamePage />} />
             
             {/* Protected routes */}
-            <Route path="/profile" element={
+            <Route path="/games-history" element={
               <ProtectedRoute>
-                <div className="container mt-4">
-                  <h2>Profilo Utente</h2>
-                  <p>Questa pagina è protetta e accessibile solo agli utenti autenticati.</p>
-                </div>
+                <GamesHistoryPage />
               </ProtectedRoute>
             } />
             

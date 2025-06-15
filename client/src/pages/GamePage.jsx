@@ -147,6 +147,7 @@ const GameContent = ({
   gamePhase, 
   roundCard, 
   cards, 
+  rounds,
   roundResult, 
   game, 
   timeLeft, 
@@ -186,6 +187,7 @@ const GameContent = ({
         <GameOver
           game={game}
           cards={cards}
+          rounds={rounds}
           incorrectAttempts={incorrectAttempts}
           onNewGame={onNewGame}
         />
@@ -230,6 +232,7 @@ const GamePage = () => {
   const {
     game,
     cards,
+    rounds,
     loading,
     error,
     roundCard,
@@ -392,6 +395,7 @@ const GamePage = () => {
         gamePhase={gamePhase}
         roundCard={roundCard}
         cards={cards}
+        rounds={rounds}
         roundResult={roundResult}
         game={game}
         timeLeft={timeLeft}

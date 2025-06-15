@@ -162,6 +162,20 @@ const SCHEMAS = {
     acquisition_order INTEGER NOT NULL,
     FOREIGN KEY (game_id) REFERENCES games (id),
     FOREIGN KEY (card_id) REFERENCES cards (id)
+  )`,
+  
+  game_rounds: `CREATE TABLE IF NOT EXISTS game_rounds (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_id INTEGER NOT NULL,
+    round_number INTEGER NOT NULL,
+    presented_card_id INTEGER NOT NULL,
+    chosen_position INTEGER NOT NULL,
+    correct_position INTEGER NOT NULL,
+    is_correct BOOLEAN NOT NULL,
+    time_taken INTEGER,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (game_id) REFERENCES games (id),
+    FOREIGN KEY (presented_card_id) REFERENCES cards (id)
   )`
 };
 
@@ -201,6 +215,15 @@ export const updateDBSchema = async () => {
       await runSQL('ALTER TABLE games ADD COLUMN incorrect_attempts INTEGER DEFAULT 0');
       console.log('Added incorrect_attempts column to games table');
     }
+    
+    // Check if game_rounds table exists
+    const tables = await getAllRows('SELECT name FROM sqlite_master WHERE type="table"');
+    const hasGameRounds = tables.some(table => table.name === 'game_rounds');
+    
+    if (!hasGameRounds) {
+      await runSQL(SCHEMAS.game_rounds);
+      console.log('Created game_rounds table');
+    }
   } catch (error) {
     console.error('Error updating database schema:', error);
     throw error;
@@ -214,7 +237,7 @@ export const updateDBSchema = async () => {
 /**
  * Drop tables in correct order to avoid foreign key constraints
  */
-const DROP_ORDER = ['game_cards', 'games', 'cards', 'users'];
+const DROP_ORDER = ['game_rounds', 'game_cards', 'games', 'cards', 'users'];
 
 /**
  * Reset the entire database - WARNING: This deletes all data!

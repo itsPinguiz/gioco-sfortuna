@@ -82,12 +82,20 @@ const createFallbackResult = (attempts) => ({
  * Reloads game data from server with error handling
  * @param {string} gameId - Game identifier
  * @param {Function} setGame - Game state setter
+ * @param {Function} setRounds - Rounds state setter
  */
-const reloadGameData = async (gameId, setGame) => {
+const reloadGameData = async (gameId, setGame, setRounds) => {
   try {
+    console.log('Reloading game data for rounds...');
     const updatedGameData = await getGameById(gameId);
+    console.log('Reloaded game data:', updatedGameData);
+    
     if (updatedGameData.game) {
       setGame(updatedGameData.game);
+    }
+    if (updatedGameData.rounds) {
+      console.log('Setting rounds from reloaded data:', updatedGameData.rounds);
+      setRounds(updatedGameData.rounds);
     }
   } catch (error) {
     console.error('Error reloading game data:', error);
@@ -123,6 +131,7 @@ const useGameState = (gameId) => {
   // Core game state
   const [game, setGame] = useState(null);
   const [cards, setCards] = useState([]);
+  const [rounds, setRounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -164,9 +173,14 @@ const useGameState = (gameId) => {
       try {
         const data = await getGameById(gameId);
         
+        console.log('Fetched game data:', data); // Debug log
+        
         if (data.game) {
           setGame(data.game);
           setCards(data.cards || []);
+          setRounds(data.rounds || []);
+          
+          console.log('Set rounds:', data.rounds); // Debug log
           
           // Always use server's attempt count as source of truth
           if (data.game.incorrect_attempts !== undefined) {
@@ -249,7 +263,7 @@ const useGameState = (gameId) => {
       if (result.gameCompleted) {
         // Reload game data after small delay for server sync
         setTimeout(async () => {
-          await reloadGameData(gameId, setGame);
+          await reloadGameData(gameId, setGame, setRounds);
           setGamePhase('over');
         }, GAME_RELOAD_DELAY);
       } else {
@@ -296,7 +310,7 @@ const useGameState = (gameId) => {
       // Handle game completion
       if (result.gameCompleted) {
         setTimeout(async () => {
-          await reloadGameData(gameId, setGame);
+          await reloadGameData(gameId, setGame, setRounds);
           setGamePhase('over');
         }, GAME_RELOAD_DELAY);
       } else {
@@ -318,7 +332,7 @@ const useGameState = (gameId) => {
       // Handle potential game end
       if (newAttempts >= MAX_ATTEMPTS) {
         setTimeout(async () => {
-          await reloadGameData(gameId, setGame);
+          await reloadGameData(gameId, setGame, setRounds);
           setGamePhase('over');
         }, GAME_RELOAD_DELAY);
       } else {
@@ -347,6 +361,7 @@ const useGameState = (gameId) => {
     // Game state
     game,
     cards,
+    rounds,
     loading,
     error,
     

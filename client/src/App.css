@@ -6,6 +6,8 @@
   --game-yellow: #ffd83e;
   --game-black: #111820;
   --app-background: #0c1318;
+  --game-success-color: #28a745;
+  --game-danger-color: #dc3545;
   
   /* Common values */
   --transition-fast: 100ms ease;
@@ -14,6 +16,7 @@
   --border-standard: 1px solid black;
   --shadow-button: 0 0 20px rgba(0, 0, 0, 0.5);
   --shadow-navbar: 0 -10px 30px black;
+  --game-border-radius: 8px;
 }
 
 /* ==========================================
@@ -57,6 +60,16 @@ body {
 /* Logo styling */
 .logo {
   filter: invert(1);
+}
+
+.logo-inverted {
+  filter: invert(1) brightness(1.2);
+  transition: var(--transition-normal);
+}
+
+.logo-inverted:hover {
+  transform: scale(1.1);
+  filter: invert(1) brightness(1.4);
 }
 
 /* Card components */
@@ -174,6 +187,67 @@ body {
   background-color: #080e13 !important;
   box-shadow: var(--shadow-navbar);
   margin-bottom: 40px;
+}
+
+/* Navbar game title styling */
+.navbar-game-title {
+  color: var(--game-yellow);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  transition: var(--transition-normal);
+}
+
+.navbar-game-title:hover {
+  color: var(--game-yellow);
+  filter: brightness(1.2);
+}
+
+/* User dropdown styling */
+.navbar .dropdown-toggle {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 5px !important;
+  transition: var(--transition-normal);
+}
+
+.navbar .dropdown-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.navbar .dropdown-toggle::after {
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+.navbar .dropdown-menu {
+  background-color: var(--game-black) !important;
+  border: 1px solid var(--game-yellow) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  min-width: 180px;
+  margin-top: 0.5rem !important;
+}
+
+.navbar .dropdown-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  padding: 0.5rem 1rem !important;
+  transition: var(--transition-normal);
+  border-radius: 5px !important;
+  margin: 2px 4px !important;
+}
+
+.navbar .dropdown-item:hover {
+  background-color: var(--game-yellow) !important;
+  color: black !important;
+}
+
+.navbar .dropdown-divider {
+  border-color: rgba(255, 216, 62, 0.3) !important;
+  margin: 0.5rem 0 !important;
 }
 
 /* ==========================================

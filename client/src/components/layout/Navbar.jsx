@@ -1,17 +1,18 @@
 import { useContext } from 'react';
-import { Navbar, Nav, Container, Button } from 'react-bootstrap';
+import { Navbar, Nav, Container, Button, NavDropdown } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
 import logo from '../../assets/icons/logo.svg';
+import userIcon from '../../assets/icons/person.png';
 
 // ==========================================
 // CONSTANTS
 // ==========================================
 
 const LOGO_CONFIG = {
-  height: "30",
+  height: "40",
   alt: "Gioco della Sfortuna Logo",
-  className: "d-inline-block align-top"
+  className: "d-inline-block align-top logo-inverted"
 };
 
 // ==========================================
@@ -32,16 +33,19 @@ const isValidAuthContext = (authContext) => {
 // ==========================================
 
 /**
- * Brand logo component with home navigation
+ * Brand logo component with home navigation and game title
  */
 const NavbarBrand = () => (
-  <Navbar.Brand as={Link} to="/">
+  <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
     <img
       src={logo}
       height={LOGO_CONFIG.height}
       className={LOGO_CONFIG.className}
       alt={LOGO_CONFIG.alt}
     />
+    <span className="ms-3 navbar-game-title">
+      Gioco della Sfortuna
+    </span>
   </Navbar.Brand>
 );
 
@@ -50,22 +54,41 @@ const NavbarBrand = () => (
  */
 const MainNavigation = () => (
   <Nav className="me-auto">
-    <Nav.Link as={Link} to="/">Home</Nav.Link>
+    {/* Removed Home link - using only logo for navigation */}
   </Nav>
 );
 
 /**
- * Authentication section for logged-in users
+ * Authentication section for logged-in users with dropdown menu
  */
 const AuthenticatedUserSection = ({ user, onLogout }) => (
-  <>
-    <Navbar.Text className="me-3">
-      Benvenuto, {user.username}
-    </Navbar.Text>
-    <Button variant="outline-light" onClick={onLogout}>
+  <NavDropdown
+    title={
+      <span className="d-flex align-items-center">
+        <img 
+          src={userIcon} 
+          alt="User" 
+          style={{ 
+            height: '20px', 
+            width: '20px', 
+            marginRight: '8px',
+            filter: 'invert(1)' 
+          }} 
+        />
+        {user.username}
+      </span>
+    }
+    id="user-dropdown"
+    align="end"
+  >
+    <NavDropdown.Item as={Link} to="/games-history">
+      Storico Partite
+    </NavDropdown.Item>
+    <NavDropdown.Divider />
+    <NavDropdown.Item onClick={onLogout}>
       Logout
-    </Button>
-  </>
+    </NavDropdown.Item>
+  </NavDropdown>
 );
 
 /**

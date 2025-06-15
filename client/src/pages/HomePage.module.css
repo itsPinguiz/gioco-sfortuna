@@ -229,6 +229,20 @@
   color: var(--game-yellow);
 }
 
+/* Fix for bullet point alignment in login prompt */
+.loginCard ul {
+  text-align: left;
+  display: inline-block;
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.loginCard ul li {
+  margin-bottom: 0.5rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .mainTitle {

@@ -216,6 +216,109 @@ const gameDao = {
       console.error('Error getting game with cards:', error);
       throw error;
     }
+  },
+
+  /**
+   * Record a game round attempt
+   * @param {number} gameId - Game ID
+   * @param {number} presentedCardId - ID of the card presented to user
+   * @param {number} chosenPosition - Position chosen by user (-1 for timeout)
+   * @param {number} correctPosition - Correct position for the card
+   * @param {boolean} isCorrect - Whether the placement was correct
+   * @param {number} timeTaken - Time taken for the round (optional)
+   * @returns {Promise<Object>} Created round record
+   */
+  recordGameRound: async (gameId, presentedCardId, chosenPosition, correctPosition, isCorrect, timeTaken = null) => {
+    try {
+      // Get current round number
+      const roundCountResult = await getRow(
+        'SELECT COUNT(*) as count FROM game_rounds WHERE game_id = ?',
+        [gameId]
+      );
+      const roundNumber = (roundCountResult?.count || 0) + 1;
+      
+      const sql = `
+        INSERT INTO game_rounds 
+        (game_id, round_number, presented_card_id, chosen_position, correct_position, is_correct, time_taken)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+      
+      const result = await runSQL(sql, [
+        gameId, 
+        roundNumber, 
+        presentedCardId, 
+        chosenPosition, 
+        correctPosition, 
+        isCorrect, 
+        timeTaken
+      ]);
+      
+      return {
+        id: result.id,
+        game_id: gameId,
+        round_number: roundNumber,
+        presented_card_id: presentedCardId,
+        chosen_position: chosenPosition,
+        correct_position: correctPosition,
+        is_correct: isCorrect,
+        time_taken: timeTaken
+      };
+    } catch (error) {
+      console.error('Error recording game round:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get all rounds for a game with card details
+   * @param {number} gameId - Game ID
+   * @returns {Promise<Array>} Array of round records with card information
+   */
+  getGameRounds: async (gameId) => {
+    try {
+      const sql = `
+        SELECT 
+          gr.*,
+          c.name as presented_card_name,
+          c.image_url as presented_card_image,
+          c.misfortune_index as presented_card_index
+        FROM game_rounds gr
+        JOIN cards c ON gr.presented_card_id = c.id
+        WHERE gr.game_id = ?
+        ORDER BY gr.round_number
+      `;
+      
+      return await getAllRows(sql, [gameId]);
+    } catch (error) {
+      console.error('Error getting game rounds:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Get game with cards and rounds by ID
+   * @param {number} gameId - Game ID
+   * @returns {Promise<Object>} Game object with cards and rounds arrays
+   */
+  getGameWithCardsAndRounds: async (gameId) => {
+    try {
+      const game = await gameDao.getGameById(gameId);
+      if (!game) {
+        return null;
+      }
+
+      const cards = await gameDao.getGameCards(gameId);
+      const rounds = await gameDao.getGameRounds(gameId);
+      
+      return {
+        game,
+        cards,
+        rounds
+      };
+    } catch (error) {
+      console.error('Error getting game with cards and rounds:', error);
+      throw error;
+    }
   }
 };
 

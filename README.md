@@ -7,7 +7,6 @@
 - Route `/`: Homepage con informazioni sul gioco e, per utenti autenticati, lista delle partite passate
 - Route `/login`: Pagina di login per gli utenti registrati
 - Route `/game/:gameId`: Pagina di gioco, dove `:gameId` è l'ID della partita in corso
-- Route `/profile`: Pagina profilo utente (accessibile solo agli utenti autenticati)
 
 ## API Server
 

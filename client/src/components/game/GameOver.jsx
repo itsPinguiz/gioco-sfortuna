@@ -144,27 +144,97 @@ const GameOverActions = ({ onNewGame }) => (
   </div>
 );
 
-// ==========================================
-// MAIN COMPONENT
-// ==========================================
+/**
+ * Round details component showing each round's outcome
+ */
+const RoundDetails = ({ rounds }) => {
+  // Debug log to check if rounds are being passed
+  console.log('RoundDetails received rounds:', rounds);
+  console.log('Rounds type:', typeof rounds);
+  console.log('Rounds is array:', Array.isArray(rounds));
+  console.log('Rounds length:', rounds?.length);
+  
+  if (!rounds || !Array.isArray(rounds) || rounds.length === 0) {
+    console.log('No rounds found - showing empty state');
+    return (
+      <div className={styles.roundDetails}>
+        <h4>Dettaglio Rounds</h4>
+        <p>Nessun round trovato per questa partita.</p>
+        <p><small>Aggiorna la pagina se i dati non compaiono.</small></p>
+      </div>
+    );
+  }
+
+  console.log('Rendering rounds:', rounds.length);
+  
+  return (
+    <div className={styles.roundDetails}>
+      <h4>Dettaglio Rounds</h4>
+      <div className={styles.roundsList}>
+        {rounds.map((round, index) => {
+          console.log(`Rendering round ${index}:`, round);
+          return (
+            <div key={round.id || index} className={styles.roundItem}>
+              <div className={styles.roundHeader}>
+                <span className={styles.roundNumber}>Round {round.round_number}</span>
+                <span className={`${styles.roundResult} ${round.is_correct ? styles.roundCorrect : styles.roundIncorrect}`}>
+                  {round.is_correct ? '✓' : '✗'}
+                </span>
+              </div>
+              
+              <div className={styles.roundContent}>
+                <div className={styles.cardInfo}>
+                  <img 
+                    src={`http://localhost:3001${round.presented_card_image}`} 
+                    alt={round.presented_card_name}
+                    className={styles.roundCardImage}
+                    onError={(e) => {
+                      console.error('Error loading image:', round.presented_card_image);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                  <div className={styles.cardDetails}>
+                    <p className={styles.cardName}>{round.presented_card_name}</p>
+                    <p className={styles.cardIndex}>Indice: {round.presented_card_index}</p>
+                  </div>
+                </div>
+                
+                <div className={styles.positionInfo}>
+                  <p><strong>Posizione scelta:</strong> {round.chosen_position === -1 ? 'Timeout' : round.chosen_position}</p>
+                  <p><strong>Posizione corretta:</strong> {round.correct_position}</p>
+                  {round.time_taken && <p><strong>Tempo impiegato:</strong> {round.time_taken}s</p>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 /**
  * GameOver Component
  * Displays the game over screen with statistics, final card collection,
- * and options to start a new game or return to home
+ * round details, and options to start a new game or return to home
  * 
  * @param {Object} game - Game object containing result and timing info
  * @param {Array} cards - Array of cards collected during the game
+ * @param {Array} rounds - Array of round details
  * @param {number} incorrectAttempts - Number of incorrect attempts made
  * @param {Function} onNewGame - Callback to start a new game
  */
 const GameOver = ({ 
   game, 
   cards = [],
+  rounds = [],
   incorrectAttempts,
   onNewGame
 }) => {
   const navigate = useNavigate();
+  
+  // Debug log to check what's being passed to GameOver
+  console.log('GameOver received:', { game, cards, rounds, incorrectAttempts });
   
   // ==========================================
   // VALIDATION
@@ -195,6 +265,9 @@ const GameOver = ({
         </h2>
       </div>
       
+      {/* Action buttons - moved to top */}
+      <GameOverActions onNewGame={onNewGame} />
+      
       {/* Main content section */}
       <div className={styles.gameOverContent}>
         {/* Game statistics */}
@@ -205,6 +278,9 @@ const GameOver = ({
           resultConfig={resultConfig}
         />
         
+        {/* Round details - Always render, let component handle empty state */}
+        <RoundDetails rounds={rounds} />
+        
         {/* Cards collection display */}
         {cards.length > 0 && (
           <div className={styles.cardsCollection}>
@@ -212,9 +288,6 @@ const GameOver = ({
           </div>
         )}
       </div>
-      
-      {/* Action buttons */}
-      <GameOverActions onNewGame={onNewGame} />
     </Container>
   );
 };

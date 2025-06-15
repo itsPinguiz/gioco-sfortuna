@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
-import { createGame, getUserGames } from '../api/API';
+import { createGame } from '../api/API';
 import dayjs from 'dayjs';
 import userIcon from '../assets/icons/person.png';
 import playIcon from '../assets/icons/play.png';
@@ -241,13 +241,11 @@ const LoginPromptSection = () => (
 
 /**
  * HomePage Component
- * Main landing page showing game introduction, new game options,
- * and user's game history (if authenticated)
+ * Main landing page showing game introduction and new game options
  * 
  * Features:
  * - Game introduction and rules
  * - New game creation
- * - Games history for authenticated users
  * - Login prompt for unauthenticated users
  * - Error handling and loading states
  */
@@ -256,14 +254,13 @@ const HomePage = () => {
   // HOOKS
   // ==========================================
   
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
 
   // ==========================================
   // STATE MANAGEMENT
   // ==========================================
   
-  const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -283,54 +280,10 @@ const HomePage = () => {
     };
   }, []);
 
-  /**
-   * Load user's games history when authentication status changes
-   */
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchGames();
-    } else {
-      // Clear games and error when not authenticated
-      setGames([]);
-      setError('');
-    }
-  }, [isAuthenticated]);
-
   // ==========================================
   // API FUNCTIONS
   // ==========================================
   
-  /**
-   * Fetches user's games from the server
-   */
-  const fetchGames = async () => {
-    // Double check authentication before making the call
-    if (!isAuthenticated) {
-      console.log('Skipping fetchGames - user not authenticated');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(''); // Clear any previous errors
-      const userGames = await getUserGames();
-      setGames(userGames);
-    } catch (error) {
-      console.error('Error fetching games:', error);
-      
-      // Handle authentication errors gracefully
-      if (error.response?.status === 401) {
-        console.log('Authentication error when fetching games - user might have been logged out');
-        setError('');
-        setGames([]);
-      } else {
-        setError(ERROR_MESSAGES.FETCH_GAMES);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
   /**
    * Creates a new game and navigates to game page
    */
@@ -361,7 +314,6 @@ const HomePage = () => {
       <Row className="mb-4">
         <Col>
           <div className={styles.pageHeader}>
-            <h1 className={styles.mainTitle}>Gioco della Sfortuna</h1>
             <p className={styles.leadText}>
               Metti alla prova la tua capacità di valutare quanto sono sfortunate 
               le situazioni più orribili della vita universitaria!
@@ -421,12 +373,8 @@ const HomePage = () => {
         </Col>
       </Row>
 
-      {/* Conditional sections based on authentication */}
-      {isAuthenticated ? (
-        <GamesHistorySection games={games} loading={loading} />
-      ) : (
-        <LoginPromptSection />
-      )}
+      {/* Login prompt for unauthenticated users */}
+      {!isAuthenticated && <LoginPromptSection />}
     </Container>
   );
 };

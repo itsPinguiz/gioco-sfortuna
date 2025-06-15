@@ -221,18 +221,29 @@ const calculateCorrectPosition = (gameCards, roundCard) => {
 };
 
 /**
- * Processes card placement result
+ * Processes card placement result with guest game limitations
  * @param {number} gameId - Game ID
  * @param {Object} roundCard - Card being placed
  * @param {number} position - Position where card is placed
  * @param {number} correctPosition - Correct position for the card
  * @param {number} gameCardsCount - Current number of cards in game
  * @param {boolean} isGuestGame - Whether this is a guest game
+ * @param {number} timeTaken - Time taken for the round
  * @returns {Promise<Object>} Placement result
  */
-const processCardPlacement = async (gameId, roundCard, position, correctPosition, gameCardsCount, isGuestGame = false) => {
+const processCardPlacement = async (gameId, roundCard, position, correctPosition, gameCardsCount, isGuestGame = false, timeTaken = null) => {
   const isTimeout = position === GAME_CONFIG.TIMEOUT_POSITION;
   const isCorrect = !isTimeout && position === correctPosition;
+  
+  // Record the round attempt
+  await gameDao.recordGameRound(
+    gameId,
+    roundCard.id,
+    position,
+    correctPosition,
+    isCorrect,
+    timeTaken
+  );
   
   if (isCorrect) {
     // Add card to game
@@ -350,22 +361,21 @@ app.post('/api/games', async (req, res) => {
   }
 });
 
-// Get game details
+// Get game details with rounds
 app.get('/api/games/:id', async (req, res) => {
   try {
     const gameId = req.params.id;
-    const game = await gameDao.getGameById(gameId);
+    const gameData = await gameDao.getGameWithCardsAndRounds(gameId);
     
-    if (!game) {
+    if (!gameData || !gameData.game) {
       return res.status(404).json({ error: 'Game not found' });
     }
     
-    if (!canAccessGame(game, req)) {
+    if (!canAccessGame(gameData.game, req)) {
       return res.status(403).json({ error: 'Access denied' });
     }
     
-    const cards = await gameDao.getGameCards(gameId);
-    res.json({ game, cards });
+    res.json(gameData);
   } catch (err) {
     console.error('Error getting game details:', err);
     res.status(500).json({ error: 'Failed to get game details' });
@@ -418,12 +428,13 @@ app.get('/api/games/:id/round', async (req, res) => {
 app.post('/api/games/:id/round',
   body('cardId').isInt().withMessage('Card ID must be an integer'),
   body('position').isInt({ min: -1 }).withMessage('Position must be -1 or non-negative integer'),
+  body('timeTaken').optional().isInt({ min: 0 }).withMessage('Time taken must be a non-negative integer'),
   async (req, res) => {
     if (handleValidationErrors(req, res)) return;
     
     try {
       const gameId = req.params.id;
-      const { cardId, position } = req.body;
+      const { cardId, position, timeTaken } = req.body;
       
       const game = await gameDao.getGameById(gameId);
       if (!game) {
@@ -452,7 +463,8 @@ app.post('/api/games/:id/round',
         position, 
         correctPosition, 
         gameCards.length,
-        isGuestGame
+        isGuestGame,
+        timeTaken
       );
       
       res.json(result);
