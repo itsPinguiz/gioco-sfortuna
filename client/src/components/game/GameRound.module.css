@@ -61,6 +61,7 @@
 .cardPosition {
   position: relative;
   margin-top: 45px;
+  margin-inline: -40px;
 }
 
 .cardScrollContainer {
@@ -113,7 +114,7 @@
   cursor: pointer;
   border: none;
   transition: all 0.2s;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   line-height: 1;
   padding-bottom: 5px;
 }
@@ -132,9 +133,11 @@
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   100% {
     opacity: 1;
   }
@@ -148,19 +151,7 @@
   margin-top: 1rem;
 }
 
-.newCardSection {
-  background: #fff3cd;
-  border: 2px dashed #ffc107;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-}
 
-.newCardSection h4 {
-  color: #856404;
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
 
 /* Drag and drop styles for horizontal layout */
 .draggableNewCard {
@@ -181,7 +172,6 @@
 /* Drop zones for horizontal layout */
 .dropZone {
   width: 60px;
-  height: 160px;
   border: 2px dashed #ccc;
   border-radius: 8px;
   display: flex;
@@ -192,12 +182,17 @@
   margin: 0 5px;
   min-width: 60px;
   flex-shrink: 0;
+  min-height: 100%;
+  margin-top: 45px;
+  z-index: 1;
+  opacity: .1;
 }
 
 .dropZoneActive {
   border-color: #28a745;
   background-color: #d4edda;
   transform: scale(1.05);
+  margin-inline: 30px;
 }
 
 .dropIndicator {
@@ -217,7 +212,7 @@
   transform: rotate(5deg);
   z-index: 1000;
   opacity: 0.8;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 /* Vertical layout for drag and drop */
@@ -229,21 +224,5 @@
   margin: 1rem 0;
 }
 
-.newCardSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  background-color: #e3f2fd;
-  border: 2px dashed #2196f3;
-  border-radius: 8px;
-  width: fit-content;
-}
 
-.newCardSection::before {
-  content: "Carta da inserire";
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #1976d2;
-  margin-bottom: 0.5rem;
-}
+
