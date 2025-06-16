@@ -3,10 +3,10 @@ import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { createGame } from '../api/API';
+import Footer from '../components/layout/Footer';
 import dayjs from 'dayjs';
 import userIcon from '../assets/icons/person.png';
 import playIcon from '../assets/icons/play.png';
-import githubIcon from '../assets/icons/github-mark.svg';
 import styles from './HomePage.module.css';
 
 // ==========================================
@@ -315,119 +315,105 @@ const HomePage = () => {
   // ==========================================
   
   return (
-    <Container className="mt-4">
-      {/* Page header */}
-      <Row className="mb-4">
-        <Col>
-          <div className={styles.pageHeader}>
-            <p className={styles.leadText}>
-              Metti alla prova la tua capacità di valutare quanto sono sfortunate 
-              le situazioni più orribili della vita universitaria!
-            </p>
-          </div>
-        </Col>
-      </Row>
+    <>
+      <Container className="mt-4">
+        {/* Page header */}
+        <Row className="mb-4">
+          <Col>
+            <div className={styles.pageHeader}>
+              <p className={styles.leadText}>
+                Metti alla prova la tua capacità di valutare quanto sono sfortunate 
+                le situazioni più orribili della vita universitaria!
+              </p>
+            </div>
+          </Col>
+        </Row>
 
-      {/* Error display */}
-      {error && (
-        <Alert variant="danger" onClose={() => setError('')} dismissible>
-          {error}
-        </Alert>
-      )}
+        {/* Error display */}
+        {error && (
+          <Alert variant="danger" onClose={() => setError('')} dismissible>
+            {error}
+          </Alert>
+        )}
 
-      {/* Main action cards */}
-      <Row className={styles.actionCards}>
-        <Col md={6} className="mb-4 mb-md-0">
-          <Card className={`${styles.gameCard} h-100`}>
-            <Card.Body className={styles.gameCardBody}>
-              <Card.Title>Inizia una nuova partita</Card.Title>
-              
-              {/* Game preview section */}
-              <div className={styles.gamePreview}>
-                <div className={styles.gameFeatures}>
-                  {isAuthenticated ? (
-                    <>
-                    </>
-                  ) : (
-                    <>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              <Card.Text className={styles.gameDescription}>
-                {isAuthenticated
-                  ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Metti alla prova la tua capacità di ordinare le situazioni sfortunate.'
-                  : 'Prova una partita demo e scopri quanto sei bravo a valutare la sfortuna! Registrati per l\'esperienza completa.'}
-              </Card.Text>
-              
-              {/* Action button */}
-              <div className="btn-wrapper">
-                <Button
-                  variant="primary"
-                  onClick={handleNewGame}
-                  disabled={loading}
-                  size="lg"
-                >
-                  <span className="icon">
-                    <img src={playIcon} alt="" />
-                  </span>
-                  {loading ? 'Caricamento...' : (isAuthenticated ? 'Inizia Partita' : 'Prova Demo Gratuita')}
-                </Button>
-              </div>
-              
-              {/* Additional info for demo users */}
-              {!isAuthenticated && (
-                <div className={styles.demoInfo}>
-                  <small>💡 Nessun account richiesto per la demo</small>
-                </div>
-              )}
-              
-              {/* Author credit */}
-              <div className={styles.authorCredit}>
-                <a 
-                  href="https://github.com/itsPinguiz" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className={styles.authorLink}
-                >
-                  <img 
-                    src={githubIcon} 
-                    alt="GitHub" 
-                    className={styles.githubIcon}
-                  />
-                  Stefano Zizzi
-                </a>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-        
-        <Col md={6}>
-          <Card className={styles.gameCard}>
-            <Card.Body>
-              <Card.Title>Come si gioca</Card.Title>
-              <Card.Text>
-                {GAME_RULES.map((rule, index) => (
-                  <div key={index} className={styles.ruleItem}>
-                    <span className={styles.ruleNumber}>{index + 1}</span>
-                    <span className={styles.ruleText}>
-                      {rule.text} <strong>{rule.bold}</strong> {rule.after}
-                      {rule.bold2 && (
-                        <> <strong>{rule.bold2}</strong> {rule.after2}</>
-                      )}
-                    </span>
+        {/* Main action cards */}
+        <Row className={styles.actionCards}>
+          <Col md={6} className="mb-4 mb-md-0">
+            <Card className={`${styles.gameCard} h-100`}>
+              <Card.Body className={styles.gameCardBody}>
+                <Card.Title>Inizia una nuova partita</Card.Title>
+                
+                {/* Game preview section */}
+                <div className={styles.gamePreview}>
+                  <div className={styles.gameFeatures}>
+                    {isAuthenticated ? (
+                      <>
+                      </>
+                    ) : (
+                      <>
+                      </>
+                    )}
                   </div>
-                ))}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+                </div>
 
-      {/* Login prompt for unauthenticated users */}
-      {!isAuthenticated && <LoginPromptSection />}
-    </Container>
+                <Card.Text className={styles.gameDescription}>
+                  {isAuthenticated
+                    ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Metti alla prova la tua capacità di ordinare le situazioni sfortunate.'
+                    : 'Prova una partita demo e scopri quanto sei bravo a valutare la sfortuna! Registrati per l\'esperienza completa.'}
+                </Card.Text>
+                
+                {/* Action button */}
+                <div className="btn-wrapper">
+                  <Button
+                    variant="primary"
+                    onClick={handleNewGame}
+                    disabled={loading}
+                    size="lg"
+                  >
+                    <span className="icon">
+                      <img src={playIcon} alt="" />
+                    </span>
+                    {loading ? 'Caricamento...' : (isAuthenticated ? 'Inizia Partita' : 'Prova Demo Gratuita')}
+                  </Button>
+                </div>
+                
+                {/* Additional info for demo users */}
+                {!isAuthenticated && (
+                  <div className={styles.demoInfo}>
+                    <small>💡 Nessun account richiesto per la demo</small>
+                  </div>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
+          
+          <Col md={6}>
+            <Card className={styles.gameCard}>
+              <Card.Body>
+                <Card.Title>Come si gioca</Card.Title>
+                <Card.Text>
+                  {GAME_RULES.map((rule, index) => (
+                    <div key={index} className={styles.ruleItem}>
+                      <span className={styles.ruleNumber}>{index + 1}</span>
+                      <span className={styles.ruleText}>
+                        {rule.text} <strong>{rule.bold}</strong> {rule.after}
+                        {rule.bold2 && (
+                          <> <strong>{rule.bold2}</strong> {rule.after2}</>
+                        )}
+                      </span>
+                    </div>
+                  ))}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Login prompt for unauthenticated users */}
+        {!isAuthenticated && <LoginPromptSection />}
+      </Container>
+      <Footer />
+    </>
   );
 };
 

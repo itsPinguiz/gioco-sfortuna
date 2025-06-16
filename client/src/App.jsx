@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './styles/common.css'; // Importa stili comuni
+import './assets/common.css'; // Importa stili comuni
 import './App.css';
 
 // ==========================================

@@ -3,6 +3,7 @@ import { Container, Row, Col, Alert, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { getUserGames } from '../api/API';
+import Footer from '../components/layout/Footer';
 import dayjs from 'dayjs';
 import styles from './GamesHistoryPage.module.css';
 
@@ -256,76 +257,82 @@ const GamesHistoryPage = () => {
   // Redirect to login if not authenticated
   if (!isAuthenticated && !loading) {
     return (
-      <Container className="mt-4">
-        <Alert variant="warning">
-          <Alert.Heading>Accesso Richiesto</Alert.Heading>
-          <p>{ERROR_MESSAGES.NOT_AUTHENTICATED}</p>
-          <Link to="/login" className="btn btn-primary">
-            Effettua il Login
-          </Link>
-        </Alert>
-      </Container>
+      <>
+        <Container className="mt-4">
+          <Alert variant="warning">
+            <Alert.Heading>Accesso Richiesto</Alert.Heading>
+            <p>{ERROR_MESSAGES.NOT_AUTHENTICATED}</p>
+            <Link to="/login" className="btn btn-primary">
+              Effettua il Login
+            </Link>
+          </Alert>
+        </Container>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <Container className="mt-4">
-      {/* Page header */}
-      <Row className="mb-4">
-        <Col>
-          <h1 className={styles.pageTitle}>Storico Partite</h1>
-          <p className={styles.pageDescription}>
-            Rivedi le tue partite passate e tieni traccia dei tuoi progressi
-          </p>
-        </Col>
-      </Row>
+    <>
+      <Container className="mt-4">
+        {/* Page header */}
+        <Row className="mb-4">
+          <Col>
+            <h1 className={styles.pageTitle}>Storico Partite</h1>
+            <p className={styles.pageDescription}>
+              Rivedi le tue partite passate e tieni traccia dei tuoi progressi
+            </p>
+          </Col>
+        </Row>
 
-      {/* Error display */}
-      {error && (
-        <Alert variant="danger" onClose={() => setError('')} dismissible>
-          {error}
-        </Alert>
-      )}
+        {/* Error display */}
+        {error && (
+          <Alert variant="danger" onClose={() => setError('')} dismissible>
+            {error}
+          </Alert>
+        )}
 
-      {/* Loading state */}
-      {loading ? (
-        <LoadingSpinner />
-      ) : games.length > 0 ? (
-        <>
-          {/* Statistics */}
-          <GamesStatistics games={games} />
+        {/* Loading state */}
+        {loading ? (
+          <LoadingSpinner />
+        ) : games.length > 0 ? (
+          <>
+            {/* Statistics */}
+            <GamesStatistics games={games} />
 
-          {/* Games table */}
-          <Card className={styles.tableCard}>
-            <Card.Header className={styles.tableHeader}>
-              <h4 className="mb-0">Tutte le Partite</h4>
-            </Card.Header>
-            <Card.Body className={styles.tableBody}>
-              <div className="table-responsive">
-                <table className={`table table-borderless ${styles.gameTable}`}>
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th>Carte</th>
-                      <th>Risultato</th>
-                      <th>Azioni</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {games.map((game) => (
-                      <GameTableRow key={game.id} game={game} />
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card.Body>
-          </Card>
-        </>
-      ) : (
-        /* Empty state */
-        <EmptyGamesState />
-      )}
-    </Container>
+            {/* Games table */}
+            <Card className={styles.tableCard}>
+              <Card.Header className={styles.tableHeader}>
+                <h4 className="mb-0">Tutte le Partite</h4>
+              </Card.Header>
+              <Card.Body className={styles.tableBody}>
+                <div className="table-responsive">
+                  <table className={`table table-borderless ${styles.gameTable}`}>
+                    <thead>
+                      <tr>
+                        <th>Data</th>
+                        <th>Carte</th>
+                        <th>Risultato</th>
+                        <th>Azioni</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {games.map((game) => (
+                        <GameTableRow key={game.id} game={game} />
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card.Body>
+            </Card>
+          </>
+        ) : (
+          /* Empty state */
+          <EmptyGamesState />
+        )}
+      </Container>
+      <Footer />
+    </>
   );
 };
 

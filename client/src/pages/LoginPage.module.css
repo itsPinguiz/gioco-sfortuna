@@ -2,11 +2,18 @@
    LOGIN PAGE SPECIFIC STYLES
    ========================================== */
 
+.pageWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 .loginContainer {
-  min-height: calc(100vh - 200px);
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 2rem 1rem;
 }
 
 .loginCard {
@@ -43,8 +50,8 @@
 }
 
 .formControl {
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 212, 62, 0.3);
+  background: var(--game-black);
+  border: 2px solid var(--game-yellow);
   border-radius: 8px;
   color: white;
   padding: 0.75rem;
@@ -52,7 +59,7 @@
 }
 
 .formControl:focus {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--game-black);
   border-color: var(--game-yellow);
   box-shadow: 0 0 0 0.2rem rgba(255, 212, 62, 0.25);
   color: white;

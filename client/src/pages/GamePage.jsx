@@ -3,6 +3,7 @@ import { Container, Alert, Button, Modal } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { createGame } from '../api/API';
+import Footer from '../components/layout/Footer';
 
 // Custom hooks
 import useGameState from '../hooks/useGameState';
@@ -391,48 +392,61 @@ const GamePage = () => {
   
   // Show loading state
   if (loading) {
-    return <LoadingState />;
+    return (
+      <>
+        <LoadingState />
+        <Footer />
+      </>
+    );
   }
 
   // Show error state
   if (error) {
-    return <ErrorState error={error} onNavigateHome={handleNavigateHome} />;
+    return (
+      <>
+        <ErrorState error={error} onNavigateHome={handleNavigateHome} />
+        <Footer />
+      </>
+    );
   }
 
   // Main game render
   return (
-    <Container className="game-container">
-      {/* Game content based on current phase */}
-      <GameContent
-        gamePhase={gamePhase}
-        roundCard={roundCard}
-        cards={cards}
-        rounds={rounds}
-        roundResult={roundResult}
-        game={game}
-        timeLeft={timeLeft}
-        incorrectAttempts={incorrectAttempts}
-        onPlaceCard={onPlaceCard}
-        onTimeUp={handleTimeUp}
-        onContinue={onContinue}
-        onNewGame={onNewGame}
-      />
-
-      {/* Cards collection - shown only in result phase */}
-      {cardsDisplayConfig.shouldShow && (
-        <CardHand 
-          cards={cards} 
-          showIndex={cardsDisplayConfig.showIndex} 
+    <>
+      <Container className="game-container">
+        {/* Game content based on current phase */}
+        <GameContent
+          gamePhase={gamePhase}
+          roundCard={roundCard}
+          cards={cards}
+          rounds={rounds}
+          roundResult={roundResult}
+          game={game}
+          timeLeft={timeLeft}
+          incorrectAttempts={incorrectAttempts}
+          onPlaceCard={onPlaceCard}
+          onTimeUp={handleTimeUp}
+          onContinue={onContinue}
+          onNewGame={onNewGame}
         />
-      )}
 
-      {/* Demo game modal */}
-      <DemoGameModal
-        show={showDemoModal}
-        onHide={() => setShowDemoModal(false)}
-        onLogin={handleDemoLogin}
-      />
-    </Container>
+        {/* Cards collection - shown only in result phase */}
+        {cardsDisplayConfig.shouldShow && (
+          <CardHand 
+            cards={cards} 
+            showIndex={cardsDisplayConfig.showIndex} 
+          />
+        )}
+
+        {/* Demo game modal */}
+        <DemoGameModal
+          show={showDemoModal}
+          onHide={() => setShowDemoModal(false)}
+          onLogin={handleDemoLogin}
+        />
+      </Container>
+      <Footer />
+    </>
   );
 };
 

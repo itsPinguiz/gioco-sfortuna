@@ -1,8 +1,9 @@
-import { useState, useContext } from 'react';
-import { Form, Button, Alert, Container, Row, Col } from 'react-bootstrap';
-import { AuthContext } from '../contexts/AuthContext';
+import { useState } from 'react';
+import { Form, Button, Alert } from 'react-bootstrap';
+import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { createGame } from '../api/API';
+import Footer from '../components/layout/Footer';
 import styles from './LoginPage.module.css';
 
 // ==========================================
@@ -144,7 +145,7 @@ const LoginPage = () => {
   // HOOKS
   // ==========================================
   
-  const { login, error } = useContext(AuthContext);
+  const { login, error } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -194,52 +195,51 @@ const LoginPage = () => {
   // ==========================================
   
   return (
-    <Container className={styles.loginContainer}>
-      <Row className="w-100 justify-content-center">
-        <Col xs={12} sm={10} md={8} lg={6}>
-          <div className={styles.loginCard}>
-            {/* Page header */}
-            <h2 className={styles.loginTitle}>Login</h2>
+    <div className={styles.pageWrapper}>
+      <div className={styles.loginContainer}>
+        <div className={styles.loginCard}>
+          {/* Page header */}
+          <h2 className={styles.loginTitle}>Login</h2>
+          
+          {/* Error display */}
+          <ErrorAlert error={error} />
+          
+          {/* Login form */}
+          <Form noValidate validated={validated} onSubmit={handleSubmit} className={styles.loginForm}>
+            {/* Username field */}
+            <FormField
+              controlId="username"
+              label="Username"
+              type="text"
+              value={formData.username}
+              onChange={(e) => handleInputChange('username', e.target.value)}
+              validationMessage={FORM_VALIDATION_MESSAGES.USERNAME_REQUIRED}
+            />
             
-            {/* Error display */}
-            <ErrorAlert error={error} />
+            {/* Password field */}
+            <FormField
+              controlId="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              validationMessage={FORM_VALIDATION_MESSAGES.PASSWORD_REQUIRED}
+            />
             
-            {/* Login form */}
-            <Form noValidate validated={validated} onSubmit={handleSubmit} className={styles.loginForm}>
-              {/* Username field */}
-              <FormField
-                controlId="username"
-                label="Username"
-                type="text"
-                value={formData.username}
-                onChange={(e) => handleInputChange('username', e.target.value)}
-                validationMessage={FORM_VALIDATION_MESSAGES.USERNAME_REQUIRED}
-              />
-              
-              {/* Password field */}
-              <FormField
-                controlId="password"
-                label="Password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-                validationMessage={FORM_VALIDATION_MESSAGES.PASSWORD_REQUIRED}
-              />
-              
-              {/* Submit button */}
-              <Button variant="primary" type="submit">
-                Accedi
-              </Button>
-            </Form>
-            
-            {/* Guest information */}
-            <div className={styles.guestInfo}>
-              <GuestInfoSection />
-            </div>
+            {/* Submit button */}
+            <Button variant="primary" type="submit">
+              Accedi
+            </Button>
+          </Form>
+          
+          {/* Guest information */}
+          <div className={styles.guestInfo}>
+            <GuestInfoSection />
           </div>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+      <Footer />
+    </div>
   );
 };
 
