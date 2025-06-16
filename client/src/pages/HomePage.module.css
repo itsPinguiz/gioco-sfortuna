@@ -8,13 +8,6 @@
   margin-bottom: 2rem;
 }
 
-.mainTitle {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: var(--game-yellow);
-  margin-bottom: 1rem;
-}
-
 .leadText {
   font-size: 1.2rem;
   color: rgb(190, 190, 190);
@@ -26,193 +19,54 @@
   margin-bottom: 3rem;
 }
 
-.gameCard {
-  height: 100%;
-  background: var(--game-black);
-  border: 2px solid var(--game-yellow);
-  transition: var(--game-transition);
+/* Rule items styling */
+.ruleItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
 }
 
-.gameCard:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(255, 212, 62, 0.3);
-}
-
-.cardTitle {
+.ruleNumber {
   color: var(--game-yellow);
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.cardText {
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.6;
-}
-
-/* Games history section */
-.historySection {
-  margin-top: 3rem;
-}
-
-.historyTitle {
-  color: var(--game-yellow);
-  margin-bottom: 1.5rem;
-  font-size: 2rem;
   font-weight: bold;
-  text-align: center;
-}
-
-.gameTable {
-  background: var(--game-black) !important;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 2px solid var(--game-yellow);
-  box-shadow: var(--game-shadow);
-}
-
-.gameTable th {
-  background: var(--game-yellow) !important;
-  color: black !important;
-  font-weight: bold;
-  border: none !important;
-  padding: 1rem;
-  text-align: center;
   font-size: 1.1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  min-width: 20px;
+  flex-shrink: 0;
 }
 
-.gameTable td {
-  border: none !important;
-  color: white !important;
-  padding: 1rem;
+.ruleText {
+  line-height: 1.4;
+}
+
+.ruleText strong {
+  color: var(--game-yellow);
+  font-weight: bold;
+}
+
+/* Demo info styling */
+.demoInfo {
+  margin-top: 1rem;
   text-align: center;
-  font-size: 1rem;
-  border-bottom: 1px solid rgba(255, 216, 62, 0.2) !important;
-  background: var(--game-black) !important;
+  color: var(--game-yellow);
+  font-weight: 500;
 }
 
-.gameTable tbody tr {
-  transition: var(--game-transition);
-  background: var(--game-black) !important;
-}
-
-.gameTable tbody tr:hover {
-  background: rgba(255, 216, 62, 0.1) !important;
-  transform: scale(1.01);
-}
-
-.gameTable tbody tr:last-child td {
-  border-bottom: none !important;
-}
-
-/* Force text color in table */
-.gameTable tbody tr td,
-.gameTable tbody tr td * {
-  color: white !important;
-}
-
-/* Status badges */
-.statusBadge {
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
+.demoInfo small {
   font-size: 0.9rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 2px solid;
-  background: transparent;
-  transition: var(--game-transition);
-  display: inline-block;
 }
 
-.statusSuccess {
-  color: var(--game-success-color) !important;
-  border-color: var(--game-success-color);
+/* Responsive design */
+@media (max-width: 768px) {
+  .leadText {
+    font-size: 1.1rem;
+  }
+  
+  .actionCards {
+    margin-bottom: 2rem;
+  }
 }
-
-.statusSuccess:hover {
-  background: var(--game-success-color);
-  color: black !important;
-}
-
-.statusDanger {
-  color: var(--game-danger-color) !important;
-  border-color: var(--game-danger-color);
-}
-
-.statusDanger:hover {
-  background: var(--game-danger-color);
-  color: white !important;
-}
-
-.statusWarning {
-  color: var(--game-yellow) !important;
-  border-color: var(--game-yellow);
-}
-
-.statusWarning:hover {
-  background: var(--game-yellow);
-  color: black !important;
-}
-
-/* Action buttons in table */
-.tableActionButton {
-  padding: 0.5rem 1rem;
-  border-radius: var(--game-border-radius);
-  font-weight: bold;
-  text-decoration: none;
-  transition: var(--game-transition);
-  border: 2px solid;
-  background: transparent;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  font-size: 0.85rem;
-  display: inline-block;
-}
-
-.tableActionPrimary {
-  color: var(--game-yellow) !important;
-  border-color: var(--game-yellow);
-}
-
-.tableActionPrimary:hover {
-  background: var(--game-yellow);
-  color: black !important;
-  transform: translateY(-2px);
-  box-shadow: var(--game-shadow-hover);
-  text-decoration: none;
-}
-
-.tableActionSecondary {
-  color: rgba(255, 255, 255, 0.8) !important;
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.tableActionSecondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white !important;
-  border-color: white;
-  transform: translateY(-2px);
-  text-decoration: none;
-}
-
-/* Empty state for games */
-.emptyGames {
-  background: var(--game-black);
-  border: 2px dashed var(--game-yellow);
-  border-radius: var(--game-border-radius-large);
-  padding: 2rem;
-  text-align: center;
-  margin: 2rem 0;
-  color: rgba(255, 255, 255, 0.8);
-}
-
-.emptyGames p {
-  margin: 0;
-  font-size: 1.1rem;
-  font-style: italic;
-}
+  
 
 /* Login prompt card */
 .loginPrompt {
@@ -295,92 +149,4 @@
   font-size: 1rem;
 }
 
-/* Author credit styling */
-.authorCredit {
-  text-align: center;
-  margin-top: auto;
-  padding-top: 1rem;
-  font-size: 0.85rem;
-}
 
-.authorLink {
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  transition: var(--transition-normal);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.authorLink:hover {
-  color: var(--game-yellow);
-  text-decoration: none;
-}
-
-.githubIcon {
-  width: 16px;
-  height: 16px;
-  filter: invert(0.6);
-  transition: var(--transition-normal);
-}
-
-.authorLink:hover .githubIcon {
-  filter: invert(1) sepia(1) saturate(5) hue-rotate(35deg);
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .mainTitle {
-    font-size: 2rem;
-  }
-  
-  .leadText {
-    font-size: 1.1rem;
-  }
-  
-  .actionCards {
-    margin-bottom: 2rem;
-  }
-  
-  .gameCard {
-    margin-bottom: 1rem;
-  }
-  
-  .gameTable th,
-  .gameTable td {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-  
-  .statusBadge {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-  }
-  
-  .tableActionButton {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .historyTitle {
-    font-size: 1.5rem;
-  }
-  
-  .gameTable th,
-  .gameTable td {
-    padding: 0.5rem;
-    font-size: 0.8rem;
-  }
-  
-  .statusBadge {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
-  }
-  
-  .tableActionButton {
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
-  }
-}

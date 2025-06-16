@@ -1,28 +1,4 @@
 /* ==========================================
-   CSS CUSTOM PROPERTIES
-   Note: Consistent with other game components
-   ========================================== */
-:root {
-  --game-bg-dark: #0c1318;
-  --game-bg-light: rgba(255, 255, 255, 0.05);
-  --game-bg-white: #fff;
-  --game-bg-gray: #f1f3f5;
-  --game-border-color: #dee2e6;
-  --game-text-muted: #6c757d;
-  --game-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  --game-shadow-small: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --game-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
-  --game-transition: all 0.2s ease;
-  --game-border-radius: 8px;
-  --game-border-radius-small: 5px;
-  --game-border-radius-large: 10px;
-  --game-success-color: #28a745;
-  --game-danger-color: #dc3545;
-  --game-black: #000;
-  --game-yellow: #ffd83d;
-}
-
-/* ==========================================
    MAIN CONTAINER
    ========================================== */
 

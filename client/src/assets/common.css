@@ -32,6 +32,8 @@
   --game-shadow-small: 0 1px 3px rgba(0, 0, 0, 0.1);
   --game-shadow-medium: 0 1px 3px rgba(0, 0, 0, 0.2);
   --game-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --shadow-button: 0 0 20px rgba(0, 0, 0, 0.5);
+  --shadow-navbar: 0 -10px 30px black;
   
   /* Border radius */
   --game-border-radius: 8px;
@@ -41,13 +43,31 @@
   
   /* Transitions */
   --game-transition: all 0.2s ease;
+  --transition-fast: 100ms ease;
+  --transition-normal: 150ms ease-in-out;
+  --transition-slow: 200ms ease;
   
   /* Card dimensions */
+  --card-width: 200px;
+  --card-height: 280px;
+  --card-image-height: 180px;
+  --card-border-radius: 10px;
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.2);
+  --card-transition: all 0.3s ease;
   --game-card-min-height: 320px;
+  
+  /* Index sizes */
+  --index-size: 60px;
+  --index-height: 45px;
+  --result-mark-size: 5rem;
   
   /* Glows */
   --game-success-glow: 0 0 15px #28a745;
   --game-danger-glow: 0 0 15px #dc3545;
+  --success-glow: 0 0 15px #28a745;
+  --danger-glow: 0 0 15px #dc3545;
+  --result-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 /* ==========================================
@@ -81,7 +101,10 @@
   box-shadow: var(--game-shadow);
 }
 
-/* Common button styles */
+/* ==========================================
+   COMMON BUTTON STYLES
+   ========================================== */
+
 .game-button {
   padding: 0.75rem 1.5rem;
   font-weight: bold;
@@ -94,7 +117,34 @@
   box-shadow: var(--game-shadow-hover);
 }
 
-/* Container styles */
+.game-button-primary {
+  background: var(--game-yellow);
+  color: black;
+  border: 2px solid var(--game-yellow);
+}
+
+.game-button-primary:hover {
+  background: #e6c73a;
+  border-color: #e6c73a;
+  color: black;
+}
+
+.game-button-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.game-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: white;
+  color: white;
+}
+
+/* ==========================================
+   COMMON CONTAINER STYLES
+   ========================================== */
+
 .game-container {
   padding: 2rem;
   background-color: var(--game-bg-dark);
@@ -102,10 +152,25 @@
   box-shadow: var(--game-shadow);
   margin: 1rem 0;
   border: 2px solid var(--game-yellow);
-  padding-bottom: 2rem;
 }
 
-/* Header styles */
+.game-card {
+  background: var(--game-black);
+  border: 2px solid var(--game-yellow);
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+  height: 100%;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(255, 212, 62, 0.3);
+}
+
+/* ==========================================
+   COMMON HEADER STYLES
+   ========================================== */
+
 .game-header {
   display: flex;
   justify-content: space-between;
@@ -115,7 +180,26 @@
   border-bottom: 1px solid var(--game-border-color);
 }
 
-/* Timer styles */
+.game-title {
+  color: var(--game-yellow);
+  font-weight: bold;
+  text-align: center;
+}
+
+.game-title-large {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.game-title-medium {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ==========================================
+   COMMON TIMER STYLES
+   ========================================== */
+
 .game-timer {
   display: flex;
   align-items: center;
@@ -142,16 +226,258 @@
   animation: pulse 1s infinite;
 }
 
-/* Attempts counter */
-.game-attempts-counter {
-  font-size: 1.2rem;
+/* ==========================================
+   COMMON STATUS BADGES
+   ========================================== */
+
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
   font-weight: bold;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 2px solid;
+  display: inline-block;
+  min-width: 80px;
+  text-align: center;
 }
 
-/* Common animations */
+.status-success {
+  background-color: rgba(40, 167, 69, 0.2);
+  border-color: var(--game-success-color);
+  color: var(--game-success-color);
+}
+
+.status-danger {
+  background-color: rgba(220, 53, 69, 0.2);
+  border-color: var(--game-danger-color);
+  color: var(--game-danger-color);
+}
+
+.status-warning {
+  background-color: rgba(255, 193, 7, 0.2);
+  border-color: #ffc107;
+  color: #ffc107;
+}
+
+/* ==========================================
+   COMMON TABLE STYLES
+   ========================================== */
+
+.game-table {
+  background-color: var(--game-black);
+  color: white;
+  border-radius: var(--game-border-radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-button);
+  border: 2px solid var(--game-yellow);
+}
+
+.game-table th {
+  background-color: var(--game-yellow);
+  color: black;
+  border-color: var(--game-yellow);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+}
+
+.game-table td {
+  background-color: var(--game-black);
+  border-color: rgba(255, 216, 62, 0.2);
+  vertical-align: middle;
+  padding: 1rem 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.game-table tbody tr {
+  transition: var(--transition-normal);
+}
+
+.game-table tbody tr:hover {
+  background-color: rgba(255, 216, 62, 0.1);
+}
+
+/* ==========================================
+   COMMON ACTION BUTTONS
+   ========================================== */
+
+.table-action-button {
+  padding: 0.5rem 1rem;
+  border-radius: var(--game-border-radius);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: var(--transition-normal);
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
+  border: 2px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table-action-primary {
+  background-color: var(--game-yellow);
+  border-color: var(--game-yellow);
+  color: black;
+}
+
+.table-action-primary:hover {
+  background-color: #e6c73a;
+  border-color: #e6c73a;
+  color: black;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+.table-action-secondary {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.table-action-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: white;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+/* ==========================================
+   COMMON STATISTICS STYLES
+   ========================================== */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: var(--game-bg-dark);
+  border-radius: var(--game-border-radius-small);
+  transition: var(--game-transition);
+  border: 1px solid var(--game-yellow);
+  text-align: center;
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+  border-color: var(--game-yellow);
+  background: rgba(255, 216, 62, 0.1);
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--game-yellow);
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--game-yellow);
+}
+
+/* ==========================================
+   COMMON EMPTY STATES
+   ========================================== */
+
+.empty-state {
+  background: var(--game-black);
+  border: 2px dashed var(--game-yellow);
+  border-radius: var(--game-border-radius-large);
+  padding: 2rem;
+  text-align: center;
+  margin: 2rem 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.empty-state p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-style: italic;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  color: rgba(255, 216, 62, 0.3);
+  margin-bottom: 1rem;
+}
+
+/* ==========================================
+   COMMON SCROLLBAR STYLES
+   ========================================== */
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--game-border-color) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: var(--game-border-radius);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--game-border-color);
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #adb5bd;
+}
+
+/* ==========================================
+   COMMON ANIMATIONS
+   ========================================== */
+
 @keyframes pulse {
   0% { opacity: 1; }
   50% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+@keyframes previewPulse {
+  from {
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  }
+  to {
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+  }
+}
+
+@keyframes pulseAnimation {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
   100% { opacity: 1; }
 }
 
@@ -169,10 +495,86 @@
     gap: 1rem;
     text-align: center;
   }
+  
+  .game-title-large {
+    font-size: 2rem;
+  }
+  
+  .game-title-medium {
+    font-size: 1.75rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .stat-number {
+    font-size: 2rem;
+  }
+  
+  .game-table th,
+  .game-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .status-badge {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+  
+  .table-action-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    min-width: 80px;
+  }
 }
 
 @media (max-width: 480px) {
   .game-container {
     padding: 0.75rem;
+  }
+  
+  .game-title-large {
+    font-size: 1.75rem;
+  }
+  
+  .game-title-medium {
+    font-size: 1.5rem;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-number {
+    font-size: 1.75rem;
+  }
+  
+  .game-table {
+    font-size: 0.8rem;
+  }
+  
+  .game-table th,
+  .game-table td {
+    padding: 0.5rem 0.3rem;
+  }
+  
+  .status-badge {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    min-width: 60px;
+  }
+  
+  .table-action-button {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    min-width: 70px;
+  }
+  
+  .empty-icon {
+    font-size: 3rem;
   }
 }

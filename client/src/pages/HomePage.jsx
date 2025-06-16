@@ -39,32 +39,6 @@ const formatGameDate = (dateString) => {
   return dayjs(dateString).format('DD/MM/YYYY HH:mm');
 };
 
-/**
- * Gets appropriate badge variant and text for game status
- * @param {Object} game - Game object
- * @returns {Object} Badge configuration
- */
-const getGameStatusBadge = (game) => {
-  if (!game.end_date) {
-    return { variant: 'warning', text: 'In corso' };
-  }
-  return game.result === 'won' 
-    ? { variant: 'success', text: 'Vittoria' }
-    : { variant: 'danger', text: 'Sconfitta' };
-};
-
-/**
- * Gets appropriate button configuration for game actions
- * @param {Object} game - Game object
- * @returns {Object} Button configuration
- */
-const getGameActionButton = (game) => {
-  if (!game.end_date) {
-    return { variant: 'primary', text: 'Continua' };
-  }
-  return { variant: 'secondary', text: 'Dettagli' };
-};
-
 // ==========================================
 // COMPONENT PARTS
 // ==========================================
@@ -84,9 +58,9 @@ const LoadingSpinner = () => (
  * New game card component
  */
 const NewGameCard = ({ isAuthenticated, onNewGame, loading }) => (
-  <Card className="h-100">
+  <Card className="game-card">
     <Card.Body>
-      <Card.Title>Inizia una nuova partita</Card.Title>
+      <Card.Title className="game-title">Inizia una nuova partita</Card.Title>
       <Card.Text>
         {isAuthenticated
           ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Hai 3 tentativi per ogni round.'
@@ -97,6 +71,7 @@ const NewGameCard = ({ isAuthenticated, onNewGame, loading }) => (
           variant="primary"
           onClick={onNewGame}
           disabled={loading}
+          className="game-button game-button-primary"
         >
           <span className="icon">
             <img src={playIcon} alt="" />
@@ -112,9 +87,9 @@ const NewGameCard = ({ isAuthenticated, onNewGame, loading }) => (
  * Game rules card component
  */
 const GameRulesCard = () => (
-  <Card className="h-100">
+  <Card className="game-card">
     <Card.Body>
-      <Card.Title>Come si gioca</Card.Title>
+      <Card.Title className="game-title">Come si gioca</Card.Title>
       <Card.Text>
         {GAME_RULES.map((rule, index) => (
           <div key={index} className={styles.ruleItem}>
@@ -132,79 +107,6 @@ const GameRulesCard = () => (
   </Card>
 );
 
-/**
- * Games table row component
- */
-const GameTableRow = ({ game }) => {
-  const statusBadge = getGameStatusBadge(game);
-  const actionButton = getGameActionButton(game);
-
-  // Determine CSS classes for badges and buttons
-  const badgeClass = `${styles.statusBadge} ${
-    statusBadge.variant === 'success' ? styles.statusSuccess :
-    statusBadge.variant === 'danger' ? styles.statusDanger :
-    styles.statusWarning
-  }`;
-
-  const buttonClass = `${styles.tableActionButton} ${
-    actionButton.variant === 'primary' ? styles.tableActionPrimary : styles.tableActionSecondary
-  }`;
-
-  return (
-    <tr key={game.id}>
-      <td>{formatGameDate(game.start_date)}</td>
-      <td>{game.cards_count}</td>
-      <td>
-        <span className={badgeClass}>
-          {statusBadge.text}
-        </span>
-      </td>
-      <td>
-        <Link 
-          to={`/game/${game.id}`} 
-          className={buttonClass}
-        >
-          {actionButton.text}
-        </Link>
-      </td>
-    </tr>
-  );
-};
-
-/**
- * Games history section component
- */
-const GamesHistorySection = ({ games, loading }) => (
-  <div className={styles.historySection}>
-    <h2 className={styles.historyTitle}>Le tue partite recenti</h2>
-
-    {loading ? (
-      <LoadingSpinner />
-    ) : games.length > 0 ? (
-      <div className="table-responsive mt-3">
-        <table className={`table ${styles.gameTable}`}>
-          <thead>
-            <tr>
-              <th>Data</th>
-              <th>Carte</th>
-              <th>Risultato</th>
-              <th>Azioni</th>
-            </tr>
-          </thead>
-          <tbody>
-            {games.map((game) => (
-              <GameTableRow key={game.id} game={game} />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ) : (
-      <div className={styles.emptyGames}>
-        <p>Non hai ancora giocato nessuna partita.</p>
-      </div>
-    )}
-  </div>
-);
 
 /**
  * Login prompt section component
@@ -339,73 +241,15 @@ const HomePage = () => {
         {/* Main action cards */}
         <Row className={styles.actionCards}>
           <Col md={6} className="mb-4 mb-md-0">
-            <Card className={`${styles.gameCard} h-100`}>
-              <Card.Body className={styles.gameCardBody}>
-                <Card.Title>Inizia una nuova partita</Card.Title>
-                
-                {/* Game preview section */}
-                <div className={styles.gamePreview}>
-                  <div className={styles.gameFeatures}>
-                    {isAuthenticated ? (
-                      <>
-                      </>
-                    ) : (
-                      <>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                <Card.Text className={styles.gameDescription}>
-                  {isAuthenticated
-                    ? 'Sfida il computer e cerca di ottenere 6 carte per vincere! Metti alla prova la tua capacità di ordinare le situazioni sfortunate.'
-                    : 'Prova una partita demo e scopri quanto sei bravo a valutare la sfortuna! Registrati per l\'esperienza completa.'}
-                </Card.Text>
-                
-                {/* Action button */}
-                <div className="btn-wrapper">
-                  <Button
-                    variant="primary"
-                    onClick={handleNewGame}
-                    disabled={loading}
-                    size="lg"
-                  >
-                    <span className="icon">
-                      <img src={playIcon} alt="" />
-                    </span>
-                    {loading ? 'Caricamento...' : (isAuthenticated ? 'Inizia Partita' : 'Prova Demo Gratuita')}
-                  </Button>
-                </div>
-                
-                {/* Additional info for demo users */}
-                {!isAuthenticated && (
-                  <div className={styles.demoInfo}>
-                    <small>💡 Nessun account richiesto per la demo</small>
-                  </div>
-                )}
-              </Card.Body>
-            </Card>
+            <NewGameCard 
+              isAuthenticated={isAuthenticated}
+              onNewGame={handleNewGame}
+              loading={loading}
+            />
           </Col>
           
           <Col md={6}>
-            <Card className={styles.gameCard}>
-              <Card.Body>
-                <Card.Title>Come si gioca</Card.Title>
-                <Card.Text>
-                  {GAME_RULES.map((rule, index) => (
-                    <div key={index} className={styles.ruleItem}>
-                      <span className={styles.ruleNumber}>{index + 1}</span>
-                      <span className={styles.ruleText}>
-                        {rule.text} <strong>{rule.bold}</strong> {rule.after}
-                        {rule.bold2 && (
-                          <> <strong>{rule.bold2}</strong> {rule.after2}</>
-                        )}
-                      </span>
-                    </div>
-                  ))}
-                </Card.Text>
-              </Card.Body>
-            </Card>
+            <GameRulesCard />
           </Col>
         </Row>
 
@@ -416,5 +260,4 @@ const HomePage = () => {
     </>
   );
 };
-
 export default HomePage;

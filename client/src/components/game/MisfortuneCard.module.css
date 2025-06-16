@@ -1,26 +1,4 @@
 /* ==========================================
-   CSS CUSTOM PROPERTIES
-   Note: Consistent with other game components
-   ========================================== */
-:root {
-  --card-width: 200px;
-  --card-height: 280px;
-  --card-image-height: 180px;
-  --card-border-radius: 10px;
-  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  --card-shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.2);
-  --card-transition: all 0.3s ease;
-  --index-size: 60px;
-  --index-height: 45px;
-  --result-mark-size: 5rem;
-  --result-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  --success-color: #28a745;
-  --danger-color: #dc3545;
-  --success-glow: 0 0 15px #28a745;
-  --danger-glow: 0 0 15px #dc3545;
-}
-
-/* ==========================================
    CARD WRAPPER
    ========================================== */
 
