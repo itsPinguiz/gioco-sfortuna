@@ -25,13 +25,6 @@ import GamesHistoryPage from './pages/GamesHistoryPage';
  * App Component
  * Main application component that sets up routing, authentication,
  * and global layout structure
- * 
- * Features:
- * - React Router for navigation
- * - Authentication context provider
- * - Protected routes for authenticated content
- * - Global navigation bar
- * - Bootstrap styling
  */
 function App() {
   return (
