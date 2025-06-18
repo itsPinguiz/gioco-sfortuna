@@ -26,7 +26,7 @@ const ERROR_MESSAGES = {
  * @returns {string} Formatted date string
  */
 const formatGameDate = (dateString) => {
-  return dayjs(dateString).tz('Europe/Rome').format('DD/MM/YYYY HH:mm');
+  return dayjs(dateString).format('DD/MM/YYYY HH:mm');
 };
 
 /**

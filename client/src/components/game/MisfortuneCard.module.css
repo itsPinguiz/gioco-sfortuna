@@ -63,6 +63,10 @@
   height: var(--card-image-height);
   object-fit: cover;
   filter: invert(1);
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translatex(-50%);
 }
 
 /* Card body */
@@ -155,15 +159,15 @@
     --index-height: 35px;
     --result-mark-size: 3.5rem;
   }
-  
+
   .cardWrapper {
     margin: 0.25rem;
   }
-  
+
   .compactTitle {
     font-size: 0.9rem;
   }
-  
+
   .misfortuneIndex {
     font-size: 1.2rem;
   }
@@ -178,11 +182,11 @@
     --index-height: 30px;
     --result-mark-size: 3rem;
   }
-  
+
   .compactTitle {
     font-size: 0.8rem;
   }
-  
+
   .misfortuneIndex {
     font-size: 1rem;
   }

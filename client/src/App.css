@@ -8,7 +8,7 @@
   --app-background: #0c1318;
   --game-success-color: #28a745;
   --game-danger-color: #dc3545;
-  
+
   /* Common values */
   --transition-fast: 100ms ease;
   --transition-normal: 150ms ease-in-out;
@@ -129,7 +129,7 @@ body {
   transition: filter var(--transition-normal);
 }
 
-.btn .icon > img {
+.btn .icon>img {
   height: 24px;
 }
 
@@ -291,6 +291,7 @@ body {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -318,11 +319,11 @@ body {
   .btn-wrapper {
     width: 100%;
   }
-  
+
   .btn-wrapper:hover {
     transform: scale(1.02);
   }
-  
+
   .navbar {
     margin-bottom: 20px;
   }
@@ -332,12 +333,48 @@ body {
   .App {
     min-height: 100vh;
   }
-  
+
   .btn-primary {
     font-size: 12pt;
   }
-  
-  .btn .icon > img {
+
+  .btn .icon>img {
     height: 20px;
   }
+}
+
+.mt-2 {
+  margin-inline: auto;
+  width: fit-content;
+  margin-block: 30px;
+}
+
+.mt-2 li {
+  width: fit-content;
+}
+
+.text-muted {
+  color: rgb(100, 100, 100) !important;
+}
+
+.btn-secondary {
+  border-radius: 0;
+  height: 40px;
+}
+
+.btn-secondary:hover {
+  background-color: #2e2e2e;
+  color: white;
+}
+
+.btn-primary:not(.game-button){
+  transition: all 200ms;
+}
+
+.btn-primary:not(.game-button):hover{
+  opacity: .7;
+}
+
+.mt-4{
+  margin-bottom: 50px;
 }

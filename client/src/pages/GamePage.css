@@ -19,9 +19,11 @@
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
+
   100% {
     opacity: 1;
   }
@@ -33,11 +35,11 @@
 
 .game-container {
   min-height: calc(100vh - 200px);
-  width: 100%;
-  max-width: 1200px;
+  width: 96%;
   padding: 0.5rem 0.2rem;
   margin: 0 auto;
   box-sizing: border-box;
+  max-width: 1600px;
 }
 
 /* ==========================================
@@ -148,15 +150,15 @@
   .game-container {
     padding: 0.5rem 0;
   }
-  
+
   .spinner-container {
     min-height: 200px;
   }
-  
+
   .spinner-container p {
     font-size: 1rem;
   }
-  
+
   .demo-limitations,
   .demo-benefits {
     margin-bottom: 1rem;
@@ -164,6 +166,7 @@
 }
 
 @media (max-width: 480px) {
+
   .demo-limitations,
   .demo-benefits {
     margin-bottom: 0.5rem;
@@ -171,8 +174,10 @@
 }
 
 @media (max-width: 480px) {
+
   .demo-limitations,
   .demo-benefits {
-    height: auto; /* Remove fixed height on very small screens */
+    height: auto;
+    /* Remove fixed height on very small screens */
   }
 }
