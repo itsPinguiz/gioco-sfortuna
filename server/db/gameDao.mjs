@@ -319,6 +319,28 @@ const gameDao = {
       console.error('Error getting game with cards and rounds:', error);
       throw error;
     }
+  },
+
+  /**
+   * Associate a guest game with a user
+   * @param {number} gameId - Game ID
+   * @param {number} userId - User ID to associate
+   * @returns {Promise<Object>} Updated game object
+   */
+  associateGameWithUser: async (gameId, userId) => {
+    try {
+      const sql = 'UPDATE games SET user_id = ? WHERE id = ? AND user_id IS NULL';
+      const result = await runSQL(sql, [userId, gameId]);
+      
+      if (result.changes === 0) {
+        throw new Error('Game not found or already has a user');
+      }
+      
+      return await gameDao.getGameById(gameId);
+    } catch (error) {
+      console.error('Error associating game with user:', error);
+      throw error;
+    }
   }
 };
 

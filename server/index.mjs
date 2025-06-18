@@ -407,6 +407,17 @@ app.get('/api/games/:id/round', async (req, res) => {
       return res.status(403).json({ error: 'Access denied' });
     }
     
+    // If user is authenticated and game is guest game, associate it with user
+    if (req.isAuthenticated() && !game.user_id && !game.end_date) {
+      try {
+        await gameDao.associateGameWithUser(gameId, req.user.id);
+        console.log(`Associated guest game ${gameId} with user ${req.user.id}`);
+      } catch (error) {
+        console.warn('Failed to associate game with user:', error);
+        // Continue anyway - don't fail the request
+      }
+    }
+    
     const gameCards = await gameDao.getGameCards(gameId);
     const cardIds = gameCards.map(card => card.id);
     const randomCards = await cardDao.getRandomCards(1, cardIds);
@@ -454,8 +465,9 @@ app.post('/api/games/:id/round',
       
       const correctPosition = calculateCorrectPosition(gameCards, roundCard);
       
-      // Check if this is a guest game (no user_id)
-      const isGuestGame = !game.user_id;
+      // Check if this is a guest game based on current authentication status
+      // If user is authenticated now, treat as full game regardless of game.user_id
+      const isGuestGame = !req.isAuthenticated();
       
       const result = await processCardPlacement(
         gameId, 
