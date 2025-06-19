@@ -11,6 +11,7 @@ import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 import styles from './GamesHistoryPage.module.css';
+import LoadingSpinner from '../components/game/LoadingSpinner';
 
 // ==========================================
 // CONSTANTS
@@ -63,17 +64,6 @@ const getGameActionButton = (game) => {
 // ==========================================
 // COMPONENT PARTS
 // ==========================================
-
-/**
- * Loading spinner component
- */
-const LoadingSpinner = () => (
-  <div className="text-center mt-3">
-    <div className="spinner-border" role="status">
-      <span className="visually-hidden">Caricamento...</span>
-    </div>
-  </div>
-);
 
 /**
  * Games table row component

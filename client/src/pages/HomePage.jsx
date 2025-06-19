@@ -44,17 +44,6 @@ const formatGameDate = (dateString) => {
 // ==========================================
 
 /**
- * Loading spinner component
- */
-const LoadingSpinner = () => (
-  <div className="text-center mt-3">
-    <div className="spinner-border" role="status">
-      <span className="visually-hidden">Caricamento...</span>
-    </div>
-  </div>
-);
-
-/**
  * New game card component
  */
 const NewGameCard = ({ isAuthenticated, onNewGame, loading }) => (

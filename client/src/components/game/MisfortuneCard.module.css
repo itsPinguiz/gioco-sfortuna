@@ -25,6 +25,8 @@
   padding: 0.1em 1em;
   justify-content: flex-end;
   border: 3px solid transparent;
+  user-select: none;
+  user-drag: none
 }
 
 /* ==========================================

@@ -91,13 +91,10 @@ const CardBody = ({ card }) => (
  * Misfortune index display component
  */
 const MisfortuneIndex = ({ card, showIndex }) => {
-  if (!showIndex || card.misfortune_index === undefined) {
-    return null;
-  }
 
   return (
     <div className={styles.misfortuneIndex} title="Indice di sfortuna">
-      {card.misfortune_index}
+      {(!showIndex || card.misfortune_index === undefined) ? "?" : card.misfortune_index}
     </div>
   );
 };

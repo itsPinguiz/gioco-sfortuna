@@ -103,7 +103,7 @@ body {
   border: var(--border-standard);
 }
 
-.btn-primary {
+.btn-primary,.btn:first-child:active {
   border-radius: 0;
   color: var(--app-background);
   font-weight: 1000;
@@ -236,6 +236,7 @@ body {
   transition: var(--transition-normal);
   border-radius: 5px !important;
   margin: 2px 4px !important;
+  max-width: 95%;
 }
 
 .navbar .dropdown-item:hover {
@@ -377,4 +378,9 @@ body {
 
 .mt-4{
   margin-bottom: 50px;
+}
+
+.spinner-border{
+  border-color: var(--game-yellow);
+  border-bottom-color: transparent;
 }

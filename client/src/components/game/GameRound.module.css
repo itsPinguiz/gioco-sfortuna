@@ -381,15 +381,24 @@
    ========================================== */
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.6; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes previewPulse {
   from {
     box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
   }
+
   to {
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
   }
@@ -404,25 +413,25 @@
     padding: 0.75rem;
     margin: 0.25rem 0;
   }
-  
+
   .roundHeader {
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
   }
-  
+
   .roundTitle h3 {
     font-size: 1.1rem;
   }
-  
+
   .timerValue {
     font-size: 1.1rem;
     min-width: 40px;
   }
-  
+
   .verticalLayout {
     gap: 0.75rem;
   }
-  
+
   .cardArray {
     min-height: 100px;
     padding: 0.5rem;
@@ -434,27 +443,23 @@
   .gameRoundContainer {
     padding: 0.5rem;
   }
-  
+
   .roundHeader {
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
   }
-  
+
   .roundTitle h3 {
     font-size: 1rem;
   }
-  
+
   .newCardSection::before {
     font-size: 0.8rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .cardArray {
     min-height: 90px;
   }
 }
-
-
-
-

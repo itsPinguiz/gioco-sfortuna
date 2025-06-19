@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { createGame } from '../api/API';
 import Footer from '../components/layout/Footer';
+import LoadingSpinner from '../components/game/LoadingSpinner';
 
 // Custom hooks
 import useGameState from '../hooks/useGameState';
@@ -57,7 +58,7 @@ const DEMO_MODAL_CONFIG = {
 const getCardsDisplayConfig = (gamePhase, roundResult) => {
   const shouldShow = gamePhase === 'result';
   const showIndex = shouldShow && roundResult?.result === 'incorrect';
-  
+
   return { shouldShow, showIndex };
 };
 
@@ -70,12 +71,7 @@ const getCardsDisplayConfig = (gamePhase, roundResult) => {
  */
 const LoadingState = () => (
   <Container className="mt-4 text-center">
-    <div className="spinner-container">
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Caricamento...</span>
-      </div>
-      <p className="mt-3">Caricamento del gioco...</p>
-    </div>
+    <LoadingSpinner />
   </Container>
 );
 
@@ -98,8 +94,8 @@ const ErrorState = ({ error, onNavigateHome }) => (
  * Demo game modal component
  */
 const DemoGameModal = ({ show, onHide, onLogin }) => (
-  <Modal 
-    show={show} 
+  <Modal
+    show={show}
     onHide={onHide}
     backdrop="static"
     keyboard={false}
@@ -111,7 +107,7 @@ const DemoGameModal = ({ show, onHide, onLogin }) => (
     </Modal.Header>
     <Modal.Body>
       <p>{DEMO_MODAL_CONFIG.CONTENT.DESCRIPTION}</p>
-      
+
       <div className="row">
         <div className="col-md-6 mb-3">
           <p><strong>{DEMO_MODAL_CONFIG.CONTENT.FEATURES_TITLE}</strong></p>
@@ -126,7 +122,7 @@ const DemoGameModal = ({ show, onHide, onLogin }) => (
             ))}
           </ul>
         </div>
-        
+
         <div className="col-md-6">
           <p><strong>{DEMO_MODAL_CONFIG.CONTENT.BENEFITS_TITLE}</strong></p>
           <ul className="demo-list demo-benefits">
@@ -156,19 +152,19 @@ const DemoGameModal = ({ show, onHide, onLogin }) => (
 /**
  * Game content renderer based on current phase
  */
-const GameContent = ({ 
-  gamePhase, 
-  roundCard, 
-  cards, 
+const GameContent = ({
+  gamePhase,
+  roundCard,
+  cards,
   rounds,
-  roundResult, 
-  game, 
-  timeLeft, 
+  roundResult,
+  game,
+  timeLeft,
   incorrectAttempts,
-  onPlaceCard, 
-  onTimeUp, 
-  onContinue, 
-  onNewGame 
+  onPlaceCard,
+  onTimeUp,
+  onContinue,
+  onNewGame
 }) => {
   switch (gamePhase) {
     case 'round':
@@ -232,7 +228,7 @@ const GamePage = () => {
   // ==========================================
   // HOOKS
   // ==========================================
-  
+
   const { gameId } = useParams();
   const { isAuthenticated } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -240,7 +236,7 @@ const GamePage = () => {
   // ==========================================
   // CUSTOM HOOKS
   // ==========================================
-    // Game state management
+  // Game state management
   const {
     game,
     cards,
@@ -270,13 +266,13 @@ const GamePage = () => {
   // ==========================================
   // STATE MANAGEMENT
   // ==========================================
-  
+
   const [showDemoModal, setShowDemoModal] = useState(false);
 
   // ==========================================
   // EFFECTS
   // ==========================================
-  
+
   /**
    * Update demo modal visibility based on authentication status
    */
@@ -319,7 +315,7 @@ const GamePage = () => {
    */
   useEffect(() => {
     document.title = 'Partita in corso - Gioco della Sfortuna';
-    
+
     return () => {
       document.title = 'Gioco della Sfortuna - Università Edition';
     };
@@ -328,7 +324,7 @@ const GamePage = () => {
   // ==========================================
   // EVENT HANDLERS
   // ==========================================
-  
+
   /**
    * Handles card placement with timer management
    */
@@ -354,10 +350,10 @@ const GamePage = () => {
         clearTimerFromLocalStorage();
         clearGameState(); // Clear game state from localStorage
       }
-      
+
       const result = await createGame();
       const newGameId = result?.game?.id || result?.id;
-      
+
       if (newGameId) {
         navigate(`/game/${newGameId}`);
       }
@@ -383,13 +379,13 @@ const GamePage = () => {
   // ==========================================
   // COMPUTED VALUES
   // ==========================================
-  
+
   const cardsDisplayConfig = getCardsDisplayConfig(gamePhase, roundResult);
 
   // ==========================================
   // RENDER
   // ==========================================
-  
+
   // Show loading state
   if (loading) {
     return (
@@ -432,9 +428,9 @@ const GamePage = () => {
 
         {/* Cards collection - shown only in result phase */}
         {cardsDisplayConfig.shouldShow && (
-          <CardHand 
-            cards={cards} 
-            showIndex={cardsDisplayConfig.showIndex} 
+          <CardHand
+            cards={cards}
+            showIndex={cardsDisplayConfig.showIndex}
           />
         )}
 
