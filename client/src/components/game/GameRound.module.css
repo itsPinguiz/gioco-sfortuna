@@ -22,7 +22,7 @@
 
 /* Common button styles */
 .gameButton {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   font-weight: bold;
   border-radius: var(--game-border-radius);
   transition: var(--game-transition);
@@ -33,10 +33,10 @@
    ========================================== */
 
 .gameRoundContainer {
-  padding: 2rem;
+  padding: 1rem;
   border-radius: var(--game-border-radius-large);
   box-shadow: var(--game-shadow);
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   max-width: 100%;
 }
 
@@ -48,19 +48,24 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--game-border-color);
 }
 
 .attemptsCounter {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 
 .roundTitle {
   text-align: center;
   flex: 1;
+}
+
+.roundTitle h3 {
+  font-size: 1.25rem;
+  margin: 0;
 }
 
 /* Timer styles */
@@ -72,15 +77,16 @@
 
 .timerLabel {
   font-weight: bold;
+  font-size: 0.9rem;
 }
 
 .timerValue {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
-  min-width: 50px;
+  min-width: 45px;
   text-align: center;
   background: var(--game-yellow);
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   color: black;
   border-radius: var(--game-border-radius);
 }
@@ -99,7 +105,7 @@
 }
 
 .loadingRound {
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
 }
 
@@ -109,13 +115,13 @@
 
 .controlButtons {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .confirmButton {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   font-weight: bold;
   border-radius: var(--game-border-radius);
   transition: var(--game-transition);
@@ -127,7 +133,7 @@
 }
 
 .resetButton {
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   font-weight: bold;
   border-radius: var(--game-border-radius);
   transition: var(--game-transition);
@@ -146,17 +152,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  margin: 1rem 0;
+  gap: 1rem;
+  margin: 0.5rem 0;
 }
 
 /* New card section */
 .newCardSection {
-  padding: 1rem;
+  padding: 0.75rem;
   background-color: var(--game-bg-light);
   border-radius: var(--game-border-radius-large);
   border: 2px solid var(--game-yellow);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   position: relative;
 }
 
@@ -164,9 +170,10 @@
   content: "Trascina questa carta tra quelle in mano";
   display: block;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   font-weight: bold;
   color: var(--game-yellow);
+  font-size: 0.9rem;
 }
 
 /* ==========================================
@@ -177,10 +184,10 @@
   display: inline-block;
   cursor: grab;
   transition: var(--game-transition);
-  margin: 1rem 0;
+  margin: 0.5rem 0;
   border: 2px solid transparent;
   border-radius: var(--game-border-radius);
-  padding: 0.5rem;
+  padding: 0.25rem;
 }
 
 .draggableNewCard:hover {
@@ -212,16 +219,16 @@
   width: 100%;
   max-width: 100%;
   overflow-x: auto;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
 }
 
 .cardArray {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   align-items: center;
   justify-content: flex-start;
-  min-height: 150px;
-  padding: 1rem;
+  min-height: 120px;
+  padding: 0.75rem;
   border-radius: var(--game-border-radius-large);
   transition: all 0.3s ease;
 }
@@ -267,14 +274,14 @@
   justify-content: center;
   border-radius: var(--game-border-radius);
   transition: var(--game-transition);
-  width: 60px;
+  width: 50px;
   border: 2px dashed #ccc;
   background-color: #f8f9fa;
-  margin: 0 5px;
-  min-width: 60px;
+  margin: 0 4px;
+  min-width: 50px;
   flex-shrink: 0;
   min-height: 100%;
-  margin-top: 45px;
+  margin-top: 35px;
   z-index: 1;
   opacity: 0.1;
 }
@@ -283,11 +290,11 @@
   border-color: #28a745;
   background-color: #d4edda;
   transform: scale(1.05);
-  margin-inline: 30px;
+  margin-inline: 25px;
 }
 
 .dropIndicator {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #6c757d;
   text-align: center;
   font-weight: bold;
@@ -306,9 +313,9 @@
   justify-content: center;
   border-radius: var(--game-border-radius);
   transition: var(--game-transition);
-  min-width: 60px;
-  height: 100px;
-  margin-left: 10px;
+  min-width: 50px;
+  height: 80px;
+  margin-left: 8px;
   opacity: 0;
 }
 
@@ -320,7 +327,7 @@
 }
 
 .endDropZoneIndicator {
-  font-size: 24px;
+  font-size: 20px;
   color: #6c757d;
   font-weight: bold;
 }
@@ -336,19 +343,19 @@
 .cardWrapper {
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
 }
 
 .cardPosition {
   position: relative;
-  margin-top: 45px;
+  margin-top: 35px;
 }
 
 .cardScrollContainer {
   display: flex;
   overflow-x: auto;
-  padding: 10px 0;
-  gap: 15px;
+  padding: 8px 0;
+  gap: 12px;
   scrollbar-width: thin;
   scrollbar-color: #007bff #f0f0f0;
   width: 100%;
@@ -356,7 +363,7 @@
 }
 
 .cardScrollContainer::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
 
 .cardScrollContainer::-webkit-scrollbar-track {
@@ -367,41 +374,6 @@
 .cardScrollContainer::-webkit-scrollbar-thumb {
   background-color: #007bff;
   border-radius: var(--game-border-radius-large);
-}
-
-.arrowButtons {
-  position: absolute;
-  top: -45px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 10px;
-}
-
-.arrowButton {
-  width: 48px;
-  height: 40px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  font-size: 1.8rem;
-  cursor: pointer;
-  border: none;
-  transition: var(--game-transition);
-  box-shadow: var(--game-shadow);
-  line-height: 1;
-  padding-bottom: 5px;
-}
-
-.arrowButton:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
 }
 
 /* ==========================================
@@ -420,6 +392,66 @@
   }
   to {
     box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .gameRoundContainer {
+    padding: 0.75rem;
+    margin: 0.25rem 0;
+  }
+  
+  .roundHeader {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .roundTitle h3 {
+    font-size: 1.1rem;
+  }
+  
+  .timerValue {
+    font-size: 1.1rem;
+    min-width: 40px;
+  }
+  
+  .verticalLayout {
+    gap: 0.75rem;
+  }
+  
+  .cardArray {
+    min-height: 100px;
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gameRoundContainer {
+    padding: 0.5rem;
+  }
+  
+  .roundHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .roundTitle h3 {
+    font-size: 1rem;
+  }
+  
+  .newCardSection::before {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cardArray {
+    min-height: 90px;
   }
 }
 

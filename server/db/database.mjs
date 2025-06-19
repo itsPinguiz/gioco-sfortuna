@@ -132,7 +132,6 @@ const executeTransaction = (statements) => {
 const SCHEMAS = {
   users: `CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE,
     username TEXT UNIQUE,
     password TEXT,
     salt TEXT
@@ -204,10 +203,34 @@ export const initializeDB = async () => {
  */
 export const updateDBSchema = async () => {
   try {
-    // Check if incorrect_attempts column exists in the games table
-    const tableInfo = await getAllRows('PRAGMA table_info(games)');
+    // Check if email column exists in users table and remove it
+    const userTableInfo = await getAllRows('PRAGMA table_info(users)');
+    const hasEmailColumn = userTableInfo.some(col => col && col.name === 'email');
     
-    const hasIncorrectAttempts = tableInfo.some(col => 
+    if (hasEmailColumn) {
+      // Create new table without email column
+      await runSQL(`CREATE TABLE users_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE,
+        password TEXT,
+        salt TEXT
+      )`);
+      
+      // Copy data from old table to new table
+      await runSQL(`INSERT INTO users_new (id, username, password, salt) 
+                   SELECT id, username, password, salt FROM users`);
+      
+      // Drop old table and rename new table
+      await runSQL('DROP TABLE users');
+      await runSQL('ALTER TABLE users_new RENAME TO users');
+      
+      console.log('Removed email column from users table');
+    }
+    
+    // Check if incorrect_attempts column exists in the games table
+    const gameTableInfo = await getAllRows('PRAGMA table_info(games)');
+    
+    const hasIncorrectAttempts = gameTableInfo.some(col => 
       col && col.name === 'incorrect_attempts'
     );
     

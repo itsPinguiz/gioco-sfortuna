@@ -65,21 +65,6 @@ const userDao = {
   },
 
   /**
-   * Get user by email
-   * @param {string} email - User email
-   * @returns {Promise<Object|null>} User object with sensitive data (for authentication)
-   */
-  getUserByEmail: async (email) => {
-    try {
-      const sql = 'SELECT * FROM users WHERE email = ?';
-      return await getRow(sql, [email]);
-    } catch (error) {
-      console.error('Error getting user by email:', error);
-      throw error;
-    }
-  },
-
-  /**
    * Get user by username
    * @param {string} username - Username
    * @returns {Promise<Object|null>} User object with sensitive data (for authentication)
@@ -123,3 +108,4 @@ const userDao = {
 };
 
 export default userDao;
+     

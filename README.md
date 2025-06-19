@@ -50,7 +50,6 @@
 
 - Table `users`: Stores user account information
   - `id` (INTEGER PRIMARY KEY): Unique user identifier
-  - `email` (TEXT UNIQUE): User email address
   - `username` (TEXT UNIQUE): User login name
   - `password` (TEXT): Hashed password
   - `salt` (TEXT): Password salt for hashing

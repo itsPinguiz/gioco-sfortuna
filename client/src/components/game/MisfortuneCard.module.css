@@ -60,7 +60,8 @@
 
 /* Card image */
 .cardImage {
-  height: var(--card-image-height);
+  height: auto;
+  width: 70%;
   object-fit: cover;
   filter: invert(1);
   position: absolute;

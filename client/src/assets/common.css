@@ -48,19 +48,19 @@
   --transition-slow: 200ms ease;
   
   /* Card dimensions */
-  --card-width: 200px;
-  --card-height: 280px;
-  --card-image-height: 180px;
-  --card-border-radius: 10px;
-  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  --card-shadow-hover: 0 10px 20px rgba(0, 0, 0, 0.2);
+  --card-width: 180px;
+  --card-height: 250px;
+  --card-image-height: 160px;
+  --card-border-radius: 8px;
+  --card-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 8px 16px rgba(0, 0, 0, 0.2);
   --card-transition: all 0.3s ease;
-  --game-card-min-height: 320px;
+  --game-card-min-height: 280px;
   
   /* Index sizes */
-  --index-size: 60px;
-  --index-height: 45px;
-  --result-mark-size: 5rem;
+  --index-size: 50px;
+  --index-height: 38px;
+  --result-mark-size: 4rem;
   
   /* Glows */
   --game-success-glow: 0 0 15px #28a745;
@@ -486,8 +486,17 @@
    ========================================== */
 
 @media (max-width: 768px) {
+  :root {
+    --card-width: 160px;
+    --card-height: 220px;
+    --card-image-height: 140px;
+    --game-card-min-height: 250px;
+    --index-size: 45px;
+    --index-height: 35px;
+  }
+  
   .game-container {
-    padding: 1rem;
+    padding: 0.75rem;
   }
   
   .game-header {
@@ -533,8 +542,17 @@
 }
 
 @media (max-width: 480px) {
+  :root {
+    --card-width: 140px;
+    --card-height: 200px;
+    --card-image-height: 120px;
+    --game-card-min-height: 220px;
+    --index-size: 40px;
+    --index-height: 30px;
+  }
+  
   .game-container {
-    padding: 0.75rem;
+    padding: 0.5rem;
   }
   
   .game-title-large {

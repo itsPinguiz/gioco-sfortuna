@@ -170,13 +170,13 @@ const MisfortuneCard = ({
         className={cardClassName}
         onClick={onClick}
       >
-        {/* Card image */}
-        <CardImage card={card} />
-        
-        {/* Card content */}
+        {/* Card title - now at the top */}
         <CardBody card={card} />
         
-        {/* Misfortune index indicator */}
+        {/* Card image - in the middle */}
+        <CardImage card={card} />
+        
+        {/* Misfortune index indicator - at the bottom */}
         <MisfortuneIndex card={card} showIndex={showIndex} />
         
         {/* Result feedback overlay */}

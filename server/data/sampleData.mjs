@@ -62,8 +62,8 @@ const misfortuneCards = [
 
 // Sample user data
 const sampleUsers = [
-  { email: 'user1@example.com', username: 'user1', password: 'P@ssw0rd1', salt: '' },
-  { email: 'user2@example.com', username: 'user2', password: 'P@ssw0rd2', salt: '' }
+  { username: 'user1', password: 'P@ssw0rd1', salt: '' },
+  { username: 'user2', password: 'P@ssw0rd2', salt: '' }
 ];
 
 // Function to create images directory if it doesn't exist

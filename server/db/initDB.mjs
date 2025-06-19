@@ -102,8 +102,8 @@ const initializeUsers = async () => {
         const hashedPassword = crypt.hashPassword(user.password, salt);
         
         return {
-          sql: 'INSERT INTO users (email, username, password, salt) VALUES (?, ?, ?, ?)',
-          params: [user.email, user.username, hashedPassword, salt]
+          sql: 'INSERT INTO users (username, password, salt) VALUES (?, ?, ?)',
+          params: [user.username, hashedPassword, salt]
         };
       });
       
