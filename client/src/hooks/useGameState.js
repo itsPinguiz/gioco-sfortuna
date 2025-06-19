@@ -240,10 +240,14 @@ const useGameState = (gameId) => {
    * @param {string} cardId - ID of the card being placed
    * @param {number} position - Position where card is being placed
    * @returns {Object|null} Placement result or null on error
-   */
-  const handlePlaceCard = async (cardId, position) => {
+   */  const handlePlaceCard = async (cardId, position) => {
     try {
       const result = await submitCardPlacement(gameId, cardId, position);
+      
+      // Update the round card with the complete data including misfortune_index
+      if (result.card) {
+        setRoundCard(result.card);
+      }
       
       // Update cards collection if placement was correct
       if (result.result === 'correct') {
@@ -290,9 +294,14 @@ const useGameState = (gameId) => {
     
     try {
       timeoutProcessingRef.current = true;
-      
-      // Submit timeout with special position indicator
+        // Submit timeout with special position indicator
       const result = await submitCardPlacement(gameId, roundCard.id, TIMEOUT_POSITION);
+      
+      // Update the round card with the complete data including misfortune_index
+      // This ensures the index is shown in the result phase after timeout
+      if (result.card) {
+        setRoundCard(result.card);
+      }
       
       // Update attempts with server data
       if (result.incorrectAttempts !== undefined) {
