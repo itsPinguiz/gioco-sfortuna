@@ -233,8 +233,8 @@
 }
 
 .roundCardImage {
-  width: 60px;
-  height: 80px;
+  height: auto;
+  width: 70%;
   object-fit: cover;
   border-radius: var(--game-border-radius-small);
   filter: invert(1) drop-shadow(0 0 1px #fff);
