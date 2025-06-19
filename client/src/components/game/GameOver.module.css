@@ -160,7 +160,8 @@
   border-radius: var(--game-border-radius);
   box-shadow: var(--game-shadow-small);
   border: 2px solid var(--game-yellow);
-  order: 1; /* Ensure it appears after stats */
+  order: 1;
+  /* Ensure it appears after stats */
 }
 
 .roundDetails h4 {
@@ -238,6 +239,8 @@
   object-fit: cover;
   border-radius: var(--game-border-radius-small);
   filter: invert(1) drop-shadow(0 0 1px #fff);
+  height: 100px;
+  width: auto;
 }
 
 .cardDetails {
@@ -281,43 +284,43 @@
     padding: 1rem;
     margin: 1rem 0;
   }
-  
+
   .gameTitle {
     font-size: 2rem;
   }
-  
+
   .statsGrid {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
-  
+
   .statItem {
     padding: 0.5rem;
   }
-  
+
   .statValue {
     font-size: 1.1rem;
   }
-  
+
   .gameOverActions {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .actionButton {
     width: 100%;
     max-width: 300px;
   }
-  
+
   .roundContent {
     grid-template-columns: 1fr;
     gap: 0.75rem;
   }
-  
+
   .positionInfo {
     text-align: left;
   }
-  
+
   .roundCardImage {
     width: 50px;
     height: 65px;
@@ -328,33 +331,31 @@
   .gameOverContainer {
     padding: 0.75rem;
   }
-  
+
   .gameTitle {
     font-size: 1.75rem;
   }
-  
+
   .gameStats {
     padding: 1rem;
   }
-  
+
   .roundDetails {
     padding: 1rem;
   }
-  
+
   .roundItem {
     padding: 0.75rem;
   }
-  
+
   .cardInfo {
     flex-direction: column;
     text-align: center;
     gap: 0.5rem;
   }
-  
+
   .roundCardImage {
     width: 40px;
     height: 55px;
   }
 }
-
-

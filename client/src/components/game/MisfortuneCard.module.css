@@ -61,13 +61,13 @@
 /* Card image */
 .cardImage {
   height: auto;
-  width: 70%;
   object-fit: cover;
   filter: invert(1);
   position: absolute;
   bottom: 32px;
   left: 50%;
   transform: translatex(-50%);
+  width: 120px;
 }
 
 /* Card body */
