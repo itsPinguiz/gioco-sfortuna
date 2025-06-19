@@ -80,6 +80,12 @@ const GuestInfoSection = () => {
   
   const handleGuestPlay = async () => {
     try {
+      // Clear any existing game state from localStorage before creating new game
+      const existingGameStates = Object.keys(localStorage).filter(key => 
+        key.startsWith('gameState_') || key.startsWith('gameTimer_')
+      );
+      existingGameStates.forEach(key => localStorage.removeItem(key));
+      
       const gameData = await createGame();
       const gameId = gameData.game?.id || gameData.id;
       if (gameId) {

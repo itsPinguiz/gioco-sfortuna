@@ -240,8 +240,7 @@ const GamePage = () => {
   // ==========================================
   // CUSTOM HOOKS
   // ==========================================
-  
-  // Game state management
+    // Game state management
   const {
     game,
     cards,
@@ -254,7 +253,8 @@ const GamePage = () => {
     incorrectAttempts,
     handlePlaceCard,
     handleTimeUp,
-    startNewRound
+    startNewRound,
+    clearGameState
   } = useGameState(gameId);
 
   // Game timer with persistence
@@ -344,15 +344,15 @@ const GamePage = () => {
     resetTimer(); // Reset timer when starting new round
     await startNewRound();
   };
-
   /**
    * Handles starting a new game with cleanup
    */
   const onNewGame = async () => {
     try {
-      // Clear timer data for current game before starting new one
+      // Clear both timer and game state data for current game before starting new one
       if (gameId) {
         clearTimerFromLocalStorage();
+        clearGameState(); // Clear game state from localStorage
       }
       
       const result = await createGame();

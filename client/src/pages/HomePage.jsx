@@ -191,13 +191,19 @@ const HomePage = () => {
   // ==========================================
   // API FUNCTIONS
   // ==========================================
-  
-  /**
+    /**
    * Creates a new game and navigates to game page
    */
   const handleNewGame = async () => {
     try {
       setLoading(true);
+      
+      // Clear any existing game state from localStorage before creating new game
+      const existingGameStates = Object.keys(localStorage).filter(key => 
+        key.startsWith('gameState_') || key.startsWith('gameTimer_')
+      );
+      existingGameStates.forEach(key => localStorage.removeItem(key));
+      
       const gameData = await createGame();
 
       // Navigate to the game page

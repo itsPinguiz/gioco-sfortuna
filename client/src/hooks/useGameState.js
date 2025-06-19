@@ -49,9 +49,26 @@ const loadGameStateFromLocalStorage = (gameId) => {
     const saved = localStorage.getItem(STORAGE_PREFIX + gameId);
     if (!saved) return null;
     
-    return JSON.parse(saved);
+    const parsedState = JSON.parse(saved);
+    
+    // Additional validation: ensure the saved state is not too old (more than 24 hours)
+    const isExpired = parsedState.timestamp && (Date.now() - parsedState.timestamp) > 24 * 60 * 60 * 1000;
+    if (isExpired) {
+      localStorage.removeItem(STORAGE_PREFIX + gameId);
+      return null;
+    }
+    
+    // Additional validation: only load state if the game has not ended
+    if (parsedState.gamePhase === 'over') {
+      localStorage.removeItem(STORAGE_PREFIX + gameId);
+      return null;
+    }
+    
+    return parsedState;
   } catch (error) {
     console.warn('Error parsing saved game state:', error);
+    // Clean up corrupted data
+    localStorage.removeItem(STORAGE_PREFIX + gameId);
     return null;
   }
 };
@@ -63,6 +80,36 @@ const loadGameStateFromLocalStorage = (gameId) => {
 const clearGameStateFromLocalStorage = (gameId) => {
   if (gameId) {
     localStorage.removeItem(STORAGE_PREFIX + gameId);
+  }
+};
+
+/**
+ * Cleans up old or invalid game states from localStorage
+ * Should be called when the app starts or when accessing game state
+ */
+const cleanupOldGameStates = () => {
+  try {
+    const keys = Object.keys(localStorage);
+    const gameStateKeys = keys.filter(key => key.startsWith(STORAGE_PREFIX));
+    
+    gameStateKeys.forEach(key => {
+      try {
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          const parsedState = JSON.parse(saved);
+          // Remove states older than 24 hours
+          const isExpired = parsedState.timestamp && (Date.now() - parsedState.timestamp) > 24 * 60 * 60 * 1000;
+          if (isExpired) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (error) {
+        // Remove corrupted states
+        localStorage.removeItem(key);
+      }
+    });
+  } catch (error) {
+    console.warn('Error cleaning up old game states:', error);
   }
 };
 
@@ -125,6 +172,11 @@ const useGameState = (gameId) => {
   // STATE INITIALIZATION
   // ==========================================
   
+  // Clean up old game states on initialization
+  useEffect(() => {
+    cleanupOldGameStates();
+  }, []);
+  
   // Load saved state if available
   const savedState = loadGameStateFromLocalStorage(gameId);
   
@@ -163,9 +215,7 @@ const useGameState = (gameId) => {
     if (gameId && gamePhase !== 'loading') {
       saveGameStateToLocalStorage(gameId, roundCard, gamePhase, incorrectAttempts);
     }
-  }, [gameId, roundCard, gamePhase, incorrectAttempts]);
-
-  /**
+  }, [gameId, roundCard, gamePhase, incorrectAttempts]);  /**
    * Load initial game data
    */
   useEffect(() => {
@@ -188,8 +238,17 @@ const useGameState = (gameId) => {
             attemptsRef.current = data.game.incorrect_attempts;
           }
           
-          // Set appropriate game phase
-          setGamePhase(data.game.result ? 'over' : 'round');
+          // If game is already completed, clear any saved state and set to 'over' phase
+          if (data.game.result) {
+            clearGameStateFromLocalStorage(gameId);
+            setRoundCard(null); // Clear any previous round card
+            setGamePhase('over');
+          } else {
+            // For active games, clear the round card state to ensure fresh start
+            setRoundCard(null);
+            setRoundResult(null);
+            setGamePhase('round');
+          }
         } else {
           setError('Gioco non trovato.');
         }
@@ -203,7 +262,6 @@ const useGameState = (gameId) => {
 
     fetchGame();
   }, [gameId]);
-
   /**
    * Reset timeout processing flag when new round starts
    */
@@ -212,6 +270,16 @@ const useGameState = (gameId) => {
       timeoutProcessingRef.current = false;
     }
   }, [roundCard?.id]);
+
+  /**
+   * Auto-load a round card when entering 'round' phase without a card
+   */
+  useEffect(() => {
+    if (gamePhase === 'round' && !roundCard && !loading) {
+      console.log('Auto-loading round card for new round...');
+      loadRoundCard();
+    }
+  }, [gamePhase, roundCard, loading]);
 
   // ==========================================
   // GAME CONTROL FUNCTIONS
@@ -352,7 +420,6 @@ const useGameState = (gameId) => {
     }
     // Note: timeoutProcessingRef.current remains true until new round starts
   };
-
   /**
    * Starts a new round by clearing result and loading new card
    * @returns {Object|null} New round card or null on error
@@ -360,6 +427,14 @@ const useGameState = (gameId) => {
   const startNewRound = async () => {
     setRoundResult(null);
     return await loadRoundCard();
+  };
+
+  /**
+   * Clears all game state from localStorage
+   * Used when starting a new game to ensure clean state
+   */
+  const clearGameState = () => {
+    clearGameStateFromLocalStorage(gameId);
   };
 
   // ==========================================
@@ -388,7 +463,8 @@ const useGameState = (gameId) => {
     handlePlaceCard,
     handleTimeUp,
     startNewRound,
-    loadRoundCard
+    loadRoundCard,
+    clearGameState
   };
 };
 

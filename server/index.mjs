@@ -402,14 +402,35 @@ app.get('/api/games/:id/round', async (req, res) => {
     
     const gameCards = await gameDao.getGameCards(gameId);
     const cardIds = gameCards.map(card => card.id);
-    const randomCards = await cardDao.getRandomCards(1, cardIds);
+    
+    // Additional validation: ensure cardIds array is valid
+    if (!Array.isArray(cardIds)) {
+      console.error('Invalid cardIds array:', cardIds);
+      return res.status(500).json({ error: 'Invalid game state' });
+    }
+    
+    // Additional robustness: filter out any null/undefined IDs
+    const validCardIds = cardIds.filter(id => id != null && Number.isInteger(id));
+    
+    console.log(`Getting random card excluding ${validCardIds.length} existing cards for game ${gameId}`);
+    
+    const randomCards = await cardDao.getRandomCards(1, validCardIds);
     
     if (randomCards.length === 0) {
       return res.status(404).json({ error: 'No more cards available' });
     }
     
+    // Additional validation: ensure the returned card is not in the exclusion list
+    const selectedCard = randomCards[0];
+    if (validCardIds.includes(selectedCard.id)) {
+      console.error(`DUPLICATE CARD DETECTED: Card ${selectedCard.id} is already in game ${gameId}`);
+      console.error('Existing card IDs:', validCardIds);
+      console.error('Selected card:', selectedCard);
+      return res.status(500).json({ error: 'Duplicate card selection detected' });
+    }
+    
     // Return card without misfortune index
-    const { misfortune_index, ...cardWithoutIndex } = randomCards[0];
+    const { misfortune_index, ...cardWithoutIndex } = selectedCard;
     res.json(cardWithoutIndex);
   } catch (err) {
     console.error('Error getting round card:', err);

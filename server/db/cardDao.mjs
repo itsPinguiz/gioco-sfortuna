@@ -46,10 +46,18 @@ const buildRandomCardsQuery = (excludeIds = []) => {
   let sql = 'SELECT * FROM cards';
   let params = [];
   
-  if (excludeIds.length > 0) {
-    const placeholders = excludeIds.map(() => '?').join(',');
-    sql += ` WHERE id NOT IN (${placeholders})`;
-    params = [...excludeIds];
+  // Only add WHERE clause if there are valid IDs to exclude
+  if (Array.isArray(excludeIds) && excludeIds.length > 0) {
+    // Filter out any invalid IDs for extra safety
+    const validIds = excludeIds.filter(id => 
+      id != null && Number.isInteger(Number(id))
+    );
+    
+    if (validIds.length > 0) {
+      const placeholders = validIds.map(() => '?').join(',');
+      sql += ` WHERE id NOT IN (${placeholders})`;
+      params = [...validIds];
+    }
   }
   
   sql += ' ORDER BY RANDOM() LIMIT ?';
@@ -95,7 +103,6 @@ const cardDao = {
       throw error;
     }
   },
-
   /**
    * Get random cards excluding specific IDs
    * @param {number} count - Number of cards to retrieve
@@ -104,13 +111,51 @@ const cardDao = {
    */
   getRandomCards: async (count, excludeIds = []) => {
     try {
-      const { sql, params } = buildRandomCardsQuery(excludeIds);
+      // Validate input parameters
+      if (!Number.isInteger(count) || count <= 0) {
+        throw new Error(`Invalid count parameter: ${count}`);
+      }
+      
+      if (!Array.isArray(excludeIds)) {
+        console.warn('excludeIds is not an array, converting:', excludeIds);
+        excludeIds = [];
+      }
+      
+      // Filter and validate exclude IDs
+      const validExcludeIds = excludeIds.filter(id => 
+        id != null && Number.isInteger(Number(id))
+      ).map(id => Number(id));
+      
+      if (validExcludeIds.length !== excludeIds.length) {
+        console.warn(`Filtered out ${excludeIds.length - validExcludeIds.length} invalid exclude IDs`);
+      }
+      
+      const { sql, params } = buildRandomCardsQuery(validExcludeIds);
       params.push(count);
+      
+      console.log(`Getting ${count} random cards excluding ${validExcludeIds.length} cards: [${validExcludeIds.join(', ')}]`);
       
       const cards = await getAllRows(sql, params);
       
       // Ensure uniqueness as extra safety measure
-      return ensureUniqueCards(cards);
+      const uniqueCards = ensureUniqueCards(cards);
+      
+      // Additional validation: verify no excluded cards are in result
+      if (validExcludeIds.length > 0) {
+        const resultIds = uniqueCards.map(card => card.id);
+        const duplicates = resultIds.filter(id => validExcludeIds.includes(id));
+        
+        if (duplicates.length > 0) {
+          console.error('CRITICAL: Excluded cards found in result!');
+          console.error('Excluded IDs:', validExcludeIds);
+          console.error('Result IDs:', resultIds);
+          console.error('Duplicates:', duplicates);
+          throw new Error(`Excluded cards found in result: ${duplicates.join(', ')}`);
+        }
+      }
+      
+      console.log(`Successfully retrieved ${uniqueCards.length} unique cards`);
+      return uniqueCards;
     } catch (error) {
       console.error('Error getting random cards:', error);
       throw error;
