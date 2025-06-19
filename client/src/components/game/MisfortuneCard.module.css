@@ -60,14 +60,15 @@
 
 /* Card image */
 .cardImage {
-  height: auto;
   object-fit: cover;
   filter: invert(1);
   position: absolute;
   bottom: 32px;
   left: 50%;
   transform: translatex(-50%);
-  width: 120px;
+  height: 120px;
+  width: auto;
+  z-index: 0;
 }
 
 /* Card body */
@@ -84,6 +85,8 @@
   font-weight: bold;
   text-transform: capitalize;
   text-align: center;
+  z-index: 1;
+  filter: drop-shadow(2px 3px 3px rgba(0,0,0,.2));
 }
 
 /* ==========================================

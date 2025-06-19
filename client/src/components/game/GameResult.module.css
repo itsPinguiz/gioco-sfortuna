@@ -8,6 +8,7 @@
   box-shadow: var(--game-shadow);
   margin: 0.5rem 0;
   text-align: center;
+  min-width: 100%;
 }
 
 /* ==========================================
