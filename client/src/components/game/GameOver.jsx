@@ -2,28 +2,37 @@ import React from 'react';
 import { Container, Alert, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import CardHand from './CardHand';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 import styles from './GameOver.module.css';
+
+// Extend dayjs with plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // ==========================================
 // UTILITY FUNCTIONS
 // ==========================================
 
 /**
- * Formats a date object to a localized date string
+ * Formats a date object to a localized date string in Italian timezone
  * @param {Date|string} date - The date to format
- * @returns {string} Formatted date string
+ * @returns {string} Formatted date string in UTC+2
  */
 const formatDate = (date) => {
-  return new Date(date).toLocaleDateString();
+  // Forza l'interpretazione come UTC, poi converte al timezone locale
+  return dayjs.utc(date).tz('Europe/Rome').format('DD/MM/YYYY');
 };
 
 /**
- * Formats a date object to a localized time string
+ * Formats a date object to a localized time string in Italian timezone
  * @param {Date|string} date - The date to format
- * @returns {string} Formatted time string
+ * @returns {string} Formatted time string in UTC+2
  */
 const formatTime = (date) => {
-  return new Date(date).toLocaleTimeString();
+  // Forza l'interpretazione come UTC, poi converte al timezone locale
+  return dayjs.utc(date).tz('Europe/Rome').format('HH:mm:ss');
 };
 
 /**
