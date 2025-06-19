@@ -129,7 +129,7 @@ const GameResult = ({
       <div className={styles.cardResult}>
         <MisfortuneCard 
           card={card} 
-          showIndex={!isCorrect} // Show index only when incorrect for learning
+          showIndex={true} 
           result={isCorrect ? 'correct' : 'incorrect'} 
         />
       </div>

@@ -1,5 +1,5 @@
 import { getRow } from './database.mjs';
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 // ==========================================
 // UTILITY FUNCTIONS
@@ -17,7 +17,7 @@ const sanitizeUser = (user) => {
 };
 
 /**
- * Validate user credentials using bcrypt
+ * Validate user credentials using crypto
  * @param {string} inputPassword - Password to check
  * @param {string} storedPassword - Stored hashed password
  * @param {string} salt - Password salt
@@ -25,7 +25,7 @@ const sanitizeUser = (user) => {
  */
 const validatePassword = (inputPassword, storedPassword, salt) => {
   try {
-    const hashedPassword = bcrypt.hashSync(inputPassword, salt);
+    const hashedPassword = crypto.scryptSync(inputPassword, salt, 32).toString('hex');
     return hashedPassword === storedPassword;
   } catch (error) {
     console.error('Error validating password:', error);
@@ -54,7 +54,7 @@ const userDao = {
       const user = await getRow(sql, [id]);
       
       if (!user) {
-        return { error: 'User not found.' };
+        return null;
       }
       
       return sanitizeUser(user);

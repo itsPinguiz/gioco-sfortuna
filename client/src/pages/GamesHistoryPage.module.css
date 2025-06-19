@@ -89,9 +89,7 @@
 .gameTable {
   background-color: var(--game-black);
   color: white;
-  border-radius: var(--game-border-radius);
   overflow: hidden;
-  box-shadow: var(--shadow-button);
 }
 
 .gameTable th {

@@ -122,6 +122,9 @@ export const AuthProvider = ({ children }) => {
       const authenticatedUser = await login(username, password);
       setUser(authenticatedUser);
       
+      // Force a small delay to ensure session is established
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
       return true;
     } catch (error) {
       logError('Login', error);

@@ -4,7 +4,33 @@ import axios from 'axios';
 const API = axios.create({
   baseURL: 'http://localhost:3001/api',
   withCredentials: true,
+  timeout: 10000, // Add timeout
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
+
+// Add request interceptor to log authentication issues
+API.interceptors.request.use(
+  (config) => {
+    console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for better error handling
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.log('401 Unauthorized response received');
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Authentication API calls
 export const login = async (username, password) => {
@@ -57,7 +83,9 @@ export const getGameById = async (gameId) => {
 
 export const getUserGames = async () => {
   try {
+    console.log('Fetching user games...');
     const response = await API.get('/games');
+    console.log('Games fetched successfully:', response.data.length);
     return response.data;
   } catch (error) {
     // If it's an authentication error, don't throw it as a generic error

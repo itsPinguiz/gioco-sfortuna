@@ -5,6 +5,11 @@ import { AuthContext } from '../contexts/AuthContext';
 import { getUserGames } from '../api/API';
 import Footer from '../components/layout/Footer';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+// Extend dayjs with plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 import styles from './GamesHistoryPage.module.css';
 
 // ==========================================
@@ -23,10 +28,10 @@ const ERROR_MESSAGES = {
 /**
  * Formats date for display in games table
  * @param {string} dateString - ISO date string
- * @returns {string} Formatted date string
+ * @returns {string} Formatted date string in UTC+2
  */
 const formatGameDate = (dateString) => {
-  return dayjs(dateString).format('DD/MM/YYYY HH:mm');
+  return dayjs(dateString).tz('Europe/Rome').format('DD/MM/YYYY HH:mm');
 };
 
 /**
@@ -221,7 +226,12 @@ const GamesHistoryPage = () => {
       return;
     }
 
-    fetchGames();
+    // Add a small delay to ensure session is properly established
+    const timer = setTimeout(() => {
+      fetchGames();
+    }, 200);
+
+    return () => clearTimeout(timer);
   }, [isAuthenticated]);
 
   // ==========================================
@@ -231,24 +241,30 @@ const GamesHistoryPage = () => {
   /**
    * Fetches user's games from the server
    */
-  const fetchGames = async () => {
-    try {
-      setLoading(true);
-      setError('');
-      const userGames = await getUserGames();
-      setGames(userGames);
-    } catch (error) {
-      console.error('Error fetching games:', error);
-      
-      if (error.response?.status === 401) {
-        setError(ERROR_MESSAGES.NOT_AUTHENTICATED);
-      } else {
-        setError(ERROR_MESSAGES.FETCH_GAMES);
+const fetchGames = async (retryCount = 0) => {
+  try {
+    setLoading(true);
+    setError('');
+    const userGames = await getUserGames();
+    setGames(userGames);
+  } catch (error) {
+    console.error('Error fetching games:', error);
+    
+    if (error.response?.status === 401) {
+      // Retry once after authentication error
+      if (retryCount < 1) {
+        console.log('Retrying games fetch after authentication delay...');
+        setTimeout(() => fetchGames(retryCount + 1), 500);
+        return;
       }
-    } finally {
-      setLoading(false);
+      setError(ERROR_MESSAGES.NOT_AUTHENTICATED);
+    } else {
+      setError(ERROR_MESSAGES.FETCH_GAMES);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
   // ==========================================
   // RENDER

@@ -27,14 +27,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = 3001;
 
 const SESSION_CONFIG = {
-  secret: 'your_secret_key_here',
+  secret: "shhhhh... it's a secret!",
   resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 30 * 60 * 1000, // 30 minutes
-    httpOnly: true,
-    sameSite: 'lax'
-  }
+  saveUninitialized: false
 };
 
 const GAME_CONFIG = {
@@ -130,37 +125,32 @@ app.use(session(SESSION_CONFIG));
 
 // Passport setup
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.authenticate('session'));
 
 // ==========================================
 // PASSPORT CONFIGURATION
 // ==========================================
 
 // Local strategy
-passport.use(new LocalStrategy(async function verify(username, password, done) {
+passport.use(new LocalStrategy(async function verify(username, password, cb) {
   try {
     const user = await userDao.checkCredentials(username, password);
     if (!user) {
-      return done(null, false, { message: 'Incorrect username or password' });
+      return cb(null, false, 'Incorrect username or password.');
     }
-    return done(null, user);
+    return cb(null, user);
   } catch (error) {
-    return done(error);
+    return cb(error);
   }
 }));
 
 // Serialize/deserialize user
-passport.serializeUser((user, done) => {
-  done(null, user.id);
+passport.serializeUser(function (user, cb) {
+  cb(null, user);
 });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await userDao.getUserById(id);
-    done(null, user);
-  } catch (err) {
-    done(err, null);
-  }
+passport.deserializeUser(function (user, cb) {
+  return cb(null, user);
 });
 
 // ==========================================
@@ -174,7 +164,7 @@ const isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
-  return res.status(401).json({ error: 'Not authenticated' });
+  return res.status(401).json({ error: 'Not authorized' });
 };
 
 // ==========================================
@@ -314,14 +304,6 @@ const processCardPlacement = async (gameId, roundCard, position, correctPosition
   }
 };
 
-// ==========================================
-// API ROUTES
-// ==========================================
-
-// Health check
-app.get('/api/ping', (req, res) => {
-  res.status(200).json({ message: 'pong' });
-});
 
 // ==========================================
 // AUTHENTICATION ROUTES
@@ -461,13 +443,13 @@ app.post('/api/games/:id/round',
       
       if (!roundCard) {
         return res.status(404).json({ error: 'Card not found' });
-      }
+      }      const correctPosition = calculateCorrectPosition(gameCards, roundCard);
       
-      const correctPosition = calculateCorrectPosition(gameCards, roundCard);
+      // Check if this is a guest game based on the game's original creation
+      const isGuestGame = !game.user_id;
       
-      // Check if this is a guest game based on current authentication status
-      // If user is authenticated now, treat as full game regardless of game.user_id
-      const isGuestGame = !req.isAuthenticated();
+      // Debug logging for session issues
+      console.log(`Processing round for game ${gameId}: isAuthenticated=${req.isAuthenticated()}, game.user_id=${game.user_id}, isGuestGame=${isGuestGame}`);
       
       const result = await processCardPlacement(
         gameId, 
@@ -526,9 +508,15 @@ const initializeApp = async () => {
   try {
     console.log('Initializing application...');
     
-    // Uncomment to reset database
-    // await resetDB();
+    // Check for reset flag from command line arguments
+    const shouldReset = process.argv.includes('--reset-db') || process.argv.includes('--reset');
     
+    // Reset database if flag is provided or uncomment the line below for always reset
+    if (shouldReset) {
+      console.log('Resetting database...');
+      await resetDB();
+    }
+
     await initializeDB();
     await updateDBSchema();
     

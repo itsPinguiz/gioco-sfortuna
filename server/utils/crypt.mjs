@@ -1,10 +1,10 @@
-import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 // ==========================================
 // CONSTANTS
 // ==========================================
 
-const SALT_ROUNDS = 10;
+const SALT_LENGTH = 32;
 
 // ==========================================
 // CRYPTO UTILITIES
@@ -12,7 +12,7 @@ const SALT_ROUNDS = 10;
 
 /**
  * Cryptographic utility functions for password management
- * Uses bcrypt for secure password hashing with salt
+ * Uses Node.js crypto module for secure password hashing with salt
  */
 const crypt = {
   /**
@@ -21,7 +21,7 @@ const crypt = {
    */
   generateSalt: () => {
     try {
-      return bcrypt.genSaltSync(SALT_ROUNDS);
+      return crypto.randomBytes(SALT_LENGTH).toString('hex');
     } catch (error) {
       console.error('Error generating salt:', error);
       throw new Error('Failed to generate password salt');
@@ -40,7 +40,7 @@ const crypt = {
         throw new Error('Password and salt are required');
       }
       
-      return bcrypt.hashSync(plainPassword, salt);
+      return crypto.scryptSync(plainPassword, salt, 32).toString('hex');
     } catch (error) {
       console.error('Error hashing password:', error);
       throw new Error('Failed to hash password');
@@ -51,15 +51,17 @@ const crypt = {
    * Verifies a password against a hash
    * @param {string} plainPassword - Plain text password to verify
    * @param {string} hashedPassword - Hashed password to compare against
+   * @param {string} salt - Salt used for hashing
    * @returns {boolean} Whether the password matches
    */
-  verifyPassword: (plainPassword, hashedPassword) => {
+  verifyPassword: (plainPassword, hashedPassword, salt) => {
     try {
-      if (!plainPassword || !hashedPassword) {
+      if (!plainPassword || !hashedPassword || !salt) {
         return false;
       }
       
-      return bcrypt.compareSync(plainPassword, hashedPassword);
+      const hashedAttempt = crypto.scryptSync(plainPassword, salt, 32).toString('hex');
+      return hashedAttempt === hashedPassword;
     } catch (error) {
       console.error('Error verifying password:', error);
       return false;
