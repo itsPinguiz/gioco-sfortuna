@@ -1,111 +1,124 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/uNTgnFHD)
-# Exam #1: "Gioco della Sfortuna"
-## Student: s309156 ZIZZI STEFANO
+# Exam #N: 1
+## Student: s346595 Stefano Zizzi
+
+## Overview
+
+"Gioco della Sfortuna" is a web-based card game where players must evaluate and rank university-related misfortune situations. Players start with 3 cards and must correctly place new cards in order of their misfortune index to win. The goal is to collect 6 cards while having only 3 attempts per round.
 
 ## React Client Application Routes
 
-- Route `/`: Homepage con informazioni sul gioco e, per utenti autenticati, lista delle partite passate
-- Route `/login`: Pagina di login per gli utenti registrati
-- Route `/game/:gameId`: Pagina di gioco, dove `:gameId` è l'ID della partita in corso
-- Route `/profile`: Pagina profilo utente (accessibile solo agli utenti autenticati)
+- Route `/`: Home page with game introduction, rules explanation, and new game creation. Shows different content for authenticated vs guest users
+- Route `/login`: Authentication page with login form and guest play option for demo games
+- Route `/game/:gameId`: Main game page where the actual gameplay happens. Parameter `gameId` specifies which game instance to load
+- Route `/games-history`: Protected route showing authenticated users their game history with detailed statistics and round information
+- Route `*`: Catch-all route that redirects to home page for invalid URLs
 
 ## API Server
 
-- POST `/api/sessions`
-  - Request body: { username, password }
-  - Response body: { id, username, email }
-  - Descrizione: Autenticazione dell'utente
+### Authentication Routes
+- POST `/api/sessions`: User login
+  - request body: `{ username: string, password: string }`
+  - response: user object (without sensitive data) or error
+- GET `/api/sessions/current`: Get current authenticated user
+  - response: user object or 401 if not authenticated
+- DELETE `/api/sessions/current`: User logout
+  - response: empty object
 
-- GET `/api/sessions/current`
-  - Response body: { id, username, email } o { error: 'Not authenticated' }
-  - Descrizione: Verifica se l'utente è autenticato
-
-- DELETE `/api/sessions/current`
-  - Response body: {}
-  - Descrizione: Logout dell'utente
-
-- POST `/api/games`
-  - Response body: { game: { id, user_id, start_date }, cards: [...] }
-  - Descrizione: Crea una nuova partita (con o senza utente autenticato)
-
-- GET `/api/games/:id`
-  - Response body: { game: { id, user_id, start_date, end_date, result }, cards: [...] }
-  - Descrizione: Ottiene i dettagli di una partita specifica
-
-- GET `/api/games`
-  - Response body: [{ id, user_id, start_date, end_date, result, cards_count }]
-  - Descrizione: Ottiene la lista delle partite dell'utente autenticato
-
-- GET `/api/games/:id/round`
-  - Response body: { id, name, image_url } (senza indice di sfortuna)
-  - Descrizione: Ottiene una carta casuale per il turno attuale
-
-- POST `/api/games/:id/round`
-  - Request body: { cardId, position }
-  - Response body: { result: 'correct'|'incorrect', card: {...}, gameCompleted: boolean, gameResult: 'won'|'lost', correctPosition }
-  - Descrizione: Sottomette la collocazione di una carta e ottiene il risultato
-
-- POST `/api/games/:id/end`
-  - Request body: { result: 'won'|'lost' }
-  - Response body: { gameId, result, end_date }
-  - Descrizione: Termina una partita con il risultato specificato
+### Game Routes
+- POST `/api/games`: Create a new game
+  - request body: none (user ID taken from session, null for guests)
+  - response: `{ game: gameObject, cards: cardArray }`
+- GET `/api/games`: Get games history for authenticated user
+  - response: array of games with card counts and statistics
+- GET `/api/games/:id`: Get specific game details with cards and rounds
+  - request parameters: `id` (game ID)
+  - response: `{ game: gameObject, cards: cardArray, rounds: roundArray }`
+- GET `/api/games/:id/round`: Get a random card for the current round
+  - request parameters: `id` (game ID)
+  - response: card object without misfortune index
+- POST `/api/games/:id/round`: Submit card placement for current round
+  - request parameters: `id` (game ID)
+  - request body: `{ cardId: number, position: number, timeTaken?: number }`
+  - response: placement result with game status and statistics
+- POST `/api/games/:id/end`: Manually end a game
+  - request parameters: `id` (game ID)
+  - request body: `{ result: string }`
+  - response: updated game object
 
 ## Database Tables
 
-- Table `users` - contiene le informazioni degli utenti registrati
-  - id: ID utente
-  - email: email dell'utente
-  - username: nome utente
-  - password: password hashata
-  - salt: salt per l'hashing della password
+- Table `users`: Stores user account information
+  - `id` (INTEGER PRIMARY KEY): Unique user identifier
+  - `username` (TEXT UNIQUE): User login name
+  - `password` (TEXT): Hashed password
+  - `salt` (TEXT): Password salt for hashing
 
-- Table `cards` - contiene le carte delle situazioni sfortunate
-  - id: ID della carta
-  - name: nome della situazione
-  - image_url: percorso dell'immagine
-  - misfortune_index: indice di sfortuna (1-100)
+- Table `cards`: Contains all misfortune situation cards
+  - `id` (INTEGER PRIMARY KEY): Unique card identifier
+  - `name` (TEXT NOT NULL): Card title/description
+  - `image_url` (TEXT NOT NULL): Path to card image
+  - `misfortune_index` (REAL NOT NULL): Misfortune rating (1-100)
 
-- Table `games` - contiene le informazioni sulle partite
-  - id: ID della partita
-  - user_id: ID dell'utente (null per partite demo)
-  - start_date: data di inizio partita
-  - end_date: data di fine partita (null se in corso)
-  - result: risultato ('won' o 'lost', null se in corso)
+- Table `games`: Stores game instances and their state
+  - `id` (INTEGER PRIMARY KEY): Unique game identifier
+  - `user_id` (INTEGER): Reference to users table (NULL for guest games)
+  - `start_date` (DATETIME NOT NULL): When the game started
+  - `end_date` (DATETIME): When the game ended
+  - `result` (TEXT): Game outcome ('won' or 'lost')
+  - `incorrect_attempts` (INTEGER DEFAULT 0): Number of wrong placements
 
-- Table `game_cards` - associa le carte alle partite
-  - id: ID dell'associazione
-  - game_id: ID della partita
-  - card_id: ID della carta
-  - acquisition_order: ordine di acquisizione nella partita
+- Table `game_cards`: Links cards to games in order
+  - `id` (INTEGER PRIMARY KEY): Unique relationship identifier
+  - `game_id` (INTEGER NOT NULL): Reference to games table
+  - `card_id` (INTEGER NOT NULL): Reference to cards table
+  - `acquisition_order` (INTEGER NOT NULL): Order in which card was obtained
+
+- Table `game_rounds`: Tracks individual round attempts
+  - `id` (INTEGER PRIMARY KEY): Unique round identifier
+  - `game_id` (INTEGER NOT NULL): Reference to games table
+  - `round_number` (INTEGER NOT NULL): Sequential round number
+  - `presented_card_id` (INTEGER NOT NULL): Card shown to player
+  - `chosen_position` (INTEGER NOT NULL): Position chosen by player (-1 for timeout)
+  - `correct_position` (INTEGER NOT NULL): Actual correct position
+  - `is_correct` (BOOLEAN NOT NULL): Whether placement was correct
+  - `time_taken` (INTEGER): Time in seconds to make decision
+  - `created_at` (DATETIME DEFAULT CURRENT_TIMESTAMP): Round timestamp
+
+## Database Reset
+
+The application supports database reset through command-line arguments:
+
+- `npm start -- --reset-db` or `npm start -- --reset`: Resets the database before starting the server
+- To always reset the database on startup, uncomment the `await resetDB();` line in `server/index.mjs`
+
+**Warning**: Database reset will delete all existing data and recreate the schema with sample data.
 
 ## Main React Components
 
-- `App` (in `App.jsx`): componente principale che definisce le route e fornisce l'AuthContext
+- `App` (in `App.jsx`): Main application component that sets up routing, authentication context, and global layout
+- `HomePage` (in `HomePage.jsx`): Landing page component with game introduction, rules, and new game creation. Handles different UI for authenticated vs guest users
+- `LoginPage` (in `LoginPage.jsx`): Authentication page with login form validation and guest demo game option
+- `GamePage` (in `GamePage.jsx`): Core game component orchestrating the entire game flow using custom hooks for state and timer management
+- `GamesHistoryPage` (in `GamesHistoryPage.jsx`): Protected page showing authenticated users their complete game history with detailed statistics
+- `NavbarComponent` (in `components/layout/Navbar.jsx`): Navigation bar with authentication status and navigation links
+- `CardHand` (in `components/game/CardHand.jsx`): Displays the player's current collection of cards, optionally showing misfortune indices
+- `GameRound` (in `components/game/GameRound.jsx`): Handles the active round gameplay including card placement and timer display
+- `GameResult` (in `components/game/GameResult.jsx`): Shows the result of a round attempt with feedback and continuation options
+- `GameOver` (in `components/game/GameOver.jsx`): Final game screen showing complete statistics and offering new game option
+- `AuthProvider` (in `contexts/AuthContext.jsx`): Authentication context provider managing user login state and authentication flows
+- `ProtectedRoute` (in `components/common/ProtectedRoute.jsx`): Route wrapper that redirects unauthenticated users to login page
+- `Footer` (in `components/layout/Footer.jsx`): Application footer with university and course information
+- `LoadingSpinner`(in `components/game/LoadingSpinner.jsx`): Loading spinner used to display loading in UI
+## Custom Hooks
 
-- `AuthContext` (in `AuthContext.jsx`): contesto per la gestione dell'autenticazione
-
-- `NavbarComponent` (in `Navbar.jsx`): barra di navigazione con login/logout
-
-- `MisfortuneCard` (in `Card.jsx`): componente per visualizzare una carta della sfortuna
-  
-- `CardHand` (in `Card.jsx`): componente per visualizzare la mano di carte del giocatore
-  
-- `GameRound` (in `Card.jsx`): componente per gestire un round di gioco
-  
-- `GameResult` (in `Card.jsx`): componente per mostrare il risultato di un round
-  
-- `GameOver` (in `Card.jsx`): componente per mostrare la schermata di fine partita
-  
-- `HomePage` (in `HomePage.jsx`): pagina principale con informazioni sul gioco e storico partite
-  
-- `LoginPage` (in `LoginPage.jsx`): pagina di login
-
-- `GamePage` (in `GamePage.jsx`): pagina principale di gioco
+- `useGameState` (in `hooks/useGameState.js`): Manages complete game state including phases, card management, and API interactions
+- `useGameTimer` (in `hooks/useGameTimer.js`): Handles game timer functionality with localStorage persistence for resuming games
 
 ## Screenshots
 
-![Screenshot Partita](./img/game_in_progress.jpg)
-![Screenshot Storico](./img/game_history.jpg)
+![Screenshot Partita](./img/game_history.png)
+![Screenshot Storico](./img/game_page.png)
 
 ## Users Credentials
 

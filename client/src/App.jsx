@@ -1,34 +1,54 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './assets/common.css'; // Importa stili comuni
 import './App.css';
 
-// Components - importiamo dal file indice principale
+// ==========================================
+// IMPORTS
+// ==========================================
+
+// Components - imported from main index file
 import { NavbarComponent, ProtectedRoute } from './components';
 
 // Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import GamePage from './pages/GamePage';
+import GamesHistoryPage from './pages/GamesHistoryPage';
 
+// ==========================================
+// MAIN APPLICATION COMPONENT
+// ==========================================
+
+/**
+ * App Component
+ * Main application component that sets up routing, authentication,
+ * and global layout structure
+ */
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <div className="App">
+          {/* Global navigation */}
           <NavbarComponent />
+          
+          {/* Application routes */}
           <Routes>
+            {/* Public routes */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/game/:gameId" element={<GamePage />} />
-            <Route path="/profile" element={
+            
+            {/* Protected routes */}
+            <Route path="/games-history" element={
               <ProtectedRoute>
-                <div className="container mt-4">
-                  <h2>Profilo Utente</h2>
-                  <p>Questa pagina è protetta e accessibile solo agli utenti autenticati.</p>
-                </div>
+                <GamesHistoryPage />
               </ProtectedRoute>
             } />
+            
+            {/* Catch-all route - redirect to home */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>

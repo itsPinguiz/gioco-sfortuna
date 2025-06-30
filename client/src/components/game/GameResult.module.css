@@ -1,27 +1,36 @@
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
 .resultContainer {
-  padding: 2rem;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: var(--game-border-radius-large);
+  box-shadow: var(--game-shadow);
+  margin: 0.5rem 0;
   text-align: center;
+  min-width: 100%;
 }
 
-/* Header styles - consistent with GameRound */
+/* ==========================================
+   HEADER SECTION
+   Note: Shared styles with GameRound for consistency
+   ========================================== */
+
 .roundHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--game-border-color);
 }
 
 .attemptsCounter {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 
+/* Timer styles - consistent with GameRound */
 .timer {
   display: flex;
   align-items: center;
@@ -30,22 +39,121 @@
 
 .timerLabel {
   font-weight: bold;
+  font-size: 0.9rem;
 }
 
 .timerValue {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
-  min-width: 50px;
+  min-width: 45px;
   text-align: center;
-  background: #e9ecef;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  background: var(--game-yellow);
+  padding: 0.2rem 0.4rem;
+  color: black;
+  border-radius: var(--game-border-radius);
 }
 
 .timerLow {
-  color: #dc3545;
+  color: var(--game-error-color);
   animation: pulse 1s infinite;
 }
+
+/* ==========================================
+   RESULT CONTENT SECTIONS
+   ========================================== */
+
+/* Alert section for result messages */
+.resultAlert {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+/* Card display section */
+.cardResult {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+/* Attempts information display */
+.attemptsInfo {
+  margin: 0.75rem 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+/* ==========================================
+   INFORMATION PANELS
+   ========================================== */
+
+/* Base style for information containers */
+.infoPanel {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: var(--game-border-radius);
+  border: 1px solid var(--game-border-color);
+  text-align: center;
+}
+
+/* Comparison information panel */
+.comparisonInfo {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: var(--game-border-radius);
+  border: 1px solid var(--game-border-color);
+  text-align: center;
+  background-color: var(--game-info-bg);
+}
+
+.comparisonInfo p {
+  color: var(--game-info-text);
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Index explanation styling */
+.indexExplanation {
+  font-weight: normal;
+}
+
+.indexHighlight {
+  display: inline-block;
+  background-color: var(--game-error-bg);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  margin: 0 0.2rem;
+  font-weight: bold;
+  color: var(--game-error-color);
+}
+
+/* ==========================================
+   ACTION BUTTONS
+   ========================================== */
+
+.actionButtons {
+  margin-top: 1.5rem;
+}
+
+.actionButtons button {
+  min-width: 130px;
+}
+
+.continueButton {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.continueButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
 
 @keyframes pulse {
   0% { opacity: 1; }
@@ -53,58 +161,81 @@
   100% { opacity: 1; }
 }
 
-.resultAlert {
-  margin-bottom: 2rem;
-  text-align: left;
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .roundHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  
+  .resultContainer {
+    padding: 0.75rem;
+  }
+  
+  .comparisonInfo {
+    padding: 0.75rem;
+  }
+  
+  .comparisonInfo p {
+    font-size: 0.9rem;
+  }
+  
+  .cardResult {
+    margin: 1rem 0;
+  }
 }
 
-.cardResult {
-  display: flex;
-  justify-content: center;
-  margin: 2rem 0;
+@media (max-width: 480px) {
+  .resultContainer {
+    padding: 0.5rem;
+  }
+  
+  .roundHeader {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .actionButtons button {
+    min-width: 110px;
+  }
 }
 
-.attemptsInfo {
+/* ==========================================
+   GUEST GAME MESSAGE STYLING
+   ========================================== */
+
+.guestMessage {
   margin: 1rem 0;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.actionButtons {
-  margin-top: 2rem;
-}
-
-.actionButtons button {
-  min-width: 150px;
-}
-
-/* Stile per il messaggio informativo */
-.comparisonInfo {
-  margin: 1.5rem 0;
-  padding: 1.2rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  border: 1px solid #dee2e6;
+  padding: 1rem;
+  border-radius: var(--game-border-radius);
   text-align: center;
+  border: 2px solid;
 }
 
-.comparisonInfo p {
-  color: #495057;
-  font-size: 1.1rem;
-  margin: 0;
-  line-height: 1.6;
-}
-
-.indexExplanation {
-  font-weight: normal;
-}
-
-.indexHighlight {
-  display: inline-block;
-  background-color: rgba(220, 53, 69, 0.2);
-  border-radius: 4px;
-  padding: 0.1rem 0.5rem;
-  margin: 0 0.2rem;
+.guestMessage h4 {
+  margin-bottom: 0.75rem;
   font-weight: bold;
-  color: #dc3545;
+  font-size: 1.1rem;
+}
+
+.guestMessage p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.guestSuccess {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-color: var(--game-success-color);
+  color: var(--game-success-color);
+}
+
+.guestError {
+  background-color: rgba(220, 53, 69, 0.1);
+  border-color: var(--game-danger-color);
+  color: var(--game-danger-color);
 }

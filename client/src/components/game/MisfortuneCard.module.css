@@ -1,20 +1,37 @@
+/* ==========================================
+   CARD WRAPPER
+   ========================================== */
+
 .cardWrapper {
-  transition: all 0.3s ease;
+  transition: var(--card-transition);
   margin: 0.5rem;
   position: relative;
 }
 
+/* ==========================================
+   MAIN CARD STYLES
+   ========================================== */
+
 .misfortuneCard {
-  width: 200px;
-  height: 280px;
-  border-radius: 10px;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: var(--card-border-radius);
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  background-color: #fff;
+  box-shadow: var(--card-shadow);
+  transition: var(--card-transition);
+  background-color: var(--game-black);
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
+  padding: 0.1em 1em;
+  justify-content: flex-end;
+  border: 3px solid transparent;
+  user-select: none;
+  user-drag: none
 }
+
+/* ==========================================
+   INTERACTIVE STATES
+   ========================================== */
 
 .selectable {
   cursor: pointer;
@@ -22,55 +39,83 @@
 
 .selectable:hover {
   transform: translateY(-10px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--card-shadow-hover);
 }
 
+/* ==========================================
+   RESULT FEEDBACK STATES
+   ========================================== */
+
+.correctCard {
+  border-color: var(--success-color);
+  box-shadow: var(--success-glow);
+}
+
+.incorrectCard {
+  border-color: var(--danger-color);
+  box-shadow: var(--danger-glow);
+}
+
+/* ==========================================
+   CARD CONTENT
+   ========================================== */
+
+/* Card image */
 .cardImage {
-  height: 180px;
   object-fit: cover;
+  filter: invert(1);
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translatex(-50%);
+  height: 120px;
+  width: auto;
+  z-index: 0;
 }
 
+/* Card body */
 .compactCardBody {
-  padding: 0.75rem;
+  padding: 0.75rem 0;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
+  flex-grow: 0;
 }
 
 .compactTitle {
-  font-size: 0.9rem;
+  font-size: 1rem;
   margin-bottom: 0;
   font-weight: bold;
+  text-transform: capitalize;
+  text-align: center;
+  z-index: 1;
+  filter: drop-shadow(2px 3px 3px rgba(0,0,0,.2));
 }
+
+/* ==========================================
+   MISFORTUNE INDEX INDICATOR
+   ========================================== */
 
 .misfortuneIndex {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(220, 53, 69, 0.9); /* Rosso più visibile */
-  color: white;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
+  background: var(--game-yellow);
+  color: black;
+  width: var(--index-size);
+  height: var(--index-height);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1.1rem;
-  border: 2px solid white;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  font-size: 1.5rem;
   z-index: 10;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
 }
 
-.correctCard {
-  border: 3px solid #28a745;
-  box-shadow: 0 0 15px #28a745;
-}
-
-.incorrectCard {
-  border: 3px solid #dc3545;
-  box-shadow: 0 0 15px #dc3545;
-}
+/* ==========================================
+   RESULT OVERLAY
+   ========================================== */
 
 .resultOverlay {
   position: absolute;
@@ -81,17 +126,74 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+}
+
+/* Result marks */
+.resultMark {
+  font-size: var(--result-mark-size);
+  text-shadow: var(--result-shadow);
+  font-weight: bold;
 }
 
 .correctMark {
-  font-size: 5rem;
-  color: #28a745;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  font-size: var(--result-mark-size);
+  text-shadow: var(--result-shadow);
+  font-weight: bold;
+  color: var(--success-color);
 }
 
 .incorrectMark {
-  font-size: 5rem;
-  color: #dc3545;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  font-size: var(--result-mark-size);
+  text-shadow: var(--result-shadow);
+  font-weight: bold;
+  color: var(--danger-color);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  :root {
+    --card-width: 160px;
+    --card-height: 220px;
+    --card-image-height: 140px;
+    --index-size: 50px;
+    --index-height: 35px;
+    --result-mark-size: 3.5rem;
+  }
+
+  .cardWrapper {
+    margin: 0.25rem;
+  }
+
+  .compactTitle {
+    font-size: 0.9rem;
+  }
+
+  .misfortuneIndex {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --card-width: 140px;
+    --card-height: 190px;
+    --card-image-height: 120px;
+    --index-size: 40px;
+    --index-height: 30px;
+    --result-mark-size: 3rem;
+  }
+
+  .compactTitle {
+    font-size: 0.8rem;
+  }
+
+  .misfortuneIndex {
+    font-size: 1rem;
+  }
 }

@@ -1,25 +1,74 @@
-.gameRoundContainer {
-  padding: 2rem;
-  background-color: #f8f9fa;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 1rem 0;
+/* ==========================================
+   COMMON UTILITY CLASSES
+   ========================================== */
+
+/* Common hover effects */
+.hoverScale {
+  transition: var(--game-transition);
 }
+
+.hoverScale:hover {
+  transform: scale(1.05);
+}
+
+.hoverLift {
+  transition: var(--game-transition);
+}
+
+.hoverLift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+/* Common button styles */
+.gameButton {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+/* ==========================================
+   MAIN CONTAINER
+   ========================================== */
+
+.gameRoundContainer {
+  padding: 1rem;
+  border-radius: var(--game-border-radius-large);
+  box-shadow: var(--game-shadow);
+  margin: 0.5rem 0;
+  max-width: 100%;
+}
+
+/* ==========================================
+   HEADER SECTION
+   ========================================== */
 
 .roundHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #dee2e6;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--game-border-color);
 }
 
 .attemptsCounter {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
 }
 
+.roundTitle {
+  text-align: center;
+  flex: 1;
+}
+
+.roundTitle h3 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+/* Timer styles */
 .timer {
   display: flex;
   align-items: center;
@@ -28,16 +77,18 @@
 
 .timerLabel {
   font-weight: bold;
+  font-size: 0.9rem;
 }
 
 .timerValue {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: bold;
-  min-width: 50px;
+  min-width: 45px;
   text-align: center;
-  background: #e9ecef;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  background: var(--game-yellow);
+  padding: 0.2rem 0.4rem;
+  color: black;
+  border-radius: var(--game-border-radius);
 }
 
 .timerLow {
@@ -45,94 +96,370 @@
   animation: pulse 1s infinite;
 }
 
+/* ==========================================
+   MAIN CONTENT AREA
+   ========================================== */
+
 .roundContent {
   text-align: center;
 }
 
+.loadingRound {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/* ==========================================
+   CONTROL BUTTONS
+   ========================================== */
+
+.controlButtons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.confirmButton {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.confirmButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+.resetButton {
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.resetButton:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--game-shadow-hover);
+}
+
+/* ==========================================
+   DRAG AND DROP LAYOUT
+   ========================================== */
+
+.verticalLayout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0;
+}
+
+/* New card section */
+.newCardSection {
+  padding: 0.75rem;
+  background-color: var(--game-bg-light);
+  border-radius: var(--game-border-radius-large);
+  border: 2px solid var(--game-yellow);
+  margin-bottom: 0.5rem;
+  position: relative;
+}
+
+.newCardSection::before {
+  content: "Trascina questa carta tra quelle in mano";
+  display: block;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  font-weight: bold;
+  color: var(--game-yellow);
+  font-size: 0.9rem;
+}
+
+/* ==========================================
+   DRAGGABLE COMPONENTS
+   ========================================== */
+
+.draggableNewCard {
+  display: inline-block;
+  cursor: grab;
+  transition: var(--game-transition);
+  margin: 0.5rem 0;
+  border: 2px solid transparent;
+  border-radius: var(--game-border-radius);
+  padding: 0.25rem;
+}
+
+.draggableNewCard:hover {
+  transform: scale(1.05);
+  border-color: var(--game-yellow);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.draggableNewCard:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}
+
+/* Drag overlay */
+.dragOverlay {
+  transform: rotate(5deg);
+  z-index: 1000;
+  opacity: 0.9;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--game-yellow);
+  border-radius: var(--game-border-radius);
+}
+
+/* ==========================================
+   SORTABLE CARDS CONTAINER
+   ========================================== */
+
+.sortableContainer {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+
+.cardArray {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 120px;
+  padding: 0.75rem;
+  border-radius: var(--game-border-radius-large);
+  transition: all 0.3s ease;
+}
+
+.cardArray:hover {
+  border-color: var(--game-yellow);
+  background-color: var(--game-bg-hover);
+}
+
+/* Individual sortable cards */
+.sortableCard {
+  transition: var(--game-transition);
+  cursor: pointer;
+}
+
+.sortableCard:hover {
+  transform: scale(1.05);
+}
+
+.previewCard {
+  opacity: 0.7;
+  border: 2px solid var(--game-yellow);
+  border-radius: var(--game-border-radius);
+  animation: previewPulse 1s ease-in-out infinite alternate;
+}
+
+/* ==========================================
+   DROP ZONES
+   ========================================== */
+
+/* Common drop zone styles */
+.dropZoneBase {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+}
+
+.dropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+  width: 50px;
+  border: 2px dashed #ccc;
+  background-color: #f8f9fa;
+  margin: 0 4px;
+  min-width: 50px;
+  flex-shrink: 0;
+  min-height: 100%;
+  margin-top: 35px;
+  z-index: 1;
+  opacity: 0.1;
+}
+
+.dropZoneActive {
+  border-color: #28a745;
+  background-color: #d4edda;
+  transform: scale(1.05);
+  margin-inline: 25px;
+}
+
+.dropIndicator {
+  font-size: 0.7rem;
+  color: #6c757d;
+  text-align: center;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.dropZoneActive .dropIndicator {
+  color: #155724;
+}
+
+/* End drop zone */
+.endDropZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--game-border-radius);
+  transition: var(--game-transition);
+  min-width: 50px;
+  height: 80px;
+  margin-left: 8px;
+  opacity: 0;
+}
+
+.endDropZoneActive {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.endDropZoneIndicator {
+  font-size: 20px;
+  color: #6c757d;
+  font-weight: bold;
+}
+
+.endDropZoneActive .endDropZoneIndicator {
+  color: #007bff;
+}
+
+/* ==========================================
+   LEGACY STYLES (for backwards compatibility)
+   ========================================== */
+
 .cardWrapper {
   display: flex;
   justify-content: center;
-  margin: 2rem 0;
+  margin: 1.5rem 0;
 }
-
-/* Rimossi i pulsanti di inserimento all'inizio, non necessari */
 
 .cardPosition {
   position: relative;
-  margin-top: 45px;
+  margin-top: 35px;
 }
 
 .cardScrollContainer {
   display: flex;
   overflow-x: auto;
-  padding: 10px 0;
-  gap: 15px;
+  padding: 8px 0;
+  gap: 12px;
   scrollbar-width: thin;
   scrollbar-color: #007bff #f0f0f0;
+  width: 100%;
+  justify-content: center;
 }
 
 .cardScrollContainer::-webkit-scrollbar {
-  height: 8px;
+  height: 6px;
 }
 
 .cardScrollContainer::-webkit-scrollbar-track {
   background: #f0f0f0;
-  border-radius: 10px;
+  border-radius: var(--game-border-radius-large);
 }
 
 .cardScrollContainer::-webkit-scrollbar-thumb {
   background-color: #007bff;
-  border-radius: 10px;
+  border-radius: var(--game-border-radius-large);
 }
 
-.arrowButtons {
-  position: absolute;
-  top: -45px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 0 10px;
-}
-
-.arrowButton {
-  width: 48px;
-  height: 40px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #007bff;
-  color: white;
-  font-weight: bold;
-  font-size: 1.8rem;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  line-height: 1;
-  padding-bottom: 5px;
-}
-
-.arrowButton:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-.loadingRound {
-  padding: 2rem;
-  text-align: center;
-}
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
 
 @keyframes pulse {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes previewPulse {
+  from {
+    box-shadow: 0 0 5px rgba(255, 193, 7, 0.5);
+  }
+
+  to {
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.8);
+  }
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .gameRoundContainer {
+    padding: 0.75rem;
+    margin: 0.25rem 0;
+  }
+
+  .roundHeader {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .roundTitle h3 {
+    font-size: 1.1rem;
+  }
+
+  .timerValue {
+    font-size: 1.1rem;
+    min-width: 40px;
+  }
+
+  .verticalLayout {
+    gap: 0.75rem;
+  }
+
+  .cardArray {
+    min-height: 100px;
+    padding: 0.5rem;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gameRoundContainer {
+    padding: 0.5rem;
+  }
+
+  .roundHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .roundTitle h3 {
+    font-size: 1rem;
+  }
+
+  .newCardSection::before {
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .cardArray {
+    min-height: 90px;
   }
 }

@@ -1,10 +1,35 @@
+/* ==========================================
+   CSS CUSTOM PROPERTIES
+   ========================================== */
+:root {
+  /* Game theme colors */
+  --game-yellow: #ffd83e;
+  --game-black: #111820;
+  --app-background: #0c1318;
+  --game-success-color: #28a745;
+  --game-danger-color: #dc3545;
+
+  /* Common values */
+  --transition-fast: 100ms ease;
+  --transition-normal: 150ms ease-in-out;
+  --transition-slow: 200ms ease;
+  --border-standard: 1px solid black;
+  --shadow-button: 0 0 20px rgba(0, 0, 0, 0.5);
+  --shadow-navbar: 0 -10px 30px black;
+  --game-border-radius: 8px;
+}
+
+/* ==========================================
+   GLOBAL LAYOUT
+   ========================================== */
+
 body {
   min-height: 100vh;
   width: 100%;
-  background-color: #f8f9fa;
   font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  color: white;
 }
 
 #root {
@@ -17,9 +42,229 @@ body {
   width: 100%;
   display: flex;
   flex-direction: column;
+  background-color: var(--app-background);
 }
 
-/* Card animations */
+/* ==========================================
+   TYPOGRAPHY
+   ========================================== */
+
+.lead {
+  color: rgb(190, 190, 190);
+}
+
+/* ==========================================
+   COMPONENTS
+   ========================================== */
+
+/* Logo styling */
+.logo {
+  filter: invert(1);
+}
+
+.logo-inverted {
+  filter: invert(1) brightness(1.2);
+  transition: var(--transition-normal);
+}
+
+.logo-inverted:hover {
+  transform: scale(1.1);
+  filter: invert(1) brightness(1.4);
+}
+
+/* Card components */
+.card {
+  padding: 2em;
+  background-color: var(--game-black);
+  color: #fff;
+}
+
+.card-title {
+  color: var(--game-yellow);
+}
+
+/* Border styling */
+.border-info {
+  border-color: var(--game-yellow) !important;
+}
+
+/* ==========================================
+   BUTTON SYSTEM
+   ========================================== */
+
+/* Base button styles */
+.btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  z-index: 2;
+  border: var(--border-standard);
+}
+
+.btn-primary,.btn:first-child:active {
+  border-radius: 0;
+  color: var(--app-background);
+  font-weight: 1000;
+  background-color: var(--game-yellow);
+  -webkit-font-smoothing: antialiased;
+  font-size: 14pt;
+  border: none;
+  outline: none;
+}
+
+.btn:hover {
+  background-color: var(--game-yellow);
+  outline: unset;
+  border-color: black;
+  color: black;
+}
+
+/* Button icons */
+.btn .icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: filter var(--transition-normal);
+}
+
+.btn .icon>img {
+  height: 24px;
+}
+
+/* Button wrapper with 3D effect */
+.btn-wrapper {
+  position: relative;
+  width: fit-content;
+  transition: all var(--transition-fast);
+  display: inline-flex;
+}
+
+.btn-wrapper:hover {
+  transform: scale(1.05);
+}
+
+/* 3D effect layers */
+.btn-wrapper::before,
+.btn-wrapper::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--game-yellow);
+  content: "";
+  transition: all var(--transition-slow);
+  border: var(--border-standard);
+  filter: brightness(0.75);
+}
+
+.btn-wrapper::before {
+  z-index: 1;
+}
+
+.btn-wrapper::after {
+  filter: brightness(0.5);
+}
+
+.btn-wrapper:hover::before,
+.btn-wrapper:hover::after {
+  transform: rotate(-2deg);
+  transform-origin: right;
+}
+
+.btn-wrapper:hover::after {
+  transform: rotate(-4deg);
+  transition: all var(--transition-fast) 150ms ease;
+}
+
+/* ==========================================
+   NAVIGATION
+   ========================================== */
+
+.navbar {
+  background-color: #080e13 !important;
+  box-shadow: var(--shadow-navbar);
+  margin-bottom: 40px;
+}
+
+/* Navbar game title styling */
+.navbar-game-title {
+  color: var(--game-yellow);
+  font-size: 1.5rem;
+  font-weight: bold;
+  transition: var(--transition-normal);
+}
+
+.navbar-game-title:hover {
+  color: var(--game-yellow);
+  filter: brightness(1.2);
+}
+
+/* User dropdown styling */
+.navbar .dropdown-toggle {
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: none !important;
+  border: none !important;
+  padding: 0.5rem 0.75rem !important;
+  border-radius: 5px !important;
+  transition: var(--transition-normal);
+}
+
+.navbar .dropdown-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.navbar .dropdown-toggle::after {
+  display: none !important;
+}
+
+.navbar .dropdown-menu {
+  background-color: var(--game-black) !important;
+  border: 1px solid var(--game-yellow) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  min-width: 180px;
+  margin-top: 0.5rem !important;
+}
+
+.navbar .dropdown-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  padding: 0.5rem 1rem !important;
+  transition: var(--transition-normal);
+  border-radius: 5px !important;
+  margin: 2px 4px !important;
+  max-width: 95%;
+}
+
+.navbar .dropdown-item:hover {
+  background-color: var(--game-yellow) !important;
+  color: black !important;
+}
+
+.navbar .dropdown-divider {
+  border-color: rgba(255, 216, 62, 0.3) !important;
+  margin: 0.5rem 0 !important;
+}
+
+/* ==========================================
+   MODALS
+   ========================================== */
+
+.modal-content {
+  background: var(--game-black);
+  color: white;
+  border: 2px solid var(--game-yellow);
+  box-shadow: var(--shadow-button);
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+
+/* Card transition animations */
 .card-enter {
   opacity: 0;
   transform: scale(0.9);
@@ -42,10 +287,12 @@ body {
   transition: all 300ms ease-out;
 }
 
+/* Logo spinning animation */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -57,10 +304,83 @@ body {
   }
 }
 
-.card {
-  padding: 2em;
-}
+/* ==========================================
+   UTILITY CLASSES
+   ========================================== */
 
 .read-the-docs {
   color: #888;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 768px) {
+  .btn-wrapper {
+    width: 100%;
+  }
+
+  .btn-wrapper:hover {
+    transform: scale(1.02);
+  }
+
+  .navbar {
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App {
+    min-height: 100vh;
+  }
+
+  .btn-primary {
+    font-size: 12pt;
+  }
+
+  .btn .icon>img {
+    height: 20px;
+  }
+}
+
+.mt-2 {
+  margin-inline: auto;
+  width: fit-content;
+  margin-block: 30px;
+}
+
+.mt-2 li {
+  width: fit-content;
+}
+
+.text-muted {
+  color: rgb(100, 100, 100) !important;
+}
+
+.btn-secondary {
+  border-radius: 0;
+  height: 40px;
+}
+
+.btn-secondary:hover {
+  background-color: #2e2e2e;
+  color: white;
+}
+
+.btn-primary:not(.game-button){
+  transition: all 200ms;
+}
+
+.btn-primary:not(.game-button):hover{
+  opacity: .7;
+}
+
+.mt-4{
+  margin-bottom: 50px;
+}
+
+.spinner-border{
+  border-color: var(--game-yellow);
+  border-bottom-color: transparent;
 }

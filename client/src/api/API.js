@@ -4,7 +4,31 @@ import axios from 'axios';
 const API = axios.create({
   baseURL: 'http://localhost:3001/api',
   withCredentials: true,
+  timeout: 10000, // Add timeout
+  headers: {
+    'Content-Type': 'application/json'
+  }
 });
+
+// Add request interceptor to log authentication issues
+API.interceptors.request.use(
+  (config) => {
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for better error handling
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Authentication API calls
 export const login = async (username, password) => {
@@ -62,7 +86,6 @@ export const getUserGames = async () => {
   } catch (error) {
     // If it's an authentication error, don't throw it as a generic error
     if (error.response && error.response.status === 401) {
-      console.log('User not authenticated for getUserGames');
       return []; // Return empty array instead of throwing error
     }
     throw error;

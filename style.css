@@ -1,0 +1,14 @@
+/* ...existing code... */
+
+.access-box {
+    /* ...existing code... */
+    margin-bottom: 3rem; /* Increase bottom margin for more spacing */
+}
+
+/* Or alternatively, add more top padding to the game box */
+.game-box {
+    /* ...existing code... */
+    margin-top: 3rem; /* Add more top margin to create distance from access box */
+}
+
+/* ...existing code... */

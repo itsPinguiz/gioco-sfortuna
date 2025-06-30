@@ -1,0 +1,152 @@
+/* ==========================================
+   HOME PAGE SPECIFIC STYLES
+   ========================================== */
+
+/* Page header */
+.pageHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.leadText {
+  font-size: 1.2rem;
+  color: rgb(190, 190, 190);
+  line-height: 1.6;
+}
+
+/* Cards section */
+.actionCards {
+  margin-bottom: 3rem;
+}
+
+/* Rule items styling */
+.ruleItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+}
+
+.ruleNumber {
+  color: var(--game-yellow);
+  font-weight: bold;
+  font-size: 1.1rem;
+  min-width: 20px;
+  flex-shrink: 0;
+}
+
+.ruleText {
+  line-height: 1.4;
+}
+
+.ruleText strong {
+  color: var(--game-yellow);
+  font-weight: bold;
+}
+
+/* Demo info styling */
+.demoInfo {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--game-yellow);
+  font-weight: 500;
+}
+
+.demoInfo small {
+  font-size: 0.9rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .leadText {
+    font-size: 1.1rem;
+  }
+  
+  .actionCards {
+    margin-bottom: 2rem;
+  }
+}
+  
+
+/* Login prompt card */
+.loginPrompt {
+  margin-top: 3rem;
+}
+
+.loginCard {
+  background: var(--game-black);
+  border: 2px solid var(--game-yellow);
+  text-align: center;
+}
+
+.loginCard .cardTitle {
+  color: var(--game-yellow);
+}
+
+/* Fix for bullet point alignment in login prompt */
+.loginCard ul {
+  text-align: left;
+  display: inline-block;
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.loginCard ul li {
+  margin-bottom: 0.5rem;
+  list-style-type: disc;
+  list-style-position: outside;
+}
+
+/* Rule items styling */
+.ruleItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+}
+
+.ruleNumber {
+  color: var(--game-yellow);
+  font-weight: bold;
+  font-size: 1.1rem;
+  min-width: 20px;
+  flex-shrink: 0;
+}
+
+.ruleText {
+  line-height: 1.4;
+}
+
+.ruleText strong {
+  color: var(--game-yellow);
+  font-weight: bold;
+}
+
+/* Demo info styling */
+.demoInfo {
+  margin-top: 1rem;
+  text-align: center;
+  color: var(--game-yellow);
+  font-weight: 500;
+}
+
+.demoInfo small {
+  font-size: 0.9rem;
+}
+
+/* Game card layout adjustments */
+.gameCardBody {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.gameDescription {
+  flex-grow: 1;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+}
+
+
