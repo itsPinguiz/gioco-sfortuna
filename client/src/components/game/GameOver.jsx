@@ -157,14 +157,7 @@ const GameOverActions = ({ onNewGame }) => (
  * Round details component showing each round's outcome
  */
 const RoundDetails = ({ rounds }) => {
-  // Debug log to check if rounds are being passed
-  console.log('RoundDetails received rounds:', rounds);
-  console.log('Rounds type:', typeof rounds);
-  console.log('Rounds is array:', Array.isArray(rounds));
-  console.log('Rounds length:', rounds?.length);
-  
   if (!rounds || !Array.isArray(rounds) || rounds.length === 0) {
-    console.log('No rounds found - showing empty state');
     return (
       <div className={styles.roundDetails}>
         <h4>Dettaglio Rounds</h4>
@@ -173,15 +166,12 @@ const RoundDetails = ({ rounds }) => {
       </div>
     );
   }
-
-  console.log('Rendering rounds:', rounds.length);
   
   return (
     <div className={styles.roundDetails}>
       <h4>Dettaglio Rounds</h4>
       <div className={styles.roundsList}>
         {rounds.map((round, index) => {
-          console.log(`Rendering round ${index}:`, round);
           return (
             <div key={round.id || index} className={styles.roundItem}>
               <div className={styles.roundHeader}>
@@ -241,9 +231,6 @@ const GameOver = ({
   onNewGame
 }) => {
   const navigate = useNavigate();
-  
-  // Debug log to check what's being passed to GameOver
-  console.log('GameOver received:', { game, cards, rounds, incorrectAttempts });
   
   // ==========================================
   // VALIDATION

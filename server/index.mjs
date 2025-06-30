@@ -12,7 +12,7 @@ import { fileURLToPath } from 'url';
 // IMPORTS - DAOs AND UTILITIES
 // ==========================================
 
-import { initializeDB, updateDBSchema, resetDB } from './db/database.mjs';
+import { initializeDB, resetDB } from './db/database.mjs';
 import userDao from './db/userDao.mjs';
 import cardDao from './db/cardDao.mjs';
 import gameDao from './db/gameDao.mjs';
@@ -393,7 +393,6 @@ app.get('/api/games/:id/round', async (req, res) => {
     if (req.isAuthenticated() && !game.user_id && !game.end_date) {
       try {
         await gameDao.associateGameWithUser(gameId, req.user.id);
-        console.log(`Associated guest game ${gameId} with user ${req.user.id}`);
       } catch (error) {
         console.warn('Failed to associate game with user:', error);
         // Continue anyway - don't fail the request
@@ -411,8 +410,6 @@ app.get('/api/games/:id/round', async (req, res) => {
     
     // Additional robustness: filter out any null/undefined IDs
     const validCardIds = cardIds.filter(id => id != null && Number.isInteger(id));
-    
-    console.log(`Getting random card excluding ${validCardIds.length} existing cards for game ${gameId}`);
     
     const randomCards = await cardDao.getRandomCards(1, validCardIds);
     
@@ -469,9 +466,6 @@ app.post('/api/games/:id/round',
       // Check if this is a guest game based on the game's original creation
       const isGuestGame = !game.user_id;
       
-      // Debug logging for session issues
-      console.log(`Processing round for game ${gameId}: isAuthenticated=${req.isAuthenticated()}, game.user_id=${game.user_id}, isGuestGame=${isGuestGame}`);
-      
       const result = await processCardPlacement(
         gameId, 
         roundCard, 
@@ -527,24 +521,15 @@ app.post('/api/games/:id/end',
  */
 const initializeApp = async () => {
   try {
-    console.log('Initializing application...');
-    
     // Check for reset flag from command line arguments
     const shouldReset = process.argv.includes('--reset-db') || process.argv.includes('--reset');
     
-    // Reset database if flag is provided or uncomment the line below for always reset
-    if (shouldReset) {
-      console.log('Resetting database...');
-      await resetDB();
-    }
-
+    await resetDB();
     await initializeDB();
-    await updateDBSchema();
     
     createImagesDirectory();
     await initializeSampleData();
     
-    console.log('Application initialized successfully');
   } catch (error) {
     console.error('Error initializing application:', error);
     throw error;

@@ -133,8 +133,6 @@ const cardDao = {
       const { sql, params } = buildRandomCardsQuery(validExcludeIds);
       params.push(count);
       
-      console.log(`Getting ${count} random cards excluding ${validExcludeIds.length} cards: [${validExcludeIds.join(', ')}]`);
-      
       const cards = await getAllRows(sql, params);
       
       // Ensure uniqueness as extra safety measure
@@ -153,8 +151,7 @@ const cardDao = {
           throw new Error(`Excluded cards found in result: ${duplicates.join(', ')}`);
         }
       }
-      
-      console.log(`Successfully retrieved ${uniqueCards.length} unique cards`);
+
       return uniqueCards;
     } catch (error) {
       console.error('Error getting random cards:', error);

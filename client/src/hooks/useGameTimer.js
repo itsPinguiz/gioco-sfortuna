@@ -248,7 +248,7 @@ const useGameTimer = (initialTime = 30, onTimeUp, gameId) => {
     
     // Utility functions
     clearTimerFromLocalStorage: () => clearTimerFromLocalStorage(gameId)
-  };
+};
 };
 
 export default useGameTimer;

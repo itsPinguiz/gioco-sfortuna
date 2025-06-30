@@ -109,7 +109,7 @@ The application supports database reset through command-line arguments:
 - `AuthProvider` (in `contexts/AuthContext.jsx`): Authentication context provider managing user login state and authentication flows
 - `ProtectedRoute` (in `components/common/ProtectedRoute.jsx`): Route wrapper that redirects unauthenticated users to login page
 - `Footer` (in `components/layout/Footer.jsx`): Application footer with university and course information
-
+- `LoadingSpinner`(in `components/game/LoadingSpinner.jsx`): Loading spinner used to display loading in UI
 ## Custom Hooks
 
 - `useGameState` (in `hooks/useGameState.js`): Manages complete game state including phases, card management, and API interactions
@@ -117,8 +117,8 @@ The application supports database reset through command-line arguments:
 
 ## Screenshots
 
-![Screenshot Partita](./img/game_in_progress.jpg)
-![Screenshot Storico](./img/game_history.jpg)
+![Screenshot Partita](./img/game_history.png)
+![Screenshot Storico](./img/game_page.png)
 
 ## Users Credentials
 

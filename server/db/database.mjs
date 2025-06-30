@@ -18,7 +18,6 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
     console.error('Error opening database:', err.message);
     throw err;
   }
-  console.log('Connected to SQLite database');
 });
 
 // ==========================================
@@ -186,72 +185,12 @@ export const initializeDB = async () => {
   try {
     const statements = Object.values(SCHEMAS).map(sql => ({ sql }));
     await executeTransaction(statements);
-    console.log('Database schema initialized successfully');
   } catch (error) {
     console.error('Error initializing database schema:', error);
     throw error;
   }
 };
 
-// ==========================================
-// SCHEMA UPDATES
-// ==========================================
-
-/**
- * Update database schema if needed
- * @returns {Promise} Promise that resolves when schema is updated
- */
-export const updateDBSchema = async () => {
-  try {
-    // Check if email column exists in users table and remove it
-    const userTableInfo = await getAllRows('PRAGMA table_info(users)');
-    const hasEmailColumn = userTableInfo.some(col => col && col.name === 'email');
-    
-    if (hasEmailColumn) {
-      // Create new table without email column
-      await runSQL(`CREATE TABLE users_new (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE,
-        password TEXT,
-        salt TEXT
-      )`);
-      
-      // Copy data from old table to new table
-      await runSQL(`INSERT INTO users_new (id, username, password, salt) 
-                   SELECT id, username, password, salt FROM users`);
-      
-      // Drop old table and rename new table
-      await runSQL('DROP TABLE users');
-      await runSQL('ALTER TABLE users_new RENAME TO users');
-      
-      console.log('Removed email column from users table');
-    }
-    
-    // Check if incorrect_attempts column exists in the games table
-    const gameTableInfo = await getAllRows('PRAGMA table_info(games)');
-    
-    const hasIncorrectAttempts = gameTableInfo.some(col => 
-      col && col.name === 'incorrect_attempts'
-    );
-    
-    if (!hasIncorrectAttempts) {
-      await runSQL('ALTER TABLE games ADD COLUMN incorrect_attempts INTEGER DEFAULT 0');
-      console.log('Added incorrect_attempts column to games table');
-    }
-    
-    // Check if game_rounds table exists
-    const tables = await getAllRows('SELECT name FROM sqlite_master WHERE type="table"');
-    const hasGameRounds = tables.some(table => table.name === 'game_rounds');
-    
-    if (!hasGameRounds) {
-      await runSQL(SCHEMAS.game_rounds);
-      console.log('Created game_rounds table');
-    }
-  } catch (error) {
-    console.error('Error updating database schema:', error);
-    throw error;
-  }
-};
 
 // ==========================================
 // DATABASE RESET

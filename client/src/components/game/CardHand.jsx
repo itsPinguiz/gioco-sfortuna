@@ -118,7 +118,7 @@ const CardHand = ({
       <CardsGrid 
         cards={sortedCards}
         onCardSelect={onCardSelect}
-        showIndex={showIndex}
+        showIndex={true}
       />
     </Container>
   );

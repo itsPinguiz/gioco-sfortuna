@@ -63,10 +63,8 @@ const getRandomCards = async (count) => {
  */
 const initializeCards = async () => {
   try {
-    console.log('Checking cards table...');
     
     if (await isTableEmpty('cards')) {
-      console.log('Initializing cards with sample data...');
       
       // Prepare transaction statements
       const statements = misfortuneCards.map(card => ({
@@ -75,9 +73,7 @@ const initializeCards = async () => {
       }));
       
       await executeTransaction(statements);
-      console.log(`Added ${misfortuneCards.length} cards to database`);
     } else {
-      console.log('Cards table already has data, skipping...');
     }
   } catch (error) {
     console.error('Error initializing cards:', error);
@@ -91,11 +87,7 @@ const initializeCards = async () => {
  */
 const initializeUsers = async () => {
   try {
-    console.log('Checking users table...');
-    
     if (await isTableEmpty('users')) {
-      console.log('Initializing users with sample data...');
-      
       // Prepare user statements with hashed passwords
       const statements = sampleUsers.map(user => {
         const salt = crypt.generateSalt();
@@ -108,9 +100,7 @@ const initializeUsers = async () => {
       });
       
       await executeTransaction(statements);
-      console.log(`Added ${sampleUsers.length} users to database`);
     } else {
-      console.log('Users table already has data, skipping...');
     }
   } catch (error) {
     console.error('Error initializing users:', error);
@@ -199,7 +189,6 @@ const createSampleRounds = async (gameId, gameCards, gameResult) => {
     
     if (roundStatements.length > 0) {
       await executeTransaction(roundStatements);
-      console.log(`Created ${roundStatements.length} sample rounds for ${gameResult} game`);
     }
   } catch (error) {
     console.error(`Error creating sample rounds for ${gameResult} game:`, error);
@@ -240,7 +229,6 @@ const createSampleGame = async (userId, gameConfig) => {
       await createSampleRounds(gameId, cards, gameConfig.result);
     }
     
-    console.log(`Created sample ${gameConfig.result} game with ${gameConfig.cardCount} cards`);
   } catch (error) {
     console.error(`Error creating sample ${gameConfig.result} game:`, error);
     throw error;
@@ -253,13 +241,10 @@ const createSampleGame = async (userId, gameConfig) => {
  */
 const initializeSampleGames = async () => {
   try {
-    console.log('Checking for sample games...');
-    
     // Get the first user
     const firstUser = await getRow('SELECT * FROM users LIMIT 1');
     
     if (!firstUser) {
-      console.log('No users found, skipping sample games creation');
       return;
     }
     
@@ -270,18 +255,12 @@ const initializeSampleGames = async () => {
     );
     
     if (existingGames.count === 0) {
-      console.log('Creating sample games for first user...');
-      
       // Create won game
       await createSampleGame(firstUser.id, SAMPLE_GAME_CONFIG.WON_GAME);
       
       // Create lost game
       await createSampleGame(firstUser.id, SAMPLE_GAME_CONFIG.LOST_GAME);
-      
-      console.log('Sample games created successfully');
-    } else {
-      console.log('User already has games, skipping sample games creation');
-    }
+    } 
   } catch (error) {
     console.error('Error initializing sample games:', error);
     throw error;
@@ -299,14 +278,10 @@ const initializeSampleGames = async () => {
  */
 const initializeSampleData = async () => {
   try {
-    console.log('Starting database initialization with sample data...');
-    
     // Initialize in sequence to handle dependencies
     await initializeCards();
     await initializeUsers();
     await initializeSampleGames();
-    
-    console.log('Database initialization completed successfully');
   } catch (error) {
     console.error('Error during database initialization:', error);
     throw error;

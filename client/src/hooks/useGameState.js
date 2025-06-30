@@ -133,15 +133,12 @@ const createFallbackResult = (attempts) => ({
  */
 const reloadGameData = async (gameId, setGame, setRounds) => {
   try {
-    console.log('Reloading game data for rounds...');
     const updatedGameData = await getGameById(gameId);
-    console.log('Reloaded game data:', updatedGameData);
     
     if (updatedGameData.game) {
       setGame(updatedGameData.game);
     }
     if (updatedGameData.rounds) {
-      console.log('Setting rounds from reloaded data:', updatedGameData.rounds);
       setRounds(updatedGameData.rounds);
     }
   } catch (error) {
@@ -223,14 +220,10 @@ const useGameState = (gameId) => {
       try {
         const data = await getGameById(gameId);
         
-        console.log('Fetched game data:', data); // Debug log
-        
         if (data.game) {
           setGame(data.game);
           setCards(data.cards || []);
           setRounds(data.rounds || []);
-          
-          console.log('Set rounds:', data.rounds); // Debug log
           
           // Always use server's attempt count as source of truth
           if (data.game.incorrect_attempts !== undefined) {
@@ -276,7 +269,6 @@ const useGameState = (gameId) => {
    */
   useEffect(() => {
     if (gamePhase === 'round' && !roundCard && !loading) {
-      console.log('Auto-loading round card for new round...');
       loadRoundCard();
     }
   }, [gamePhase, roundCard, loading]);

@@ -243,7 +243,6 @@ const fetchGames = async (retryCount = 0) => {
     if (error.response?.status === 401) {
       // Retry once after authentication error
       if (retryCount < 1) {
-        console.log('Retrying games fetch after authentication delay...');
         setTimeout(() => fetchGames(retryCount + 1), 500);
         return;
       }
