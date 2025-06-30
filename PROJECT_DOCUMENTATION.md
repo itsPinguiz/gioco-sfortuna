@@ -874,86 +874,6 @@ const handlePlaceCard = async (cardId, position) => {
 
 ---
 
-## 🎨 Styling e Temi
-
-### 🌈 Sistema di Design
-
-Il gioco utilizza un tema scuro con accenti colorati:
-
-```css
-:root {
-  /* Colori principali */
-  --game-bg-gray: #2c3e50;
-  --game-black: #1a252f;
-  --game-white: #ecf0f1;
-  --game-yellow: #f1c40f;
-  
-  /* Dimensioni carte responsive */
-  --card-width: 180px;
-  --card-height: 250px;
-  --card-border-radius: 15px;
-  
-  /* Effetti */
-  --card-shadow: 0 8px 25px rgba(0,0,0,0.4);
-  --success-glow: 0 0 20px rgba(46, 204, 113, 0.8);
-  --danger-glow: 0 0 20px rgba(231, 76, 60, 0.8);
-}
-```
-
-### 📱 Responsive Design
-
-```css
-/* Mobile First */
-@media (max-width: 480px) {
-  :root {
-    --card-width: 140px;
-    --card-height: 190px;
-  }
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-  :root {
-    --card-width: 160px;
-    --card-height: 220px;
-  }
-}
-```
-
----
-
-## 🧪 Testing e Quality Assurance
-
-### 🔍 Test Coverage
-
-#### **Frontend Tests**
-- **Unit Tests**: Componenti React con testing-library
-- **Integration Tests**: API calls e hooks
-- **E2E Tests**: Playwright per flussi utente completi
-
-#### **Backend Tests**
-- **Unit Tests**: DAO e utility functions
-- **Integration Tests**: API endpoints
-- **Database Tests**: Operazioni CRUD e transazioni
-
-### 📁 Struttura Test
-
-```
-tests/
-├── e2e/                     # Playwright E2E
-│   ├── auth.spec.js         # Test autenticazione
-│   ├── gameFlow.spec.js     # Test gameplay completo
-│   └── navigation.spec.js   # Test navigazione
-├── integration/             # Test integrazione
-│   ├── api.test.jsx         # Test API calls
-│   └── gameFlow.test.jsx    # Test flusso gioco
-└── unit/                    # Test unitari
-    ├── components/          # Test componenti
-    └── hooks/               # Test custom hooks
-```
-
----
-
 ## 🚀 Deployment e Performance
 
 ### ⚡ Ottimizzazioni Performance
@@ -968,21 +888,6 @@ tests/
 - **Query Optimization**: Query efficienti con prepared statements
 - **Session Management**: Configurazione ottimale sessioni Express
 
-### 🔧 Build e Deploy
-
-```bash
-# Ambiente di sviluppo
-npm run dev              # Client dev server (Vite)
-npm start               # Server Express.js
-
-# Build produzione
-npm run build           # Build client ottimizzato
-npm run preview         # Preview build locale
-
-# Database management
-npm start -- --reset-db # Reset completo database
-```
-
 ---
 
 ## 🛠️ Development Workflow
@@ -996,88 +901,22 @@ cd server && npm install # Install dipendenze server
 
 # Sviluppo
 npm run dev             # Client su porta 5173
-cd server && npm start  # Server su porta 3001
-
-# Testing
-npm test                # Test frontend
-cd server && npm test   # Test backend
-npx playwright test     # E2E tests
+cd server && node index.mjs  # Server su porta 3001
 ```
 
 ### 🔄 Database Management
 
 ```bash
 # Reset database con dati sample
-npm start -- --reset-db
+node index.mjs --reset
 
-# In alternativa, modifica server/index.mjs:
-// Decommentare: await resetDB();
 ```
 
 ### 📁 File di Configurazione
 
 - `vite.config.js`: Configurazione build frontend
-- `playwright.config.js`: Configurazione E2E tests
 - `eslint.config.js`: Linting rules
 - `package.json`: Dipendenze e scripts
-
----
-
-## 🚀 Prossimi Sviluppi
-
-### 🌟 Funzionalità Future
-
-1. **Modalità Multiplayer**: Sfide in tempo reale tra giocatori
-2. **Classifiche Globali**: Leaderboard con migliori tempi
-3. **Personalizzazione**: Temi personalizzabili e avatar
-4. **Tutorial Interattivo**: Onboarding guidato per nuovi utenti
-5. **Modalità Difficoltà**: Livelli con diversi gradi di complessità
-6. **Achievements**: Sistema di obiettivi e trofei
-7. **Progressive Web App**: Installazione offline-first
-
-### 🔧 Miglioramenti Tecnici
-
-1. **Performance**: Lazy loading componenti e immagini
-2. **Accessibility**: Migliore supporto screen readers
-3. **Internationalization**: Supporto multilingua
-4. **Analytics**: Tracking comportamento utenti (GDPR compliant)
-5. **Database Migration**: Sistema di versioning schema
-
----
-
-## 📞 Contatti e Supporto
-
-**Sviluppatore**: Stefano Zizzi (s346595)  
-**Progetto**: Esame Applicazioni Web 1  
-**Anno Accademico**: 2024/2025  
-
-### 🐛 Bug Report
-
-Per segnalare bug o problemi:
-1. Descrizione dettagliata del problema
-2. Step per riprodurre l'errore
-3. Browser e sistema operativo utilizzato
-4. Screenshot se applicabile
-
-### 💡 Feature Request
-
-Per richiedere nuove funzionalità:
-1. Descrizione della funzionalità desiderata
-2. Caso d'uso specifico
-3. Priorità e impatto stimato
-
----
-
-## 📄 Licenza e Crediti
-
-Questo progetto è stato sviluppato per scopi educativi nell'ambito del corso di **Applicazioni Web 1** presso il Politecnico di Torino.
-
-### 🎨 Asset e Risorse
-
-- **Icone**: SVG personalizzate per situazioni universitarie
-- **Immagini**: Asset originali ottimizzati per web
-- **Font**: Roboto e font di sistema per compatibilità
-- **Colori**: Palette custom ispirata al material design
 
 ### 📚 Tecnologie e Framework
 
